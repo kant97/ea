@@ -10,16 +10,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BestMutationRateSearcher {
-    final ProblemsManager.ProblemType myProblemType;
+    private final ProblemsManager.ProblemType myProblemType;
     private final double INFINITY = Double.MAX_VALUE;
-    private int myProblemSize;
-    private int myLambda;
-    private int myBeginFitness;
-    private int myEndFitness;
-    private final double minMutationProbability;
-    private final double maxMutationProbability;
-    private final double precisionForProbability;
+    private final int myProblemSize;
+    private final int myLambda;
+    private final int myBeginFitness;
+    private final int myEndFitness;
+    private final double myMinMutationProbability;
+    private final double myMaxMutationProbability;
+    private final double myPrecisionForProbability;
     private static final Double EPS = 0.0000000001;
+    private final ArrayList<OptimizationParametersSearchingListener> myListeners;
 
     public BestMutationRateSearcher(ProblemsManager.ProblemType problemType,
                                     int problemSize,
@@ -34,9 +35,10 @@ public class BestMutationRateSearcher {
         myLambda = lambda;
         myBeginFitness = beginFitness;
         myEndFitness = endFitness;
-        this.minMutationProbability = minMutationProbability;
-        this.maxMutationProbability = maxMutationProbability;
-        this.precisionForProbability = precisionForProbability;
+        myMinMutationProbability = minMutationProbability;
+        myMaxMutationProbability = maxMutationProbability;
+        myPrecisionForProbability = precisionForProbability;
+        myListeners = new ArrayList<>();
     }
 
     protected ProbabilityVectorGenerator getProbabilityVectorGenerator(double currentProbability, @NotNull Problem problem) {
@@ -45,8 +47,16 @@ public class BestMutationRateSearcher {
     }
 
     protected ProbabilitySearcher getProbabilitySearcher() {
-        return ProbabilitySearcher.createProbabilitySearcher(minMutationProbability, maxMutationProbability,
-                precisionForProbability, ProbabilitySamplingStrategy.ITERATIVE);
+        return ProbabilitySearcher.createProbabilitySearcher(myMinMutationProbability, myMaxMutationProbability,
+                myPrecisionForProbability, ProbabilitySamplingStrategy.ITERATIVE);
+    }
+
+    public void addListener(OptimizationParametersSearchingListener listener) {
+        myListeners.add(listener);
+    }
+
+    public void deleteAllListeners() {
+        myListeners.clear();
     }
 
     public ArrayList<Double> getBestMutationProbabilities() {
@@ -61,8 +71,7 @@ public class BestMutationRateSearcher {
             ProbabilitySearcher ps = getProbabilitySearcher();
             int feedback = -1;
             for (double p = ps.getInitialProbability(); !ps.isFinished(); p = ps.getNextProb(feedback)) {
-                ProbabilityVectorGenerator pvg = getProbabilityVectorGenerator(p, problem);
-                ArrayList<Double> v = pvg.getProbabilityVector();
+                ArrayList<Double> v = getProbabilityVectorGenerator(p, problem).getProbabilityVector();
                 Double p0Tilda = v.get(0);
                 if (Math.abs(p0Tilda - 1.) < EPS) {
                     update(T, pOpt, INFINITY, p, fitness);
@@ -74,6 +83,10 @@ public class BestMutationRateSearcher {
                     }
                     update(T, pOpt, tFP, p, fitness);
                 }
+            }
+            for (OptimizationParametersSearchingListener listener: myListeners) {
+                listener.onNewMutationProbabilityForFitness(fitness, pOpt.get(fitness - myBeginFitness));
+                listener.onNewOptimizationTimeForFitness(fitness, T.get(fitness - myBeginFitness));
             }
         }
         ArrayList<Double> pOptList = new ArrayList<>(pOpt.size());
