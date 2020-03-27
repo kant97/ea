@@ -1,8 +1,8 @@
 package algo;
 
 import problem.Problem;
+import utils.PatchCalcUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,9 +12,12 @@ public class ABalgo implements Algorithm {
     private final double b; //b = 0.5
     private final double lowerBound; // 1 / problemLength or 1 / (problemLength^2)
     private final int lambda;
+
     private final Problem problem;
     private final int problemLength;
+
     private final Random rand;
+    private int iterCount = 0;
 
     public ABalgo(double mutationRate, double a, double b, double lowerBound, int lambda, Problem problem) {
         this.mutationRate = mutationRate;
@@ -29,13 +32,14 @@ public class ABalgo implements Algorithm {
 
     @Override
     public void makeIteration() {
+        iterCount++;
         List<Integer> bestPatch = null;
         int bestFitness = problem.getFitness();
         int numberOfBetter = 0;
         for (int i = 0; i < lambda; ++i) {
-            List<Integer> patch = Utils.createPatch(mutationRate, problemLength);
+            List<Integer> patch = PatchCalcUtil.createPatch(mutationRate, problemLength);
             int fitness = problem.calculatePatchFitness(patch);
-            if (fitness > problem.getFitness()) {
+            if (fitness >= problem.getFitness()) {
                 numberOfBetter++;
             }
             if (fitness > bestFitness) {
@@ -71,6 +75,21 @@ public class ABalgo implements Algorithm {
     @Override
     public int getFitness() {
         return problem.getFitness();
+    }
+
+    @Override
+    public long getFitnessCount() {
+        return iterCount * lambda;
+    }
+
+    @Override
+    public int getIterCount() {
+        return iterCount;
+    }
+
+    @Override
+    public String getProblemInfo() {
+        return problem.getInfo();
     }
 
 //    private List<Integer> createPatch() {

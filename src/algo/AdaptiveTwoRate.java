@@ -1,6 +1,9 @@
 package algo;
 
 import problem.Problem;
+import utils.BestCalculatedPatch;
+import utils.BestCalculatedPatchMedAverage;
+import utils.PatchCalcUtil;
 
 import java.util.*;
 
@@ -15,7 +18,7 @@ public class AdaptiveTwoRate implements Algorithm{
     private final Random rand;
     private final int[] fitnessOfPatches; //created once for calculating median
 
-    private int curIter = 0;
+    private int iterCount = 0;
     private double mutationRate;
 
 
@@ -38,9 +41,9 @@ public class AdaptiveTwoRate implements Algorithm{
 
     @Override
     public void makeIteration() {
-        curIter++;
-        BestCalculatedPatch bpHalf = getHalfBest(mutationRate / 2);
-        BestCalculatedPatch bpMult = getHalfBest(mutationRate * 2);
+        iterCount++;
+        BestCalculatedPatchMedAverage bpHalf = new BestCalculatedPatchMedAverage(mutationRate / 2, lambda / 2, problem);
+        BestCalculatedPatchMedAverage bpMult = new BestCalculatedPatchMedAverage(mutationRate * 2, lambda / 2, problem);
         double newMutationRate = mutationRate;
         if (bpHalf.fitness > bpMult.fitness) {
             if (bpHalf.fitness >= problem.getFitness()) {
@@ -176,36 +179,19 @@ public class AdaptiveTwoRate implements Algorithm{
         return problem.getFitness();
     }
 
-    private BestCalculatedPatch getHalfBest(double mutation) {
-        List<Integer> bestPatch = null;
-        int bestFitness = -1;
-        double average = 0;
-        for (int i = 0; i < lambda / 2; ++i) {
-            List<Integer> patch = Utils.createPatch(mutation, problemLength);
-            int fitness = problem.calculatePatchFitness(patch);
-            fitnessOfPatches[i] = fitness; //убрать если не надо считать медиану
-            average = (i == 0) ? fitness : (average * i + fitness) / (i + 1);
-            if (fitness >= bestFitness) {
-                bestFitness = fitness;
-                bestPatch = patch;
-            }
-        }
-        Arrays.sort(fitnessOfPatches); //убрать если не надо считать медиану
-        return new BestCalculatedPatch(bestPatch, bestFitness, fitnessOfPatches[lambda / 4], average);
+    @Override
+    public long getFitnessCount() {
+        return iterCount * lambda;
     }
 
-    private class BestCalculatedPatch {
-        List<Integer> patch;
-        int fitness;
-        int median;
-        double average;
+    @Override
+    public int getIterCount() {
+        return iterCount;
+    }
 
-        public BestCalculatedPatch(List<Integer> patch, int fitness, int median, double average) {
-            this.patch = patch;
-            this.fitness = fitness;
-            this.median = median;
-            this.average = average;
-        }
+    @Override
+    public String getProblemInfo() {
+        return problem.getInfo();
     }
 
 }

@@ -6,5 +6,7 @@ public interface Algorithm {
     void printInfo();
     double getMutationRate();
     int getFitness();
-
+    long getFitnessCount();
+    int getIterCount();
+    String getProblemInfo();
 }

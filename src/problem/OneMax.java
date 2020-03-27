@@ -60,4 +60,9 @@ public class OneMax extends AbstractProblem {
         }
         return newFitness;
     }
+
+    @Override
+    public String getInfo() {
+        return "";
+    }
 }

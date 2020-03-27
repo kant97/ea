@@ -1,10 +1,10 @@
-package algo;
+package utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Utils {
+public class PatchCalcUtil {
     private static final Random rand = new Random();
     public static List<Integer> createPatch (double mutation, int problemLength) {
         List<Integer> patch = new ArrayList<>(16);
@@ -21,7 +21,8 @@ public class Utils {
 
     }
 
-    private static int getNextIndex(int curIndex, double mutation) {
-        return curIndex + 1 + (int) (Math.log(rand.nextDouble()) / Math.log(1.0 - mutation));
+    public static int getNextIndex(int curIndex, double mutation) {
+        // casting the entire result to int correctly processes int overflows.
+        return (int) (curIndex + 1 + Math.log(rand.nextDouble()) / Math.log(1.0 - mutation));
     }
 }
