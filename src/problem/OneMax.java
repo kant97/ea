@@ -33,12 +33,11 @@ public class OneMax extends AbstractProblem {
             int removed = toFlip.remove(r);
             myOffspring[removed] = !myOffspring[removed];
         }
-        myFitness = getHonestFitness();
+        myFitness = calcOneMaxFitness(myOffspring);
         assert fitness == myFitness;
     }
 
-    @Override
-    protected int getHonestFitness() {
+    public static int calcOneMaxFitness(boolean[] myOffspring) {
         int fit = 0;
         for (boolean b : myOffspring) {
             if (b) {
@@ -46,6 +45,11 @@ public class OneMax extends AbstractProblem {
             }
         }
         return fit;
+    }
+
+    @Override
+    protected int getHonestFitness() {
+        return calcOneMaxFitness(myOffspring);
     }
 
     @Override

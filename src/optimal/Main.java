@@ -37,8 +37,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws Exception {
-        BestMutationRateSearcher searcher = new BestMutationRateSearcher(ProblemsManager.ProblemType.ONE_MAX, 1000,
-                10, 500, 1000, 0.001, 0.5, 0.01);
+        BestMutationRateSearcher searcher = new BestMutationRateSearcher(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100,
+                1024, 17, 34, 0.1, 0.5, 0.1);
         OptimalParametersLogger logger = new OptimalParametersLogger("bestProbabilities.csv", "bestTimes.csv");
         searcher.addListener(logger);
         System.out.println(searcher.getBestMutationProbabilities());

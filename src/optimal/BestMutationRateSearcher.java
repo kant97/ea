@@ -78,7 +78,7 @@ public class BestMutationRateSearcher {
                 } else {
                     double tFP = 1. / (1. - p0Tilda);
                     int fitnessOffset = fitness - myBeginFitness;
-                    for (int i = 1; i < v.size(); i++) {
+                    for (int i = 1; i < Math.min(v.size(), T.size() - fitnessOffset); i++) {
                         tFP += T.get(fitnessOffset + i) * v.get(i) / (1. - p0Tilda);
                     }
                     update(T, pOpt, tFP, p, fitness);

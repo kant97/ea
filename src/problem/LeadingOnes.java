@@ -63,4 +63,9 @@ public class LeadingOnes extends AbstractProblem {
         return patchFitness;
     }
 
+    @Override
+    public String getInfo() {
+        return null;
+    }
+
 }

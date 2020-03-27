@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static utils.PatchCalcUtil.createPatch;
+
 public class TwoRate implements Algorithm {
     protected double mutationRate;
     private final double lowerBound; // 2.0 / problemLength or 2.0 / (problemLength^2)
@@ -21,6 +23,7 @@ public class TwoRate implements Algorithm {
     public int increaseCount = 0;
     public int equalCount = 0;
     private int almostTheSame = 0;
+    public int iterCount = 0;
 
     public TwoRate(double r, double lowerBound, int lambda, Problem problem) {
         this.problem = problem;
@@ -28,11 +31,13 @@ public class TwoRate implements Algorithm {
         this.mutationRate = r / problemLength;
         this.lowerBound = lowerBound;
         this.lambda = lambda;
+        this.iterCount = 0;
         rand = new Random();
     }
 
     @Override
     public void makeIteration() {
+        iterCount++;
         BestCalculatedPatch bpHalf = getHalfBest(mutationRate / 2);
         BestCalculatedPatch bpMult = getHalfBest(mutationRate * 2);
         double newMutationRate = mutationRate;
@@ -115,7 +120,7 @@ public class TwoRate implements Algorithm {
         List<Integer> bestPatch = null;
         int bestFitness = -1;
         for (int i = 0; i < lambda / 2; ++i) {
-            List<Integer> patch = Utils.createPatch(mutation, problemLength);
+            List<Integer> patch = createPatch(mutation, problemLength);
             int fitness = problem.calculatePatchFitness(patch);
             if (fitness >= bestFitness) {
                 bestFitness = fitness;
@@ -195,5 +200,20 @@ public class TwoRate implements Algorithm {
             this.patch = patch;
             this.fitness = fitness;
         }
+    }
+
+    @Override
+    public String getProblemInfo() {
+        return problem.getInfo();
+    }
+
+    @Override
+    public int getIterCount() {
+        return iterCount;
+    }
+
+    @Override
+    public long getFitnessCount() {
+        return iterCount * lambda;
     }
 }
