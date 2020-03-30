@@ -1,0 +1,25 @@
+{
+  "amountOfThreads": 10,
+  "experimentConfigurations": [
+    {
+      "problemType": "ONE_MAX_NEUTRALITY_3",
+      "problemSize": 100,
+      "lambda": 10,
+      "beginFitness": 17,
+      "endFitness": 34,
+      "minMutationProbability": 0.1,
+      "maxMutationProbability": 0.5,
+      "precisionForProbability": 0.1
+    },
+    {
+      "problemType": "ONE_MAX_NEUTRALITY_3",
+      "problemSize": 200,
+      "lambda": 10,
+      "beginFitness": 17,
+      "endFitness": 34,
+      "minMutationProbability": 0.1,
+      "maxMutationProbability": 0.5,
+      "precisionForProbability": 0.1
+    }
+  ]
+}
