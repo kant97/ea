@@ -1,5 +1,8 @@
 package optimal;
 
+import optimal.configuration.OneExperimentConfiguration;
+import optimal.execution.OptimizationParametersSearchingListener;
+import optimal.execution.ResultEntity;
 import optimal.probabilitySampling.ProbabilitySamplingStrategy;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.jetbrains.annotations.NotNull;
@@ -21,23 +24,18 @@ public class BestMutationRateSearcher {
     private final double myPrecisionForProbability;
     private static final Double EPS = 0.0000000001;
     private final ArrayList<OptimizationParametersSearchingListener> myListeners;
+    private final OneExperimentConfiguration myConfiguration;
 
-    public BestMutationRateSearcher(ProblemsManager.ProblemType problemType,
-                                    int problemSize,
-                                    int lambda,
-                                    int beginFitness,
-                                    int endFitness,
-                                    double minMutationProbability,
-                                    double maxMutationProbability,
-                                    double precisionForProbability) {
-        myProblemType = problemType;
-        myProblemSize = problemSize;
-        myLambda = lambda;
-        myBeginFitness = beginFitness;
-        myEndFitness = endFitness;
-        myMinMutationProbability = minMutationProbability;
-        myMaxMutationProbability = maxMutationProbability;
-        myPrecisionForProbability = precisionForProbability;
+    public BestMutationRateSearcher(@NotNull OneExperimentConfiguration configuration) {
+        myProblemType = configuration.problemType;
+        myProblemSize = configuration.problemSize;
+        myLambda = configuration.lambda;
+        myBeginFitness = configuration.beginFitness;
+        myEndFitness = configuration.endFitness;
+        myMinMutationProbability = configuration.minMutationProbability;
+        myMaxMutationProbability = configuration.maxMutationProbability;
+        myPrecisionForProbability = configuration.precisionForProbability;
+        myConfiguration = configuration;
         myListeners = new ArrayList<>();
     }
 
@@ -84,9 +82,9 @@ public class BestMutationRateSearcher {
                     update(T, pOpt, tFP, p, fitness);
                 }
             }
-            for (OptimizationParametersSearchingListener listener: myListeners) {
-                listener.onNewMutationProbabilityForFitness(fitness, pOpt.get(fitness - myBeginFitness));
-                listener.onNewOptimizationTimeForFitness(fitness, T.get(fitness - myBeginFitness));
+            for (OptimizationParametersSearchingListener listener : myListeners) {
+                listener.onNewResultEntity(new ResultEntity(myConfiguration, fitness, pOpt.get(fitness - myBeginFitness),
+                        T.get(fitness - myBeginFitness)));
             }
         }
         ArrayList<Double> pOptList = new ArrayList<>(pOpt.size());
@@ -98,7 +96,7 @@ public class BestMutationRateSearcher {
     }
 
     private void update(ArrayList<Double> T, HashMap<Integer, Double> pOpt,
-                               Double optimizationTime, Double currentProbability, int currentFitness) {
+                        Double optimizationTime, Double currentProbability, int currentFitness) {
         int fitnessOffset = currentFitness - myBeginFitness;
         if ((Math.abs(INFINITY - optimizationTime) < EPS) && !pOpt.containsKey(fitnessOffset)) {
             pOpt.put(fitnessOffset, currentProbability);

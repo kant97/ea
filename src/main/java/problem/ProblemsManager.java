@@ -2,7 +2,22 @@ package problem;
 
 public class ProblemsManager {
     public enum ProblemType {
-        ONE_MAX, LEADING_ONES, ONE_MAX_NEUTRALITY_3
+        ONE_MAX {
+            @Override
+            public String toString() {
+                return "ONE_MAX";
+            }
+        }, LEADING_ONES {
+            @Override
+            public String toString() {
+                return "LEADING_ONES";
+            }
+        }, ONE_MAX_NEUTRALITY_3 {
+            @Override
+            public String toString() {
+                return "ONE_MAX_NEUTRALITY_3";
+            }
+        }
     }
 
     public static Problem createProblemInstance(ProblemType type, int n) {
