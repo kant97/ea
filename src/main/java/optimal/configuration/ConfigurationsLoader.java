@@ -17,7 +17,7 @@ public class ConfigurationsLoader {
     @NotNull
     Configuration loadConfiguration() throws URISyntaxException, FileNotFoundException {
         File jsonFile;
-        URL resource = ClassLoader.getSystemResource("experimentsConfiguration.json");
+        URL resource = getClass().getClassLoader().getResource("experimentsConfiguration.json");
         jsonFile = Paths.get(resource.toURI()).toFile();
         Gson gson = new Gson();
         return gson.fromJson(new FileReader(jsonFile), Configuration.class);
