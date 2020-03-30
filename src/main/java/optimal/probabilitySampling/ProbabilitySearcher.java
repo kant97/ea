@@ -1,6 +1,6 @@
 package optimal.probabilitySampling;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class ProbabilitySearcher {
     protected final double myLeftProb;

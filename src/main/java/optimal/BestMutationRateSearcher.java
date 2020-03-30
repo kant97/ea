@@ -1,8 +1,8 @@
 package optimal;
 
-import com.sun.istack.internal.NotNull;
 import optimal.probabilitySampling.ProbabilitySamplingStrategy;
 import optimal.probabilitySampling.ProbabilitySearcher;
+import org.jetbrains.annotations.NotNull;
 import problem.Problem;
 import problem.ProblemsManager;
 

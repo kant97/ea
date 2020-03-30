@@ -1,11 +1,12 @@
 package optimal;
 
 import algo.OneStepTwoRate;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import problem.Problem;
-import problem.ProblemsManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public class ProbabilityVectorGenerator {
     public static final int AMOUNT_OF_RUNS = 10000;
