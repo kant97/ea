@@ -1,28 +1,27 @@
-package algo;
+package optimal.oneStepAlgorithms;
 
+import algo.SimpleEA;
 import problem.Problem;
+import utils.BestCalculatedPatch;
 
-public class OneStepTwoRate extends TwoRate {
+public class OneStepSimpleEA extends SimpleEA implements OneStepAlgorithm {
     private int newFitnessOfOffspring;
     private int initialFitnessOfOffspring;
     private double initialR;
 
-    public OneStepTwoRate(double probability, double lowerBound, int lambda, Problem problem) {
-        super(probability * problem.getLength(), lowerBound, lambda, problem);
+    public OneStepSimpleEA(double probability, int lambda, Problem problem) {
+        super(probability * problem.getLength(), lambda, problem);
         newFitnessOfOffspring = problem.getFitness();
         initialFitnessOfOffspring = newFitnessOfOffspring;
-        initialR = mutationRate;
-    }
-
-    public void setMutationRate(double mutationRate) {
-        this.mutationRate = mutationRate;
+        initialR = super.getMutationRate();
     }
 
     @Override
-    protected void updateProblemInstance(TwoRate.BestCalculatedPatch bpHalf) {
-        newFitnessOfOffspring = bpHalf.fitness;
+    protected void updateProblemInstance(BestCalculatedPatch best) {
+        newFitnessOfOffspring = best.fitness;
     }
 
+    @Override
     public void resetState() {
         newFitnessOfOffspring = initialFitnessOfOffspring;
         mutationRate = initialR;
