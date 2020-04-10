@@ -1,9 +1,10 @@
 package optimal;
 
 import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.probability.ProbabilitySamplingConfiguration;
 import optimal.execution.OptimizationParametersSearchingListener;
 import optimal.execution.ResultEntity;
-import optimal.probabilitySampling.ProbabilitySamplingStrategy;
+import optimal.execution.ResultsConsumer;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.jetbrains.annotations.NotNull;
 import problem.Problem;
@@ -19,9 +20,7 @@ public class BestMutationRateSearcher {
     private final int myLambda;
     private final int myBeginFitness;
     private final int myEndFitness;
-    private final double myMinMutationProbability;
-    private final double myMaxMutationProbability;
-    private final double myPrecisionForProbability;
+    ProbabilitySamplingConfiguration myProbabilityEnumerationConfiguration;
     private static final Double EPS = 0.0000000001;
     private final ArrayList<OptimizationParametersSearchingListener> myListeners;
     private final OneExperimentConfiguration myConfiguration;
@@ -32,21 +31,19 @@ public class BestMutationRateSearcher {
         myLambda = configuration.lambda;
         myBeginFitness = configuration.beginFitness;
         myEndFitness = configuration.endFitness;
-        myMinMutationProbability = configuration.minMutationProbability;
-        myMaxMutationProbability = configuration.maxMutationProbability;
-        myPrecisionForProbability = configuration.precisionForProbability;
+        myProbabilityEnumerationConfiguration = configuration.getProbabilityEnumerationConfiguration();
         myConfiguration = configuration;
         myListeners = new ArrayList<>();
     }
 
     protected ProbabilityVectorGenerator getProbabilityVectorGenerator(double currentProbability, @NotNull Problem problem) {
         return new ProbabilityVectorGenerator(currentProbability, myProblemSize, myLambda,
-                2.0 / (double) myProblemSize, problem);
+                2.0 / (double) myProblemSize, myConfiguration.getNumberOfStepRepetitions(), problem,
+                myConfiguration.algorithmType);
     }
 
     protected ProbabilitySearcher getProbabilitySearcher() {
-        return ProbabilitySearcher.createProbabilitySearcher(myMinMutationProbability, myMaxMutationProbability,
-                myPrecisionForProbability, ProbabilitySamplingStrategy.ITERATIVE);
+        return ProbabilitySearcher.createProbabilitySearcher(myProbabilityEnumerationConfiguration);
     }
 
     public void addListener(OptimizationParametersSearchingListener listener) {
@@ -71,21 +68,22 @@ public class BestMutationRateSearcher {
             for (double p = ps.getInitialProbability(); !ps.isFinished(); p = ps.getNextProb(feedback)) {
                 ArrayList<Double> v = getProbabilityVectorGenerator(p, problem).getProbabilityVector();
                 Double p0Tilda = v.get(0);
+                double tFP = INFINITY;
                 if (Math.abs(p0Tilda - 1.) < EPS) {
-                    update(T, pOpt, INFINITY, p, fitness);
+                    update(T, pOpt, tFP, p, fitness);
                 } else {
-                    double tFP = 1. / (1. - p0Tilda);
+                    tFP = 1. / (1. - p0Tilda);
                     int fitnessOffset = fitness - myBeginFitness;
                     for (int i = 1; i < Math.min(v.size(), T.size() - fitnessOffset); i++) {
                         tFP += T.get(fitnessOffset + i) * v.get(i) / (1. - p0Tilda);
                     }
                     update(T, pOpt, tFP, p, fitness);
                 }
+                notifyListeners(new ResultEntity(myConfiguration, fitness, p, tFP),
+                        ResultsConsumer.ResultType.INTERMEDIATE);
             }
-            for (OptimizationParametersSearchingListener listener : myListeners) {
-                listener.onNewResultEntity(new ResultEntity(myConfiguration, fitness, pOpt.get(fitness - myBeginFitness),
-                        T.get(fitness - myBeginFitness)));
-            }
+            notifyListeners(new ResultEntity(myConfiguration, fitness, pOpt.get(fitness - myBeginFitness),
+                    T.get(fitness - myBeginFitness)), ResultsConsumer.ResultType.OPTIMAL);
         }
         ArrayList<Double> pOptList = new ArrayList<>(pOpt.size());
         for (int i = 0; i < pOpt.size(); i++) {
@@ -93,6 +91,12 @@ public class BestMutationRateSearcher {
         }
         pOpt.forEach(pOptList::set);
         return pOptList;
+    }
+
+    public void notifyListeners(ResultEntity resultEntity, ResultsConsumer.ResultType type) {
+        for (OptimizationParametersSearchingListener listener : myListeners) {
+            listener.onNewResultEntity(resultEntity, type);
+        }
     }
 
     private void update(ArrayList<Double> T, HashMap<Integer, Double> pOpt,

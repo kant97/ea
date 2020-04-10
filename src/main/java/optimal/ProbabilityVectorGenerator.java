@@ -1,6 +1,8 @@
 package optimal;
 
-import algo.OneStepTwoRate;
+import optimal.configuration.OneExperimentConfiguration;
+import optimal.oneStepAlgorithms.OneStepAlgorithm;
+import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
 import org.jetbrains.annotations.NotNull;
 import problem.Problem;
 
@@ -9,21 +11,24 @@ import java.util.Collections;
 import java.util.HashMap;
 
 public class ProbabilityVectorGenerator {
-    public static final int AMOUNT_OF_RUNS = 10000;
 
     private final double myProbability;
     private final int myLambda;
     private final double myLowerBound;
+    private final int myAmountOfOneStepRepetitions;
     private final Problem myProblem;
-    private final OneStepTwoRate myAlgorithm;
+    private final OneStepAlgorithm myAlgorithm;
 
     public ProbabilityVectorGenerator(double probability, int n, int lambda, double lowerBound,
-                                      @NotNull Problem problem) {
+                                      int amountOfRepetitions,
+                                      @NotNull Problem problem,
+                                      @NotNull OneStepAlgorithmsManager.AlgorithmType algorithmType) {
         myProbability = probability;
         myLambda = lambda;
         myLowerBound = lowerBound;
+        myAmountOfOneStepRepetitions = amountOfRepetitions;
         myProblem = problem;
-        myAlgorithm = new OneStepTwoRate(myProbability, myLowerBound, myLambda, myProblem);
+        myAlgorithm = OneStepAlgorithmsManager.createAlgorithm(probability, lowerBound, lambda, problem, algorithmType);
     }
 
     @NotNull
@@ -32,7 +37,7 @@ public class ProbabilityVectorGenerator {
 
         HashMap<Integer, Integer> increaseToAmount = new HashMap<>();
 
-        for (int i = 0; i < AMOUNT_OF_RUNS; i++) {
+        for (int i = 0; i < myAmountOfOneStepRepetitions; i++) {
             myAlgorithm.makeIteration();
             int newFitness = myAlgorithm.getFitness();
             int fitnessIncrease = newFitness - beginFitness;
@@ -46,7 +51,7 @@ public class ProbabilityVectorGenerator {
         for (int i = 0; i <= maxIncrease; i++) {
             ans.add(0.);
         }
-        increaseToAmount.forEach((increase, amount) -> ans.set(increase, (double) (int) amount / (double) AMOUNT_OF_RUNS));
+        increaseToAmount.forEach((increase, amount) -> ans.set(increase, (double) (int) amount / (double) myAmountOfOneStepRepetitions));
         return ans;
     }
 }

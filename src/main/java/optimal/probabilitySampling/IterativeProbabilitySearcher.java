@@ -1,8 +1,11 @@
 package optimal.probabilitySampling;
 
+import optimal.configuration.probability.IterativeProbabilityConfiguration;
+
 class IterativeProbabilitySearcher extends ProbabilitySearcher {
-    protected IterativeProbabilitySearcher(double myLeftProb, double myRightProb, double myPrecision) {
-        super(myLeftProb, myRightProb, myPrecision);
+    protected IterativeProbabilitySearcher(IterativeProbabilityConfiguration configuration) {
+        super(configuration.minMutationProbability, configuration.maxMutationProbability,
+                configuration.precisionForProbability);
     }
 
     @Override
@@ -14,10 +17,5 @@ class IterativeProbabilitySearcher extends ProbabilitySearcher {
     @Override
     public double getInitialProbability() {
         return myLeftProb;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return Math.abs(myLastReturnedPrecision - myRightProb) < myPrecision;
     }
 }

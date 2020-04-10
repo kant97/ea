@@ -1,5 +1,8 @@
 package optimal.probabilitySampling;
 
+import optimal.configuration.probability.ExponentialGridConfiguration;
+import optimal.configuration.probability.IterativeProbabilityConfiguration;
+import optimal.configuration.probability.ProbabilitySamplingConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class ProbabilitySearcher {
@@ -12,24 +15,29 @@ public abstract class ProbabilitySearcher {
         myLeftProb = leftProb;
         myRightProb = rightProb;
         myPrecision = precision;
-        myLastReturnedPrecision = leftProb - precision;
+        myLastReturnedPrecision = leftProb;
     }
 
     @NotNull
-    public static ProbabilitySearcher createProbabilitySearcher(double leftProb, double rightProb, double precision,
-                                                                ProbabilitySamplingStrategy strategy) {
-        if (strategy.equals(ProbabilitySamplingStrategy.ITERATIVE)) {
-            return new IterativeProbabilitySearcher(leftProb, rightProb, precision);
-        } else if (strategy.equals(ProbabilitySamplingStrategy.TERNARY_SEARCH)) {
+    public static ProbabilitySearcher createProbabilitySearcher(@NotNull ProbabilitySamplingConfiguration probabilitySamplingConfiguration) {
+        ProbabilitySamplingStrategy strategy = probabilitySamplingConfiguration.getStrategy();
+        if (strategy == ProbabilitySamplingStrategy.ITERATIVE) {
+            return new IterativeProbabilitySearcher((IterativeProbabilityConfiguration) probabilitySamplingConfiguration);
+        } else if (strategy == ProbabilitySamplingStrategy.TERNARY_SEARCH) {
             throw new IllegalStateException("Ternary search is not implemented yet");
+        } else if (strategy == ProbabilitySamplingStrategy.EXPONENTIAL_GRID) {
+            return new ExponentialGridProbabilitySearcher((ExponentialGridConfiguration) probabilitySamplingConfiguration);
         }
         throw new IllegalArgumentException("Unknown strategy");
     }
 
-    // if feedback > 0 then previous returned probability improved something
+    // if feedback > 0 then the previously returned probability improved something
     public abstract double getNextProb(double feedback);
 
     public abstract double getInitialProbability();
 
-    public abstract boolean isFinished();
+    public boolean isFinished() {
+        double difference = myLastReturnedPrecision - myRightProb;
+        return difference > myPrecision / 2.;
+    }
 }
