@@ -8,7 +8,28 @@
       "lambda": 10,
       "beginFitness": 17,
       "endFitness": 34,
-      "probabilityEnumerationStrategy": "ITERATIVE",
+      "probabilityEnumerationStrategy": "EXPONENTIAL_GRID",
+      "exponentialGridProbabilityConfiguration": {
+        "base": 10,
+        "minPowerValue": -3,
+        "maxPowerValue": -2,
+        "precisionForPower": 0.1
+      }
+    },
+    {
+      "problemType": "ONE_MAX_NEUTRALITY_3",
+      "algorithmType": "TWO_RATE",
+      "problemSize": 100,
+      "lambda": 10,
+      "beginFitness": 17,
+      "endFitness": 34,
+      "probabilityEnumerationStrategy": "EXPONENTIAL_GRID",
+      "exponentialGridProbabilityConfiguration": {
+        "base": 10,
+        "minPowerValue": -3,
+        "maxPowerValue": -2,
+        "precisionForPower": 0.1
+      },
       "iterativeProbabilityConfiguration": {
         "minMutationProbability": 0.1,
         "maxMutationProbability": 0.5,

@@ -4,20 +4,20 @@
     {
       "problemType": "ONE_MAX_NEUTRALITY_3",
       "algorithmType": "TWO_RATE",
-      "problemSize": 100,
       "lambda": 10,
       "beginFitness": 17,
       "endFitness": 34,
-      "probabilityEnumerationStrategy": "ITERATIVE",
-      "iterativeProbabilityConfiguration": {
-        "minMutationProbability": 0.1,
-        "maxMutationProbability": 0.5,
-        "precisionForProbability": 0.1
+      "probabilityEnumerationStrategy": "EXPONENTIAL_GRID",
+      "exponentialGridProbabilityConfiguration": {
+        "base": 10,
+        "minPowerValue": -3,
+        "maxPowerValue": -2,
+        "precisionForPower": 0.1
       }
     },
     {
       "problemType": "ONE_MAX",
-      "algorithmType": "TWO_RATE",
+      "algorithmType": "SIMPLE_ONE_PLUS_LAMBDA",
       "problemSize": 100,
       "lambda": 10,
       "beginFitness": 50,

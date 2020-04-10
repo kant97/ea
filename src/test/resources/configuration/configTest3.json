@@ -1,0 +1,14 @@
+{
+  "amountOfThreads": 10,
+  "experimentConfigurations": [
+    {
+      "problemType": "ONE_MAX_NEUTRALITY_3",
+      "algorithmType": "TWO_RATE",
+      "problemSize": 100,
+      "lambda": 10,
+      "beginFitness": 17,
+      "endFitness": 34,
+      "probabilityEnumerationStrategy": "ITERATIVE"
+    }
+  ]
+}

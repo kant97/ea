@@ -9,6 +9,6 @@ class ExperimentRunnerTest {
 
     @Test
     void runExperiments() throws IOException, URISyntaxException {
-        new ExperimentRunner("testsResults.csv").runExperiments();
+//        new ExperimentRunner("testsResults.csv").runExperiments();
     }
 }

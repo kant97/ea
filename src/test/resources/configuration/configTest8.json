@@ -17,7 +17,6 @@
     },
     {
       "problemType": "ONE_MAX",
-      "algorithmType": "TWO_RATE",
       "problemSize": 100,
       "lambda": 10,
       "beginFitness": 50,

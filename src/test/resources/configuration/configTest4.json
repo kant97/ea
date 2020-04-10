@@ -2,12 +2,12 @@
   "amountOfThreads": 10,
   "experimentConfigurations": [
     {
-      "problemType": "ONE_MAX_NEUTRALITY_3",
+      "problemType": "ONE_MAX",
       "algorithmType": "TWO_RATE",
       "problemSize": 100,
       "lambda": 10,
-      "beginFitness": 17,
-      "endFitness": 34,
+      "beginFitness": 50,
+      "endFitness": 100,
       "probabilityEnumerationStrategy": "ITERATIVE",
       "iterativeProbabilityConfiguration": {
         "minMutationProbability": 0.1,
@@ -16,13 +16,13 @@
       }
     },
     {
-      "problemType": "ONE_MAX",
+      "problemType": "ONE_MAX_NEUTRALITY_3",
       "algorithmType": "TWO_RATE",
       "problemSize": 100,
       "lambda": 10,
-      "beginFitness": 50,
-      "endFitness": 100,
-      "probabilityEnumerationStrategy": "ITERATIVE",
+      "beginFitness": 17,
+      "endFitness": 34,
+      "probabilityEnumerationStrategy": "EXPONENTIAL_GRID",
       "iterativeProbabilityConfiguration": {
         "minMutationProbability": 0.1,
         "maxMutationProbability": 0.5,
