@@ -12,7 +12,7 @@ import java.util.Random;
 import static utils.PatchCalcUtil.createPatch;
 
 public class SimpleEA implements Algorithm {
-    private double mutationRate;
+    protected double mutationRate;
     private final int lambda;
 
     private final Problem problem;
@@ -22,7 +22,7 @@ public class SimpleEA implements Algorithm {
 
     private int iterCount = 0;
 
-    public SimpleEA(double r, double lowerBound, int lambda, Problem problem) {
+    public SimpleEA(double r, int lambda, Problem problem) {
         this.problem = problem;
         this.problemLength = problem.getLength();
         this.mutationRate = r / problemLength;
@@ -35,8 +35,12 @@ public class SimpleEA implements Algorithm {
         iterCount++;
         BestCalculatedPatch best = new BestCalculatedPatch(mutationRate, lambda, problem);
         if (best.fitness > problem.getFitness()) {
-            problem.applyPatch(best.patch, best.fitness);
+            updateProblemInstance(best);
         }
+    }
+
+    protected void updateProblemInstance(BestCalculatedPatch best) {
+        problem.applyPatch(best.patch, best.fitness);
     }
 
     @Override

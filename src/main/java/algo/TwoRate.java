@@ -194,6 +194,11 @@ public class TwoRate implements Algorithm {
 
     protected class BestCalculatedPatch {
         List<Integer> patch;
+
+        public int getFitness() {
+            return fitness;
+        }
+
         int fitness;
 
         BestCalculatedPatch(List<Integer> patch, int fitness) {
