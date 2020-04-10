@@ -5,6 +5,7 @@ import optimal.configuration.Configuration;
 import optimal.configuration.ConfigurationsLoader;
 import optimal.configuration.OneExperimentConfiguration;
 
+import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,15 +15,10 @@ import java.util.concurrent.*;
 
 public class ExperimentRunner {
 
-    private final ConfigurationsLoader configurationsLoader = new ConfigurationsLoader();
-    final ResultsWriter resultsWriter;
+    private final ResultsConsumer resultsConsumer;
 
-    public ExperimentRunner() throws IOException, URISyntaxException {
-        resultsWriter = new ResultsWriter();
-    }
-
-    ExperimentRunner(String fileForResults) throws IOException {
-        resultsWriter = new ResultsWriter(fileForResults);
+    public ExperimentRunner() throws IOException {
+        resultsConsumer = ResultsConsumer.createResultsConsumer(true);
     }
 
     public void runExperiments() {
@@ -30,7 +26,7 @@ public class ExperimentRunner {
         Configuration configuration;
         try {
             configuration = configurationsLoader.getConfiguration();
-        } catch (FileNotFoundException | URISyntaxException e) {
+        } catch (FileNotFoundException | URISyntaxException | ConfigurationException e) {
             e.printStackTrace();
             return;
         }
@@ -38,13 +34,23 @@ public class ExperimentRunner {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(configuration.amountOfThreads);
         ExecutorService loggingResultsService = Executors.newSingleThreadExecutor();
 
-        loggingResultsService.execute(resultsWriter);
+        ResultWriter writer;
+        try {
+            writer = new ResultWriter(ResultsConsumer.ALL_MUTATION_RATES_RESULTS_FILE_NAME,
+                    ResultsConsumer.ResultType.INTERMEDIATE);
+            resultsConsumer.addWriter(writer);
+        } catch (IOException e) {
+            System.err.println("Failed to add writer for intermediate results");
+            e.printStackTrace();
+        }
+
+        loggingResultsService.execute(resultsConsumer);
 
         List<Future<?>> futures = new ArrayList<>();
         for (OneExperimentConfiguration oneExperimentConfiguration : configuration.experimentConfigurations) {
             futures.add(executor.submit(() -> {
                 BestMutationRateSearcher searcher = new BestMutationRateSearcher(oneExperimentConfiguration);
-                searcher.addListener(resultsWriter::addToQueue);
+                searcher.addListener(resultsConsumer::consumeResult);
                 searcher.getBestMutationProbabilities();
             }));
         }
