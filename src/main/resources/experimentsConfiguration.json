@@ -3,23 +3,34 @@
   "experimentConfigurations": [
     {
       "problemType": "ONE_MAX_NEUTRALITY_3",
+      "algorithmType": "TWO_RATE",
+      "numberOfStepRepetitions": 10000,
       "problemSize": 100,
       "lambda": 10,
       "beginFitness": 17,
       "endFitness": 34,
-      "minMutationProbability": 0.1,
-      "maxMutationProbability": 0.5,
-      "precisionForProbability": 0.1
+      "probabilityEnumerationStrategy": "EXPONENTIAL_GRID",
+      "exponentialGridProbabilityConfiguration": {
+        "base": 10,
+        "minPowerValue": -2,
+        "maxPowerValue": -1,
+        "precisionForPower": 0.1
+      }
     },
     {
-      "problemType": "ONE_MAX_NEUTRALITY_3",
-      "problemSize": 200,
+      "problemType": "ONE_MAX",
+      "numberOfStepRepetitions": 40000,
+      "algorithmType": "SIMPLE_ONE_PLUS_LAMBDA",
+      "problemSize": 100,
       "lambda": 10,
-      "beginFitness": 17,
-      "endFitness": 34,
-      "minMutationProbability": 0.1,
-      "maxMutationProbability": 0.5,
-      "precisionForProbability": 0.1
+      "beginFitness": 50,
+      "endFitness": 100,
+      "probabilityEnumerationStrategy": "ITERATIVE",
+      "iterativeProbabilityConfiguration": {
+        "minMutationProbability": 0.1,
+        "maxMutationProbability": 0.5,
+        "precisionForProbability": 0.1
+      }
     }
   ]
 }
