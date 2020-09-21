@@ -56,11 +56,13 @@ public class ExperimentRunner {
                 resultsConsumer.consumeResult(((ResultEntityObtainedEvent) event).getResultEntity(), event.getEventType());
             }
         };
+        ProgressTracker progressTracker = new ProgressTracker();
         for (OneExperimentConfiguration oneExperimentConfiguration : configuration.experimentConfigurations) {
             futures.add(executor.submit(() -> {
                 BestMutationRateSearcher searcher = new BestMutationRateSearcher(oneExperimentConfiguration);
                 searcher.addListener(resultsListener, EventType.INTERMEDIATE_RESULT_READY);
                 searcher.addListener(resultsListener, EventType.OPTIMAL_RESULT_READY);
+                searcher.addListener(event -> progressTracker.updateProgress(), EventType.PROGRESS_UPDATE);
                 searcher.getBestMutationProbabilities();
             }));
         }

@@ -2,8 +2,8 @@ package optimal;
 
 import optimal.configuration.OneExperimentConfiguration;
 import optimal.configuration.probability.ProbabilitySamplingConfiguration;
-import optimal.execution.events.EventType;
 import optimal.execution.ResultEntity;
+import optimal.execution.events.EventType;
 import optimal.execution.events.EventsManager;
 import optimal.execution.events.ResultEntityObtainedEvent;
 import optimal.probabilitySampling.ProbabilitySearcher;
@@ -88,6 +88,7 @@ public class BestMutationRateSearcher {
             }
             notifyResultsListeners(new ResultEntity(myConfiguration, fitness, pOpt.get(fitness - myBeginFitness),
                     T.get(fitness - myBeginFitness)), EventType.OPTIMAL_RESULT_READY);
+            notifyProgressListeners();
         }
         ArrayList<Double> pOptList = new ArrayList<>(pOpt.size());
         for (int i = 0; i < pOpt.size(); i++) {
@@ -95,6 +96,10 @@ public class BestMutationRateSearcher {
         }
         pOpt.forEach(pOptList::set);
         return pOptList;
+    }
+
+    private void notifyProgressListeners() {
+        myEventsManager.notify(EventType.PROGRESS_UPDATE, null);
     }
 
     public void notifyResultsListeners(ResultEntity resultEntity, EventType type) {
