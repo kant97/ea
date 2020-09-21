@@ -1,5 +1,6 @@
 package optimal.execution;
 
+import optimal.execution.events.EventType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class ResultsConsumer implements Runnable {
         ResultsConsumer consumer = new ResultsConsumer();
         if (addDefaultWriter) {
             // default writer
-            consumer.addWriter(new ResultWriter(OPTIMAL_MUTATION_RATE_RESULTS_FILE_NAME, ResultType.OPTIMAL));
+            consumer.addWriter(new ResultWriter(OPTIMAL_MUTATION_RATE_RESULTS_FILE_NAME, EventType.OPTIMAL_RESULT_READY));
         }
         return consumer;
     }
@@ -32,7 +33,7 @@ public class ResultsConsumer implements Runnable {
     public void waitAndLogResults() throws InterruptedException {
         QueueEntry entity = queue.take();
         for (ResultWriter writer : myWriters) {
-            writer.writeResultsForMyType(entity.resultEntity, entity.resultType);
+            writer.writeResultsForMyType(entity.resultEntity, entity.eventType);
         }
     }
 
@@ -54,32 +55,18 @@ public class ResultsConsumer implements Runnable {
         }
     }
 
-    public synchronized void consumeResult(@NotNull ResultEntity e, @NotNull ResultType type) {
+    public synchronized void consumeResult(@NotNull ResultEntity e, @NotNull EventType type) {
         queue.add(new QueueEntry(e, type));
     }
 
 
-    public enum ResultType {
-        OPTIMAL {
-            @Override
-            public String toString() {
-                return "OptimalResult";
-            }
-        }, INTERMEDIATE {
-            @Override
-            public String toString() {
-                return "IntermediateResult";
-            }
-        }
-    }
-
     private static class QueueEntry {
         final ResultEntity resultEntity;
-        final ResultType resultType;
+        final EventType eventType;
 
-        public QueueEntry(@NotNull ResultEntity resultEntity, @NotNull ResultType resultType) {
+        public QueueEntry(@NotNull ResultEntity resultEntity, @NotNull EventType eventType) {
             this.resultEntity = resultEntity;
-            this.resultType = resultType;
+            this.eventType = eventType;
         }
     }
 }

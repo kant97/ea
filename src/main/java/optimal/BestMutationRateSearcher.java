@@ -2,9 +2,10 @@ package optimal;
 
 import optimal.configuration.OneExperimentConfiguration;
 import optimal.configuration.probability.ProbabilitySamplingConfiguration;
-import optimal.execution.OptimizationParametersSearchingListener;
+import optimal.execution.events.EventType;
 import optimal.execution.ResultEntity;
-import optimal.execution.ResultsConsumer;
+import optimal.execution.events.EventsManager;
+import optimal.execution.events.ResultEntityObtainedEvent;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.jetbrains.annotations.NotNull;
 import problem.Problem;
@@ -12,6 +13,7 @@ import problem.ProblemsManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 public class BestMutationRateSearcher {
     private final ProblemsManager.ProblemType myProblemType;
@@ -22,8 +24,8 @@ public class BestMutationRateSearcher {
     private final int myEndFitness;
     ProbabilitySamplingConfiguration myProbabilityEnumerationConfiguration;
     private static final Double EPS = 0.0000000001;
-    private final ArrayList<OptimizationParametersSearchingListener> myListeners;
     private final OneExperimentConfiguration myConfiguration;
+    private final EventsManager myEventsManager;
 
     public BestMutationRateSearcher(@NotNull OneExperimentConfiguration configuration) {
         myProblemType = configuration.problemType;
@@ -33,10 +35,11 @@ public class BestMutationRateSearcher {
         myEndFitness = configuration.endFitness;
         myProbabilityEnumerationConfiguration = configuration.getProbabilityEnumerationConfiguration();
         myConfiguration = configuration;
-        myListeners = new ArrayList<>();
+        myEventsManager = new EventsManager();
     }
 
-    protected ProbabilityVectorGenerator getProbabilityVectorGenerator(double currentProbability, @NotNull Problem problem) {
+    protected ProbabilityVectorGenerator getProbabilityVectorGenerator(double currentProbability,
+                                                                       @NotNull Problem problem) {
         return new ProbabilityVectorGenerator(currentProbability, myProblemSize, myLambda,
                 2.0 / (double) myProblemSize, myConfiguration.getNumberOfStepRepetitions(), problem,
                 myConfiguration.algorithmType);
@@ -46,13 +49,14 @@ public class BestMutationRateSearcher {
         return ProbabilitySearcher.createProbabilitySearcher(myProbabilityEnumerationConfiguration);
     }
 
-    public void addListener(OptimizationParametersSearchingListener listener) {
-        myListeners.add(listener);
+    public void addListener(Consumer<EventsManager.Event> listener, @NotNull EventType eventType) {
+        myEventsManager.subscribe(eventType, listener);
     }
 
-    public void deleteAllListeners() {
-        myListeners.clear();
+    public void deleteListener(Consumer<EventsManager.Event> listener, @NotNull EventType eventType) {
+        myEventsManager.unsubscribe(eventType, listener);
     }
+
 
     public ArrayList<Double> getBestMutationProbabilities() {
         ArrayList<Double> T = new ArrayList<>(myEndFitness - myBeginFitness + 1); // optimization time for any fitness
@@ -79,11 +83,11 @@ public class BestMutationRateSearcher {
                     }
                     update(T, pOpt, tFP, p, fitness);
                 }
-                notifyListeners(new ResultEntity(myConfiguration, fitness, p, tFP),
-                        ResultsConsumer.ResultType.INTERMEDIATE);
+                notifyResultsListeners(new ResultEntity(myConfiguration, fitness, p, tFP),
+                        EventType.INTERMEDIATE_RESULT_READY);
             }
-            notifyListeners(new ResultEntity(myConfiguration, fitness, pOpt.get(fitness - myBeginFitness),
-                    T.get(fitness - myBeginFitness)), ResultsConsumer.ResultType.OPTIMAL);
+            notifyResultsListeners(new ResultEntity(myConfiguration, fitness, pOpt.get(fitness - myBeginFitness),
+                    T.get(fitness - myBeginFitness)), EventType.OPTIMAL_RESULT_READY);
         }
         ArrayList<Double> pOptList = new ArrayList<>(pOpt.size());
         for (int i = 0; i < pOpt.size(); i++) {
@@ -93,10 +97,8 @@ public class BestMutationRateSearcher {
         return pOptList;
     }
 
-    public void notifyListeners(ResultEntity resultEntity, ResultsConsumer.ResultType type) {
-        for (OptimizationParametersSearchingListener listener : myListeners) {
-            listener.onNewResultEntity(resultEntity, type);
-        }
+    public void notifyResultsListeners(ResultEntity resultEntity, EventType type) {
+        myEventsManager.notify(type, new ResultEntityObtainedEvent(type, resultEntity));
     }
 
     private void update(ArrayList<Double> T, HashMap<Integer, Double> pOpt,

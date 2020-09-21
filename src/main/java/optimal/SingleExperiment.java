@@ -2,15 +2,17 @@ package optimal;
 
 import optimal.configuration.OneExperimentConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
-import optimal.execution.OptimizationParametersSearchingListener;
+import optimal.execution.events.EventType;
 import optimal.execution.ResultEntity;
-import optimal.execution.ResultsConsumer;
+import optimal.execution.events.EventsManager;
+import optimal.execution.events.ResultEntityObtainedEvent;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
 import optimal.probabilitySampling.ProbabilitySamplingStrategy;
 import problem.ProblemsManager;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.function.Consumer;
 
 public class SingleExperiment {
 
@@ -22,7 +24,7 @@ public class SingleExperiment {
                         new IterativeProbabilityConfiguration(0.1, 0.5,
                                 0.1)));
         OptimalParametersLogger logger = new OptimalParametersLogger("bestProbabilities.csv", "bestTimes.csv");
-        searcher.addListener(logger);
+        searcher.addListener(logger, EventType.OPTIMAL_RESULT_READY);
         System.out.println(searcher.getBestMutationProbabilities());
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
@@ -30,7 +32,7 @@ public class SingleExperiment {
         System.out.println("Time elapsed:" + timeElapsed);
     }
 
-    private static final class OptimalParametersLogger implements OptimizationParametersSearchingListener,
+    private static final class OptimalParametersLogger implements Consumer<EventsManager.Event>,
             AutoCloseable {
 
         private final PrintWriter myProbabilityPrintWriter;
@@ -50,8 +52,10 @@ public class SingleExperiment {
         }
 
         @Override
-        public void onNewResultEntity(ResultEntity resultEntity, ResultsConsumer.ResultType type) {
-            if (type == ResultsConsumer.ResultType.OPTIMAL) {
+        public void accept(EventsManager.Event event) {
+            if (event instanceof ResultEntityObtainedEvent) {
+                final ResultEntityObtainedEvent resultEntityObtainedEvent = (ResultEntityObtainedEvent) event;
+                final ResultEntity resultEntity = resultEntityObtainedEvent.getResultEntity();
                 myProbabilityPrintWriter.println(resultEntity.fitness + ", " + resultEntity.optimizationTime);
                 myTimePrintWriter.println(resultEntity.fitness + ", " + resultEntity.optimizationTime);
             }

@@ -1,6 +1,7 @@
 package optimal.execution;
 
 import optimal.configuration.OneExperimentConfiguration;
+import optimal.execution.events.EventType;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,9 +16,9 @@ public class ResultWriter implements AutoCloseable {
             "optimizationTime"};
     private final Path outputPath;
     private final BufferedWriter writer;
-    private final ResultsConsumer.ResultType myResultsType;
+    private final EventType myResultsType;
 
-    public ResultWriter(String fileName, ResultsConsumer.ResultType resultsType) throws IOException {
+    public ResultWriter(String fileName, EventType resultsType) throws IOException {
         myResultsType = resultsType;
         File file = new File(fileName);
         boolean isNewFile = file.createNewFile();
@@ -34,7 +35,7 @@ public class ResultWriter implements AutoCloseable {
         }
     }
 
-    public void writeResultsForMyType(ResultEntity results, ResultsConsumer.ResultType type) {
+    public void writeResultsForMyType(ResultEntity results, EventType type) {
         if (myResultsType != type) {
             return;
         }
