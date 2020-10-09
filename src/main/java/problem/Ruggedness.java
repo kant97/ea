@@ -28,12 +28,25 @@ public class Ruggedness implements Problem {
         fitness = countFitness(om);
     }
 
+    public Ruggedness(int n, int r, int fitness) {
+        individual = new boolean[n];
+        length = n;
+        Random random = new Random();
+        this.r = r;
+        int om = 0;
+        optimum = countFitness(om);
+        int realFitness = countFitness(fitness);
+        individual = OneMax.generateOneMaxOffspringWithFitness(individual, 0, realFitness);
+        this.onesCount = realFitness;
+        this.fitness = fitness;
+    }
+
     private int countFitness(int om) {
         if (r == 1) {
 //            if (om == length) {
 //                return om / 2 + 2;
 //            }
-                return om / 2 + 1 + om % 2;
+            return om / 2 + 1 + om % 2;
 //            }
         } else {
 //            if (om == length) {

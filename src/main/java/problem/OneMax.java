@@ -37,6 +37,36 @@ public class OneMax extends AbstractProblem {
         assert fitness == myFitness;
     }
 
+    public static boolean[] generateOneMaxOffspringWithFitness(boolean[] offspring, int curFitness, int targetFitness) {
+        int fitness = targetFitness;
+        int myFitness = curFitness;
+        boolean[] myOffspring = offspring;
+        boolean zerosToFlip = (fitness - myFitness) > 0;
+        ArrayList<Integer> toFlip = new ArrayList<>(myOffspring.length / 2);
+
+        for (int i = 0; i < myOffspring.length; i++) {
+            if (zerosToFlip) {
+                if (!myOffspring[i]) {
+                    toFlip.add(i);
+                }
+            } else {
+                if (myOffspring[i]) {
+                    toFlip.add(i);
+                }
+            }
+        }
+
+        int toFlipAmount = Math.abs(fitness - myFitness);
+        Random random = new Random();
+        for (int i = 0; i < toFlipAmount; i++) {
+            int r = random.nextInt(toFlip.size());
+            int removed = toFlip.remove(r);
+            myOffspring[removed] = !myOffspring[removed];
+        }
+        assert curFitness == targetFitness;
+        return myOffspring;
+    }
+
     public static int calcOneMaxFitness(boolean[] myOffspring) {
         int fit = 0;
         for (boolean b : myOffspring) {

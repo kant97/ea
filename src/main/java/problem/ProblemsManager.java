@@ -17,6 +17,11 @@ public class ProblemsManager {
             public String toString() {
                 return "ONE_MAX_NEUTRALITY_3";
             }
+        }, ONE_MAX_RUGGEDNESS_10 {
+            @Override
+            public String toString() {
+                return "ONE_MAX_RUGGEDNESS_10";
+            }
         }
     }
 
@@ -36,6 +41,8 @@ public class ProblemsManager {
             throw new IllegalStateException("Leading ones is not supported yet");
         } else if (type.equals(ProblemType.ONE_MAX_NEUTRALITY_3)) {
             return new OneMaxNeutral3(n, fitness);
+        } else if (type.equals(ProblemType.ONE_MAX_RUGGEDNESS_10)) {
+            return new Ruggedness(n, 2, fitness);
         }
         throw new IllegalArgumentException("Problem with type: " + type.toString() + " is not supported yet");
     }
