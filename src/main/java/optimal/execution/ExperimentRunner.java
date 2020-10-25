@@ -11,7 +11,6 @@ import optimal.execution.events.ResultEntityObtainedEvent;
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -26,19 +25,20 @@ public class ExperimentRunner {
     }
 
     public void runExperiments() {
-        ConfigurationsLoader configurationsLoader = new ConfigurationsLoader();
-        Configuration configuration;
+        final ConfigurationsLoader configurationsLoader = new ConfigurationsLoader();
+        final Configuration configuration;
         try {
             configuration = configurationsLoader.getConfiguration();
-        } catch (FileNotFoundException | URISyntaxException | ConfigurationException e) {
+        } catch (FileNotFoundException | ConfigurationException e) {
             e.printStackTrace();
             return;
         }
 
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(configuration.amountOfThreads);
-        ExecutorService loggingResultsService = Executors.newSingleThreadExecutor();
+        final ThreadPoolExecutor executor =
+                (ThreadPoolExecutor) Executors.newFixedThreadPool(configuration.amountOfThreads);
+        final ExecutorService loggingResultsService = Executors.newSingleThreadExecutor();
 
-        ResultWriter writer;
+        final ResultWriter writer;
         try {
             writer = new ResultWriter(ResultsConsumer.ALL_MUTATION_RATES_RESULTS_FILE_NAME,
                     EventType.INTERMEDIATE_RESULT_READY);
@@ -50,16 +50,16 @@ public class ExperimentRunner {
 
         loggingResultsService.execute(resultsConsumer);
 
-        List<Future<?>> futures = new ArrayList<>();
+        final List<Future<?>> futures = new ArrayList<>();
         final Consumer<EventsManager.Event> resultsListener = event -> {
             if (event instanceof ResultEntityObtainedEvent) {
                 resultsConsumer.consumeResult(((ResultEntityObtainedEvent) event).getResultEntity(), event.getEventType());
             }
         };
-        ProgressTracker progressTracker = new ProgressTracker();
+        final ProgressTracker progressTracker = new ProgressTracker();
         for (OneExperimentConfiguration oneExperimentConfiguration : configuration.experimentConfigurations) {
             futures.add(executor.submit(() -> {
-                BestMutationRateSearcher searcher = new BestMutationRateSearcher(oneExperimentConfiguration);
+                final BestMutationRateSearcher searcher = new BestMutationRateSearcher(oneExperimentConfiguration);
                 searcher.addListener(resultsListener, EventType.INTERMEDIATE_RESULT_READY);
                 searcher.addListener(resultsListener, EventType.OPTIMAL_RESULT_READY);
                 searcher.addListener(event -> progressTracker.updateProgress(), EventType.PROGRESS_UPDATE);
