@@ -1,15 +1,18 @@
 package problem;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 public class Ruggedness implements Problem {
+    private final int realOptimumBacket;
     private boolean[] individual;
     private final int length;
     private int fitness;
     private int onesCount;
     private final int r;
     private final int optimum;
+    private final HashMap<Integer, Integer> lastBucketMapping = new HashMap<>();
 
     public Ruggedness(int n, int r) {
         individual = new boolean[n];
@@ -18,6 +21,7 @@ public class Ruggedness implements Problem {
         this.r = r;
         int om = 0;
         optimum = countFitness(n);
+        realOptimumBacket = optimum / r;
         for (int i = 0; i < n; ++i) {
             individual[i] = rand.nextBoolean();
             if (individual[i]) {
@@ -31,11 +35,14 @@ public class Ruggedness implements Problem {
     public Ruggedness(int n, int r, int fitness) {
         individual = new boolean[n];
         length = n;
-        Random random = new Random();
         this.r = r;
-        int om = 0;
-        optimum = countFitness(om);
-        int realFitness = countFitness(fitness);
+        optimum = countFitness(n);
+        realOptimumBacket = n / r;
+        final int firstNumberInLastBucket = realOptimumBacket * r;
+        for (int i = firstNumberInLastBucket; i <= n; i++) {
+            lastBucketMapping.put(i, n - (i - firstNumberInLastBucket));
+        }
+        final int realFitness = countFitness(fitness);
         individual = OneMax.generateOneMaxOffspringWithFitness(individual, 0, realFitness);
         this.onesCount = realFitness;
         this.fitness = fitness;
@@ -52,7 +59,12 @@ public class Ruggedness implements Problem {
 //            if (om == length) {
 //                return length;
 //            }
-            return r * (om / r) + r - 1 - om % r;
+
+            final int omBucket = om / r;
+            if (realOptimumBacket == omBucket) {
+                return lastBucketMapping.get(om);
+            }
+            return r * omBucket + r - 1 - om % r;
         }
     }
 
