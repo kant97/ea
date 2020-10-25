@@ -6,8 +6,13 @@ import optimal.execution.ResultEntity;
 import optimal.execution.events.EventType;
 import optimal.execution.events.EventsManager;
 import optimal.execution.events.ResultEntityObtainedEvent;
+import optimal.heuristics.ExperimentState;
+import optimal.heuristics.Heuristics;
+import optimal.probability.ProbabilityVectorGenerator;
+import optimal.probability.ProbabilityVectorGeneratorFixedSuccess;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import problem.Problem;
 import problem.ProblemsManager;
 
@@ -26,6 +31,7 @@ public class BestMutationRateSearcher {
     private static final Double EPS = 0.0000000001;
     private final OneExperimentConfiguration myConfiguration;
     private final EventsManager myEventsManager;
+    protected final @Nullable Heuristics myHeuristics;
 
     public BestMutationRateSearcher(@NotNull OneExperimentConfiguration configuration) {
         myProblemType = configuration.problemType;
@@ -36,11 +42,17 @@ public class BestMutationRateSearcher {
         myProbabilityEnumerationConfiguration = configuration.getProbabilityEnumerationConfiguration();
         myConfiguration = configuration;
         myEventsManager = new EventsManager();
+        myHeuristics = Heuristics.createHeuristics(configuration.problemType);
+        addListener(event -> {
+            if (myHeuristics != null) {
+                myHeuristics.acceptResult(((ResultEntityObtainedEvent) event).getResultEntity());
+            }
+        }, EventType.INTERMEDIATE_RESULT_READY);
     }
 
     protected ProbabilityVectorGenerator getProbabilityVectorGenerator(double currentProbability,
                                                                        @NotNull Problem problem) {
-        return new ProbabilityVectorGenerator(currentProbability, myProblemSize, myLambda,
+        return new ProbabilityVectorGeneratorFixedSuccess(currentProbability, myProblemSize, myLambda,
                 2.0 / (double) myProblemSize, myConfiguration.getNumberOfStepRepetitions(), problem,
                 myConfiguration.algorithmType);
     }
@@ -58,6 +70,7 @@ public class BestMutationRateSearcher {
     }
 
 
+
     public ArrayList<Double> getBestMutationProbabilities() {
         ArrayList<Double> T = new ArrayList<>(myEndFitness - myBeginFitness + 1); // optimization time for any fitness
         for (int f = myBeginFitness; f <= myEndFitness; f++) {
@@ -70,6 +83,15 @@ public class BestMutationRateSearcher {
             ProbabilitySearcher ps = getProbabilitySearcher();
             int feedback = -1;
             for (double p = ps.getInitialProbability(); !ps.isFinished(); p = ps.getNextProb(feedback)) {
+                if (myHeuristics != null) {
+                    myHeuristics.acceptNewExperimentState(new ExperimentState(myProblemType, fitness, p));
+                    if (myHeuristics.isSupposedToBeInfOnThisExperiment()) {
+                        update(T, pOpt, INFINITY, p, fitness);
+                        notifyResultsListeners(new ResultEntity(myConfiguration, fitness, p, INFINITY),
+                                EventType.INTERMEDIATE_RESULT_READY);
+                        continue;
+                    }
+                }
                 ArrayList<Double> v = getProbabilityVectorGenerator(p, problem).getProbabilityVector();
                 Double p0Tilda = v.get(0);
                 double tFP = INFINITY;
