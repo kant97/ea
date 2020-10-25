@@ -23,6 +23,15 @@ public class Plateau implements Problem {
         fitness = (int) Math.floor(((double) onesCount) / k) + 1;
     }
 
+    public Plateau(int n, int k, int fitness) {
+        // generates individual with the least possible OneMax fitness
+        final int oneMaxFitness = (fitness - 1) * k;
+        this.k = k;
+        this.individual = OneMax.generateOneMaxOffspringWithFitness(new boolean[n], 0, oneMaxFitness);
+        this.onesCount = oneMaxFitness;
+        this.fitness = fitness;
+    }
+
     @Override
     public int calculatePatchFitness(List<Integer> patch) {
         int newFitness = onesCount;
