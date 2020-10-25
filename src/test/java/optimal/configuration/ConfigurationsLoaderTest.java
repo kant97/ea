@@ -56,13 +56,13 @@ class ConfigurationsLoaderTest {
     private Configuration loadConfigFromTestFile(String testFileName) throws URISyntaxException,
             FileNotFoundException, ConfigurationException {
         when(mockedConfigurationLoader.getConfigurationFilename()).thenReturn("configuration/" + testFileName);
-        return mockedConfigurationLoader.loadConfiguration();
+        return mockedConfigurationLoader.loadConfigurationFromResources();
     }
 
     @BeforeEach
     void setUp() throws FileNotFoundException, ConfigurationException, URISyntaxException {
         mockedConfigurationLoader = Mockito.mock(ConfigurationsLoader.class);
-        doCallRealMethod().when(mockedConfigurationLoader).loadConfiguration();
+        doCallRealMethod().when(mockedConfigurationLoader).loadConfigurationFromResources();
     }
 
 }
