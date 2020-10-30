@@ -10,7 +10,7 @@ public class ProbabilityVectorGeneratorFixedSuccess extends ProbabilityVectorGen
 
     public ProbabilityVectorGeneratorFixedSuccess(double probability, int n, int lambda, double lowerBound,
                                                   int amountOfRepetitions, @NotNull Problem problem,
-                                                  OneStepAlgorithmsManager.@NotNull AlgorithmType algorithmType) {
+                                                  @NotNull OneStepAlgorithmsManager.AlgorithmType algorithmType) {
         super(probability, n, lambda, lowerBound, amountOfRepetitions, problem, algorithmType);
     }
 
