@@ -25,4 +25,8 @@ public class ExponentialGridProbabilitySearcher extends ProbabilitySearcher {
         return f(myLeftProb);
     }
 
+    @Override
+    public double getProbabilityOnStepN(int n) {
+        return f(myLeftProb + myPrecision * n);
+    }
 }

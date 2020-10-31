@@ -18,4 +18,9 @@ class IterativeProbabilitySearcher extends ProbabilitySearcher {
     public double getInitialProbability() {
         return myLeftProb;
     }
+
+    @Override
+    public double getProbabilityOnStepN(int n) {
+        return myLeftProb + myPrecision * n;
+    }
 }
