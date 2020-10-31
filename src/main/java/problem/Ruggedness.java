@@ -20,8 +20,9 @@ public class Ruggedness implements Problem {
         Random rand = new Random();
         this.r = r;
         int om = 0;
+        realOptimumBacket = n / r;
+        remapTheLastBacket(n, r);
         optimum = countFitness(n);
-        realOptimumBacket = optimum / r;
         for (int i = 0; i < n; ++i) {
             individual[i] = rand.nextBoolean();
             if (individual[i]) {
@@ -36,16 +37,20 @@ public class Ruggedness implements Problem {
         individual = new boolean[n];
         length = n;
         this.r = r;
-        optimum = countFitness(n);
         realOptimumBacket = n / r;
-        final int firstNumberInLastBucket = realOptimumBacket * r;
-        for (int i = firstNumberInLastBucket; i <= n; i++) {
-            lastBucketMapping.put(i, n - (i - firstNumberInLastBucket));
-        }
+        remapTheLastBacket(n, r);
+        optimum = countFitness(n);
         final int realFitness = countFitness(fitness);
         individual = OneMax.generateOneMaxOffspringWithFitness(individual, 0, realFitness);
         this.onesCount = realFitness;
         this.fitness = fitness;
+    }
+
+    public void remapTheLastBacket(int n, int r) {
+        final int firstNumberInLastBucket = realOptimumBacket * r;
+        for (int i = firstNumberInLastBucket; i <= n; i++) {
+            lastBucketMapping.put(i, n - (i - firstNumberInLastBucket));
+        }
     }
 
     private int countFitness(int om) {
