@@ -36,6 +36,9 @@ public abstract class ProbabilitySearcher {
 
     public abstract double getInitialProbability();
 
+    // if n = 0 then the initial probability is returned
+    public abstract double getProbabilityOnStepN(int n);
+
     public boolean isFinished() {
         double difference = myLastReturnedPrecision - myRightProb;
         return difference > myPrecision / 2.;
