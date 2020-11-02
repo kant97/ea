@@ -1,7 +1,5 @@
 package optimal.configuration.probability;
 
-import optimal.configuration.ConfigurationVisitor;
-import optimal.configuration.VisitableConfiguration;
 import optimal.probabilitySampling.ProbabilitySamplingStrategy;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,26 +63,5 @@ public class ExponentialGridConfiguration extends ProbabilitySamplingConfigurati
         if (minPowerValue > maxPowerValue) {
             throw new ConfigurationException("Max mutation power should not be smaller than min, min = " + minPowerValue + " max = " + maxPowerValue);
         }
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitExponentialGridConfig(this);
-    }
-
-    public double getBase() {
-        return base;
-    }
-
-    public double getMinPowerValue() {
-        return minPowerValue;
-    }
-
-    public double getMaxPowerValue() {
-        return maxPowerValue;
-    }
-
-    public double getPrecisionForPower() {
-        return precisionForPower;
     }
 }

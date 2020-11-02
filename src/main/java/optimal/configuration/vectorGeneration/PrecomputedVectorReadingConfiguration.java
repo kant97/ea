@@ -1,6 +1,5 @@
 package optimal.configuration.vectorGeneration;
 
-import optimal.configuration.ConfigurationVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
@@ -8,19 +7,19 @@ import java.util.Objects;
 
 public class PrecomputedVectorReadingConfiguration extends VectorGenerationConfiguration {
     private final String validationFileName;
-    private final String precomputedVectorsDir; // ends on /
+    private final String precomputedVectorsDirName;
 
-    public PrecomputedVectorReadingConfiguration(String validationFileName, String precomputedVectorsDir) {
+    public PrecomputedVectorReadingConfiguration(String validationFileName, String precomputedVectorsDirName) {
         this.validationFileName = validationFileName;
-        this.precomputedVectorsDir = precomputedVectorsDir;
+        this.precomputedVectorsDirName = precomputedVectorsDirName;
     }
 
     public String getValidationFileName() {
         return validationFileName;
     }
 
-    public String getPrecomputedVectorsDir() {
-        return precomputedVectorsDir;
+    public String getPrecomputedVectorsDirName() {
+        return precomputedVectorsDirName;
     }
 
     @Override
@@ -29,12 +28,12 @@ public class PrecomputedVectorReadingConfiguration extends VectorGenerationConfi
         if (o == null || getClass() != o.getClass()) return false;
         PrecomputedVectorReadingConfiguration that = (PrecomputedVectorReadingConfiguration) o;
         return validationFileName.equals(that.validationFileName) &&
-                precomputedVectorsDir.equals(that.precomputedVectorsDir);
+                precomputedVectorsDirName.equals(that.precomputedVectorsDirName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(validationFileName, precomputedVectorsDir);
+        return Objects.hash(validationFileName, precomputedVectorsDirName);
     }
 
     @Override
@@ -45,10 +44,5 @@ public class PrecomputedVectorReadingConfiguration extends VectorGenerationConfi
     @Override
     public void validate() throws ConfigurationException {
 
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitPrecomputedVectorReadingConfig(this);
     }
 }

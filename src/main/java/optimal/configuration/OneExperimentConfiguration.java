@@ -4,7 +4,6 @@ import optimal.configuration.algorithms.AlgorithmConfig;
 import optimal.configuration.probability.ProbabilitySamplingConfiguration;
 import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.runs.StopConditionConfiguration;
-import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
 import java.util.Objects;
@@ -41,10 +40,5 @@ public class OneExperimentConfiguration extends AbstractSingleExperimentConfigur
         if (stopConditionConfig == null) {
             throw new ConfigurationException("Strategy of repetitions of one step of the algorithm is not set");
         }
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitOneExperimentConfig(this);
     }
 }

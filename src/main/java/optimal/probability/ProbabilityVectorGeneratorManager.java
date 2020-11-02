@@ -32,7 +32,6 @@ public class ProbabilityVectorGeneratorManager {
             updateState(configuration);
         }
         assert CONFIGURATION_TO_NUMBER_TRANSLATOR != null;
-        return new PrecomputedProbabilityVectorsReader(configuration, CONFIGURATION_TO_NUMBER_TRANSLATOR, probability
-                , fitness);
+        return new PrecomputedProbabilityVectorsReader(CONFIGURATION_TO_NUMBER_TRANSLATOR, probability, fitness);
     }
 }

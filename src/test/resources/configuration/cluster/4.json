@@ -15,6 +15,5 @@
     "globalMaximumRuns": 10000,
     "strategy": "FIXED_SUCCESS"
   },
-  "outputFileName": "output",
-  "outputDirectory": "directory"
+  "outputFileName": "output"
 }

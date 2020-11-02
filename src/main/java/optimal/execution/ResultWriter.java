@@ -1,7 +1,6 @@
 package optimal.execution;
 
 import optimal.configuration.AbstractSingleExperimentConfiguration;
-import optimal.configuration.CsvExportConfigurationVisitor;
 import optimal.execution.events.EventType;
 
 import java.io.BufferedWriter;
@@ -10,31 +9,27 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 
 public class ResultWriter implements AutoCloseable {
-    private final static String[] ENTRIES = {"problem", "algorithm", "problemSize"
-            , "lambda", "beginFitness", "endFitness", "probabilityEnumeration", "vectorGeneration", "fitness",
-            "probability", "optimizationTime"};
+    private final static String[] entries = {"problemType", "algorithmType", "problemSize"
+            , "lambda", "beginFitness", "endFitness", "probabilityEnumerationStrategy", "fitness", "bestProbability",
+            "optimizationTime"};
     private final Path outputPath;
     private final BufferedWriter writer;
     private final EventType myResultsType;
 
-    public ResultWriter(String fileName, EventType resultsType, StandardOpenOption... options) throws IOException {
+    public ResultWriter(String fileName, EventType resultsType) throws IOException {
         myResultsType = resultsType;
         File file = new File(fileName);
-        boolean needToWriteHeader = file.createNewFile();
+        boolean isNewFile = file.createNewFile();
         outputPath = file.toPath();
-        writer = Files.newBufferedWriter(outputPath, options);
-        if (Arrays.stream(options).noneMatch(option -> option == StandardOpenOption.APPEND)) {
-            needToWriteHeader = true;
-        }
-        if (needToWriteHeader) {
-            for (int i = 0; i < ENTRIES.length - 1; i++) {
-                writer.write(ENTRIES[i]);
+        writer = Files.newBufferedWriter(outputPath, StandardOpenOption.APPEND);
+        if (isNewFile) {
+            for (int i = 0; i < entries.length - 1; i++) {
+                writer.write(entries[i]);
                 writer.write(',');
             }
-            writer.write(ENTRIES[ENTRIES.length - 1]);
+            writer.write(entries[entries.length - 1]);
             writer.write('\n');
             writer.flush();
         }
@@ -46,7 +41,19 @@ public class ResultWriter implements AutoCloseable {
         }
         AbstractSingleExperimentConfiguration configuration = results.configuration;
         try {
-            writer.write(configuration.accept(new CsvExportConfigurationVisitor()));
+            writer.write(configuration.problemConfig.getProblemType().toString());
+            writer.write(',');
+            writer.write(configuration.algorithmConfig.getAlgorithmType().toString());
+            writer.write(',');
+            writer.write(Integer.toString(configuration.problemConfig.getSize()));
+            writer.write(',');
+            writer.write(Integer.toString(configuration.algorithmConfig.getLambda()));
+            writer.write(',');
+            writer.write(Integer.toString(configuration.beginFitness));
+            writer.write(',');
+            writer.write(Integer.toString(configuration.endFitness));
+            writer.write(',');
+            writer.write(configuration.probabilityEnumeration.getStrategy().name());
             writer.write(',');
             writer.write(Integer.toString(results.fitness));
             writer.write(',');

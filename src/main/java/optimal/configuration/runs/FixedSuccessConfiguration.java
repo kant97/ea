@@ -1,6 +1,5 @@
 package optimal.configuration.runs;
 
-import optimal.configuration.ConfigurationVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
@@ -62,10 +61,5 @@ public class FixedSuccessConfiguration extends StopConditionConfiguration {
             throw new ConfigurationException("Amount of success should not exceed global maximum runs amount, but it " +
                     "does: amountOfSuccess=" + amountOfSuccess + " globalMaximRuns=" + globalMaximumRuns);
         }
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitFixedSuccessConfig(this);
     }
 }

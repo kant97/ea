@@ -1,7 +1,5 @@
 package optimal.configuration.probability;
 
-import optimal.configuration.ConfigurationVisitor;
-import optimal.configuration.VisitableConfiguration;
 import optimal.probabilitySampling.ProbabilitySamplingStrategy;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,10 +59,5 @@ public class IterativeProbabilityConfiguration extends ProbabilitySamplingConfig
         if (maxMutationProbability < minMutationProbability) {
             throw new ConfigurationException("Max mutation probability should not be smaller than min, min = " + minMutationProbability + " max = " + maxMutationProbability);
         }
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitIterativeProbabilityConfig(this);
     }
 }
