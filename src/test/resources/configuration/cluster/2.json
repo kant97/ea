@@ -13,5 +13,6 @@
     "strategy": "FIXED_RUNS",
     "amountOfRuns": "7000"
   },
-  "outputFileName": "output"
+  "outputFileName": "output",
+  "outputDirectory": "directory"
 }

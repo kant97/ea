@@ -14,5 +14,6 @@
     "globalMaximumRuns": 10000,
     "amountOfSuccess": 5000
   },
-  "outputFileName": "output"
+  "outputFileName": "output",
+  "outputDirectory": "directory"
 }
