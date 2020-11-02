@@ -71,4 +71,20 @@ public class ExponentialGridConfiguration extends ProbabilitySamplingConfigurati
     public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
         return visitor.visitExponentialGridConfig(this);
     }
+
+    public double getBase() {
+        return base;
+    }
+
+    public double getMinPowerValue() {
+        return minPowerValue;
+    }
+
+    public double getMaxPowerValue() {
+        return maxPowerValue;
+    }
+
+    public double getPrecisionForPower() {
+        return precisionForPower;
+    }
 }
