@@ -8,19 +8,19 @@ import java.util.Objects;
 
 public class PrecomputedVectorReadingConfiguration extends VectorGenerationConfiguration {
     private final String validationFileName;
-    private final String precomputedVectorsDirName;
+    private final String precomputedVectorsDir; // ends on /
 
-    public PrecomputedVectorReadingConfiguration(String validationFileName, String precomputedVectorsDirName) {
+    public PrecomputedVectorReadingConfiguration(String validationFileName, String precomputedVectorsDir) {
         this.validationFileName = validationFileName;
-        this.precomputedVectorsDirName = precomputedVectorsDirName;
+        this.precomputedVectorsDir = precomputedVectorsDir;
     }
 
     public String getValidationFileName() {
         return validationFileName;
     }
 
-    public String getPrecomputedVectorsDirName() {
-        return precomputedVectorsDirName;
+    public String getPrecomputedVectorsDir() {
+        return precomputedVectorsDir;
     }
 
     @Override
@@ -29,12 +29,12 @@ public class PrecomputedVectorReadingConfiguration extends VectorGenerationConfi
         if (o == null || getClass() != o.getClass()) return false;
         PrecomputedVectorReadingConfiguration that = (PrecomputedVectorReadingConfiguration) o;
         return validationFileName.equals(that.validationFileName) &&
-                precomputedVectorsDirName.equals(that.precomputedVectorsDirName);
+                precomputedVectorsDir.equals(that.precomputedVectorsDir);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(validationFileName, precomputedVectorsDirName);
+        return Objects.hash(validationFileName, precomputedVectorsDir);
     }
 
     @Override
