@@ -1,5 +1,6 @@
 package optimal.configuration.vectorGeneration;
 
+import optimal.configuration.ConfigurationVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
@@ -44,5 +45,10 @@ public class PrecomputedVectorReadingConfiguration extends VectorGenerationConfi
     @Override
     public void validate() throws ConfigurationException {
 
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitPrecomputedVectorReadingConfig(this);
     }
 }
