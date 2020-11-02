@@ -1,6 +1,5 @@
 package optimal.configuration.vectorGeneration;
 
-import optimal.configuration.ConfigurationVisitor;
 import optimal.configuration.runs.StopConditionConfiguration;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,10 +38,5 @@ public class RunTimeGenerationConfiguration extends VectorGenerationConfiguratio
     @Override
     public void validate() throws ConfigurationException {
         stopConditionConfig.validate();
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitRunTimeGenerationConfig(this);
     }
 }

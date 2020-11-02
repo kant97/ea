@@ -1,16 +1,13 @@
 package optimal.configuration.algorithms;
 
 import com.google.gson.annotations.SerializedName;
-import optimal.configuration.ConfigurationVisitor;
 import optimal.configuration.ValidatableConfiguration;
-import optimal.configuration.VisitableConfiguration;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
-import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
 import java.util.Objects;
 
-public class AlgorithmConfig implements ValidatableConfiguration, VisitableConfiguration {
+public class AlgorithmConfig implements ValidatableConfiguration {
     @SerializedName(value = "type", alternate = "myType")
     private final OneStepAlgorithmsManager.AlgorithmType myType;
     @SerializedName(value = "lambda", alternate = "myLambda")
@@ -59,10 +56,5 @@ public class AlgorithmConfig implements ValidatableConfiguration, VisitableConfi
                 "myType=" + myType +
                 ", myLambda=" + myLambda +
                 '}';
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitAlgorithmConfig(this);
     }
 }

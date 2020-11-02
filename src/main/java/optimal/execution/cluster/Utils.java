@@ -8,15 +8,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Utils {
-    public final static String RESULTS_DIRECTORY_NAME = "vectors";
-//    public static final String RESULTS_DIRECTORY = "./" + RESULTS_DIRECTORY_NAME + "/";
+    private final static String RESULTS_DIRECTORY_NAME = "vectors";
+    public static final String RESULTS_DIRECTORY = "./" + RESULTS_DIRECTORY_NAME + "/";
     private static final String CONFIGURATIONS_DIRECTORY_NAME = "jsonConfigs";
     public static final String CONFIGURATIONS_DIRECTORY = "./" + CONFIGURATIONS_DIRECTORY_NAME + "/";
     public static final String GLOBAL_CONFIGS_FILE_NAME_JSON = "global_configs.json";
 
 
-    public static Path createResultsDirectoryInFsIfNotExists(String resultsDirectory) {
-        return createDirectory(resultsDirectory);
+    public static Path createResultsDirectoryInFsIfNotExists() {
+        return createDirectory(RESULTS_DIRECTORY);
     }
 
     @NotNull

@@ -1,7 +1,5 @@
 package optimal.probability;
 
-import optimal.configuration.OptimalMutationRateSearchingSingleExperimentConfiguration;
-import optimal.configuration.vectorGeneration.PrecomputedVectorReadingConfiguration;
 import optimal.execution.cluster.ConfigurationToNumberTranslator;
 import optimal.utils.DataProcessor;
 import org.jetbrains.annotations.NotNull;
@@ -11,16 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static optimal.execution.cluster.Utils.RESULTS_DIRECTORY;
+
 public class PrecomputedProbabilityVectorsReader implements ProbabilityVectorGenerator {
-    private final OptimalMutationRateSearchingSingleExperimentConfiguration myConfiguration;
     private final ConfigurationToNumberTranslator myConfigurationToNumberTranslator;
     private final double myProbability;
     private final int myFitness;
 
-    protected PrecomputedProbabilityVectorsReader(@NotNull OptimalMutationRateSearchingSingleExperimentConfiguration configuration,
-                                                  @NotNull ConfigurationToNumberTranslator configurationToNumberTranslator,
+    protected PrecomputedProbabilityVectorsReader(@NotNull ConfigurationToNumberTranslator configurationToNumberTranslator,
                                                   double probability, int fitness) {
-        this.myConfiguration = configuration;
         this.myConfigurationToNumberTranslator = configurationToNumberTranslator;
         this.myProbability = probability;
         this.myFitness = fitness;
@@ -31,13 +28,9 @@ public class PrecomputedProbabilityVectorsReader implements ProbabilityVectorGen
         final int fileId = myConfigurationToNumberTranslator.translateFitnessAndMutationRateToNumber(myFitness,
                 myProbability);
         final ProbabilityVectorProcessor probabilityVectorProcessor =
-                new ProbabilityVectorProcessor(getPrecomputedVectorsDir() + fileId + ".csv");
+                new ProbabilityVectorProcessor(RESULTS_DIRECTORY + fileId + ".csv");
         probabilityVectorProcessor.loadData();
         return probabilityVectorProcessor.getProcessedData();
-    }
-
-    private String getPrecomputedVectorsDir() {
-        return ((PrecomputedVectorReadingConfiguration) myConfiguration.getVectorGenerationConfig()).getPrecomputedVectorsDir();
     }
 
     private static final class ProbabilityVectorProcessor extends DataProcessor<ArrayList<Double>> {

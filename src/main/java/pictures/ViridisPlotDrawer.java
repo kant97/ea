@@ -1,11 +1,12 @@
 package pictures;
 
+import optimal.heuristics.OneMaxHeuristics;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
-import pictures.coloring.AbstractColouring;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,16 +19,16 @@ public class ViridisPlotDrawer {
     private final @NotNull Graphics myGraphics;
     private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[d, r] stores math expectation of
     generations amount to reach the global optima if starting from the distance d with the mutation rate r */
-    private final AbstractColouring myColoring;
     private final int myOneWidth;
     private final int myOneHeight;
+    private final @NotNull ArrayList<ArrayList<Double>> myRunTimesWithSortedColumns;
     private final @NotNull ProbabilitySearcher myProbabilitySampler;
     private final Stroke myLineStroke;
 
     public ViridisPlotDrawer(int xOffsetLeft, int yOffsetUp,
                              int plotWidth, int plotHeight, @NotNull Graphics graphics,
                              @NotNull SimpleMatrix data,
-                             AbstractColouring coloring, @NotNull ProbabilitySearcher probabilitySampler) {
+                             @NotNull ProbabilitySearcher probabilitySampler) {
         this.myXOffsetLeft = xOffsetLeft;
         this.myYOffsetUp = yOffsetUp;
         this.myPlotWidth = plotWidth;
@@ -36,15 +37,28 @@ public class ViridisPlotDrawer {
         this.myRunTimes = data;
         this.myOneWidth = myPlotWidth / data.numCols();
         this.myOneHeight = myPlotHeight / data.numRows();
-        this.myColoring = coloring;
         this.myProbabilitySampler = probabilitySampler;
+        this.myRunTimesWithSortedColumns = calculateSortedColumns();
         this.myLineStroke = new BasicStroke(1f);
+    }
+
+    private ArrayList<ArrayList<Double>> calculateSortedColumns() {
+        final ArrayList<ArrayList<Double>> sortedColumns = new ArrayList<>();
+        for (int c = 0; c < myRunTimes.numCols(); c++) {
+            final ArrayList<Double> column = new ArrayList<>();
+            for (int r = 0; r < myRunTimes.numRows(); r++) {
+                column.add(myRunTimes.get(r, c));
+            }
+            column.sort(null);
+            sortedColumns.add(column);
+        }
+        return sortedColumns;
     }
 
     public void drawViridisPlot() {
         for (int i = 0; i < myRunTimes.numRows(); i++) {
             for (int j = 0; j < myRunTimes.numCols(); j++) {
-                drawRect(i, j, myColoring.getRgdColor(i, j));
+                drawRect(i, j, getRgdColor(i, j));
             }
         }
     }
@@ -98,6 +112,41 @@ public class ViridisPlotDrawer {
             throw new IllegalStateException("Failed to correctly calculate box for mutation rate " + mutationRate);
         }
         return leftK;
+    }
+
+    private int getRgdColor(int row, int col) {
+        final double value01 = getValueForRgbColorModification(row, col);
+//        final double value01 = getValueForRgbColorInitial(row, col);
+        if (Double.isNaN(value01)) {
+            throw new IllegalStateException("max value = " + myRunTimesWithSortedColumns.get(col).get(0) + ", curr " +
+                    "value = " + myRunTimes.get(row, col));
+        }
+        return value01 > 1. ? 0xff0000 : Viridis$.MODULE$.apply(value01);
+    }
+
+    private double getValueForRgbColorModification(int row, int col) {
+        final double value = myRunTimes.get(row, col);
+        final int k = calculateAmountNotPurple(col);
+        final double valueK = myRunTimesWithSortedColumns.get(col).get(k - 1);
+        final double value1 = myRunTimesWithSortedColumns.get(col).get(0);
+        final double m = Math.min(1, Math.log(0.5) / (value1 - valueK));
+        return Math.exp(m * (value1 - value));
+    }
+
+    private double getValueForRgbColorInitial(int row, int col) {
+        final double value = myRunTimes.get(row, col);
+        final double valueBest = myRunTimesWithSortedColumns.get(col).get(0);
+        return Math.exp(valueBest - value);
+    }
+
+    private int calculateAmountNotPurple(int column) {
+        int k = 0;
+        for (int r = 0; r < myRunTimes.numRows(); r++) {
+            if (!OneMaxHeuristics.isTooBig(myRunTimes.get(r, column))) {
+                k++;
+            }
+        }
+        return k;
     }
 
     private void drawRect(int matrixRowInd, int matrixColInd, int rgdColor) {

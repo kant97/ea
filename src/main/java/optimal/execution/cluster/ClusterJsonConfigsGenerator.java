@@ -2,7 +2,6 @@ package optimal.execution.cluster;
 
 import optimal.configuration.OneExperimentConfiguration;
 import optimal.configuration.ProbabilityVectorGenerationConfiguration;
-import optimal.configuration.loaders.ManyExperimentsConfigurationLoader;
 import optimal.configuration.loaders.OneExperimentConfigurationLoader;
 import optimal.configuration.loaders.ProbabilityVectorGenerationConfigurationLoader;
 import optimal.probabilitySampling.ProbabilitySearcher;
@@ -12,53 +11,38 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 public class ClusterJsonConfigsGenerator {
-    private final List<OneExperimentConfiguration> myExperimentConfigurations;
-    private final OneExperimentConfigurationLoader myExperimentConfigurationSerializer;
+    private final OneExperimentConfiguration myExperimentConfiguration;
+    private final OneExperimentConfigurationLoader myExperimentConfigurationLoader;
 
     private int minFileId = Integer.MAX_VALUE;
     private int maxFileId = Integer.MIN_VALUE;
     private int amountOfGeneratedFiles;
-    private int resultsDirectoryId = 0;
 
-    public ClusterJsonConfigsGenerator(ManyExperimentsConfigurationLoader experimentConfigurationLoader) {
+    public ClusterJsonConfigsGenerator(OneExperimentConfigurationLoader experimentConfigurationLoader) {
         try {
-            this.myExperimentConfigurations = experimentConfigurationLoader.getConfiguration().getConfigurations();
+            this.myExperimentConfiguration = experimentConfigurationLoader.getConfiguration();
         } catch (FileNotFoundException | ConfigurationException e) {
             throw new IllegalStateException("Failed to load global configurations");
         }
-        this.myExperimentConfigurationSerializer =
-                experimentConfigurationLoader.getOneExperimentConfigurationSerializer();
+        this.myExperimentConfigurationLoader = experimentConfigurationLoader;
     }
 
     public void generateJsonConfigs() {
-        int offset = 0;
-        for (OneExperimentConfiguration oneExperimentConfiguration : myExperimentConfigurations) {
-            final ConfigurationToNumberTranslator configurationToNumberTranslator =
-                    new ConfigurationToNumberTranslator(oneExperimentConfiguration);
-            String resultDirectory = "./" + generateNewResultsDirectoryName() + "/";
-            preparePlaceForFiles(oneExperimentConfiguration, resultDirectory);
-            for (int f = oneExperimentConfiguration.beginFitness; f < oneExperimentConfiguration.endFitness; f++) {
-                final ProbabilitySearcher probabilitySearcher =
-                        ProbabilitySearcher.createProbabilitySearcher(oneExperimentConfiguration.getProbabilityEnumerationConfiguration());
-                for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished(); p =
-                        probabilitySearcher.getNextProb()) {
-                    final int number = configurationToNumberTranslator.translateFitnessAndMutationRateToNumber(f, p);
-                    final int configFileId = offset + number;
-                    writeConfigToFile(oneExperimentConfiguration, f, p, configFileId, number, resultDirectory);
-                    onNewFileCreation(configFileId);
-                }
+        final ConfigurationToNumberTranslator configurationToNumberTranslator =
+                new ConfigurationToNumberTranslator(myExperimentConfiguration);
+        preparePlaceForFiles();
+        for (int f = myExperimentConfiguration.beginFitness; f < myExperimentConfiguration.endFitness; f++) {
+            final ProbabilitySearcher probabilitySearcher =
+                    ProbabilitySearcher.createProbabilitySearcher(myExperimentConfiguration.getProbabilityEnumerationConfiguration());
+            for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished(); p =
+                    probabilitySearcher.getNextProb()) {
+                final int number = configurationToNumberTranslator.translateFitnessAndMutationRateToNumber(f, p);
+                writeConfigToFile(f, p, number);
+                onNewFileCreation(number);
             }
-            offset += maxFileId + 1;
         }
-    }
-
-    private String generateNewResultsDirectoryName() {
-        final String s = Utils.RESULTS_DIRECTORY_NAME + resultsDirectoryId;
-        resultsDirectoryId++;
-        return s;
     }
 
     private void onNewFileCreation(int fileId) {
@@ -79,18 +63,16 @@ public class ClusterJsonConfigsGenerator {
         return amountOfGeneratedFiles;
     }
 
-    private void writeConfigToFile(OneExperimentConfiguration configuration, int fitness, double p, int configFileId,
-                                   int resultFileId, String resultsDir) {
-        final String configFileName = configFileId + ".json";
-        final String resultFileName = resultFileId + ".csv";
+    private void writeConfigToFile(int fitness, double p, int fileId) {
+        final String configFileName = fileId + ".json";
+        final String resultFileName = fileId + ".csv";
         try (final BufferedWriter writer =
                      new BufferedWriter(new FileWriter(Utils.CONFIGURATIONS_DIRECTORY + configFileName))) {
             final ProbabilityVectorGenerationConfiguration probabilityVectorGenerationConfiguration =
                     new ProbabilityVectorGenerationConfiguration(p, fitness,
-                            configuration.problemConfig, configuration.algorithmConfig,
-                            configuration.stopConditionConfig,
-                            resultFileName,
-                            resultsDir);
+                            myExperimentConfiguration.problemConfig, myExperimentConfiguration.algorithmConfig,
+                            myExperimentConfiguration.stopConditionConfig,
+                            resultFileName);
             final ProbabilityVectorGenerationConfigurationLoader loader =
                     new ProbabilityVectorGenerationConfigurationLoader("tmp");
             writer.write(loader.serializeConfiguration(probabilityVectorGenerationConfiguration));
@@ -99,12 +81,12 @@ public class ClusterJsonConfigsGenerator {
         }
     }
 
-    private void preparePlaceForFiles(OneExperimentConfiguration configuration, String resultsDir) {
-        Utils.createResultsDirectoryInFsIfNotExists(resultsDir);
+    private void preparePlaceForFiles() {
+        Utils.createResultsDirectoryInFsIfNotExists();
         try (final BufferedWriter writer =
-                     new BufferedWriter(new FileWriter(resultsDir + Utils.GLOBAL_CONFIGS_FILE_NAME_JSON))) {
+                     new BufferedWriter(new FileWriter(Utils.RESULTS_DIRECTORY + Utils.GLOBAL_CONFIGS_FILE_NAME_JSON))) {
             final String serializeConfiguration =
-                    myExperimentConfigurationSerializer.serializeConfiguration(configuration);
+                    myExperimentConfigurationLoader.serializeConfiguration(myExperimentConfiguration);
             writer.write(serializeConfiguration);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to write experiment configurations to results folder");

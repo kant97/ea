@@ -8,27 +8,25 @@ import org.jetbrains.annotations.NotNull;
 import javax.naming.ConfigurationException;
 import java.util.Objects;
 
-public class ProbabilityVectorGenerationConfiguration implements ValidatableConfiguration, VisitableConfiguration {
+public class ProbabilityVectorGenerationConfiguration implements ValidatableConfiguration {
     private final double probability;
     private final int fitness;
     private final ProblemConfig problemConfig;
     private final AlgorithmConfig algorithmConfig;
     private final StopConditionConfiguration stopConditionConfig;
     private final String outputFileName;
-    private final String outputDirectory;
 
     public ProbabilityVectorGenerationConfiguration(double probability, int fitness,
                                                     @NotNull ProblemConfig problemConfig,
                                                     @NotNull AlgorithmConfig algorithmConfig,
                                                     @NotNull StopConditionConfiguration stopConditionConfig,
-                                                    String outputFileName, String outputDirectory) {
+                                                    String outputFileName) {
         this.probability = probability;
         this.fitness = fitness;
         this.problemConfig = problemConfig;
         this.algorithmConfig = algorithmConfig;
         this.stopConditionConfig = stopConditionConfig;
         this.outputFileName = outputFileName;
-        this.outputDirectory = outputDirectory;
     }
 
     public double getProbability() {
@@ -59,15 +57,8 @@ public class ProbabilityVectorGenerationConfiguration implements ValidatableConf
         if (probability > 1.) {
             throw new ConfigurationException("Probability can not be more than 1, but it is " + probability);
         }
-        if (outputFileName == null) {
-            throw new ConfigurationException("Output file name is not configured");
-        }
-        if (outputDirectory == null) {
-            throw new ConfigurationException("Output directory name is not configured");
-        }
         problemConfig.validate();
         algorithmConfig.validate();
-        stopConditionConfig.validate();
     }
 
     public String getOutputFileName() {
@@ -84,35 +75,23 @@ public class ProbabilityVectorGenerationConfiguration implements ValidatableConf
                 problemConfig.equals(that.problemConfig) &&
                 algorithmConfig.equals(that.algorithmConfig) &&
                 stopConditionConfig.equals(that.stopConditionConfig) &&
-                outputFileName.equals(that.outputFileName) &&
-                outputDirectory.equals(that.outputDirectory);
+                outputFileName.equals(that.outputFileName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(probability, fitness, problemConfig, algorithmConfig, stopConditionConfig, outputFileName
-                , outputDirectory);
+        return Objects.hash(probability, fitness, problemConfig, algorithmConfig, stopConditionConfig, outputFileName);
     }
 
     @Override
     public String toString() {
-        return "ProbabilityVectorGenerationConfiguration{" +
+        return "ClusterExperimentConfiguration{" +
                 "probability=" + probability +
                 ", fitness=" + fitness +
                 ", problemConfig=" + problemConfig +
                 ", algorithmConfig=" + algorithmConfig +
                 ", stopConditionConfig=" + stopConditionConfig +
                 ", outputFileName='" + outputFileName + '\'' +
-                ", outputDirectory='" + outputDirectory + '\'' +
                 '}';
-    }
-
-    @Override
-    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
-        return visitor.visitProbabilityVectorGenerationConfiguration(this);
-    }
-
-    public String getOutputDirectory() {
-        return outputDirectory;
     }
 }
