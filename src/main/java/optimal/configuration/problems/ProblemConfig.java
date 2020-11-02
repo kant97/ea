@@ -1,13 +1,16 @@
 package optimal.configuration.problems;
 
 import com.google.gson.annotations.SerializedName;
+import optimal.configuration.ConfigurationVisitor;
 import optimal.configuration.ValidatableConfiguration;
+import optimal.configuration.VisitableConfiguration;
+import org.jetbrains.annotations.NotNull;
 import problem.ProblemsManager;
 
 import javax.naming.ConfigurationException;
 import java.util.Objects;
 
-public class ProblemConfig implements ValidatableConfiguration {
+public class ProblemConfig implements ValidatableConfiguration, VisitableConfiguration {
     @SerializedName(value = "type", alternate = "myType")
     private final ProblemsManager.ProblemType myType;
 
@@ -54,5 +57,10 @@ public class ProblemConfig implements ValidatableConfiguration {
                 "myType=" + myType +
                 ", mySize=" + mySize +
                 '}';
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitProblemConfig(this);
     }
 }

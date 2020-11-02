@@ -1,5 +1,6 @@
 package optimal.configuration.runs;
 
+import optimal.configuration.ConfigurationVisitor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
@@ -46,5 +47,10 @@ public class FixedRunsConfiguration extends StopConditionConfiguration {
         if (amountOfRuns < 0) {
             throw new ConfigurationException("amount of runs amount should be greater than 0, but it is " + amountOfRuns);
         }
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitFixedRunsConfig(this);
     }
 }
