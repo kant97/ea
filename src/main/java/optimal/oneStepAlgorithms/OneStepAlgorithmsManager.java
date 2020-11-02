@@ -1,5 +1,8 @@
 package optimal.oneStepAlgorithms;
 
+import optimal.configuration.algorithms.AlgorithmConfig;
+import optimal.configuration.algorithms.TwoRateConfig;
+import org.jetbrains.annotations.NotNull;
 import problem.Problem;
 
 public class OneStepAlgorithmsManager {
@@ -26,4 +29,17 @@ public class OneStepAlgorithmsManager {
         }
         throw new IllegalArgumentException("Algorithm type " + type.toString() + "is not supported yet");
     }
+
+    public static OneStepAlgorithm createAlgorithm(double currentProbability, @NotNull AlgorithmConfig algorithmConfig, @NotNull Problem problem) {
+        final AlgorithmType algorithmType = algorithmConfig.getAlgorithmType();
+        if (algorithmType == AlgorithmType.TWO_RATE) {
+            final TwoRateConfig config = (TwoRateConfig) algorithmConfig;
+            return new OneStepTwoRate(currentProbability, config.getLowerBound(), config.getLambda(),
+                    problem);
+        } else if (algorithmType == AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA) {
+            return new OneStepSimpleEA(currentProbability, algorithmConfig.getLambda(), problem);
+        }
+        throw new IllegalArgumentException("Algorithm type " + algorithmType.toString() + " is not supported yet");
+    }
+
 }

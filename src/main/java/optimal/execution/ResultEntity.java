@@ -1,14 +1,15 @@
 package optimal.execution;
 
+import optimal.configuration.AbstractSingleExperimentConfiguration;
 import optimal.configuration.OneExperimentConfiguration;
 
 public class ResultEntity {
-    public final OneExperimentConfiguration configuration;
+    public final AbstractSingleExperimentConfiguration configuration;
     public final int fitness;
     public final double bestProbability;
     public final double optimizationTime;
 
-    public ResultEntity(OneExperimentConfiguration configuration, int fitness, double bestProbability,
+    public ResultEntity(AbstractSingleExperimentConfiguration configuration, int fitness, double bestProbability,
                         double optimizationTime) {
         this.configuration = configuration;
         this.fitness = fitness;

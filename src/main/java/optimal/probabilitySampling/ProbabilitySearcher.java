@@ -31,8 +31,7 @@ public abstract class ProbabilitySearcher {
         throw new IllegalArgumentException("Unknown strategy");
     }
 
-    // if feedback > 0 then the previously returned probability improved something
-    public abstract double getNextProb(double feedback);
+    public abstract double getNextProb();
 
     public abstract double getInitialProbability();
 

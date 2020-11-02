@@ -17,5 +17,11 @@ public enum EventType {
         public String toString() {
             return "Progress";
         }
+    },
+    COMPUTATION_FINISHED {
+        @Override
+        public String toString() {
+            return "Computation is finished";
+        }
     }
 }

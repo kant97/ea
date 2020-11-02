@@ -1,4 +1,4 @@
-package pictures;
+package optimal.utils;
 
 import org.jetbrains.annotations.NotNull;
 

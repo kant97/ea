@@ -17,7 +17,7 @@ import java.util.Random;
 public class ColorfulPicturePainter extends Frame {
 
     public static void main(String[] a) throws IOException {
-        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("data.csv", 9, 8, 10);
+        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("data.csv", 8, 7, 9);
         matrixDataProcessor.loadData();
         drawChart(matrixDataProcessor.getProcessedData());
     }

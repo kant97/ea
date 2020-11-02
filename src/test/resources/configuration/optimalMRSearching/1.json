@@ -1,0 +1,27 @@
+{
+  "problemConfig": {
+    "type": "ONE_MAX_NEUTRALITY_3",
+    "size": 100
+  },
+  "algorithmConfig": {
+    "type": "TWO_RATE",
+    "lambda": 16,
+    "lowerBound": 0.01
+  },
+  "vectorGenerationConfig": {
+    "strategy": "RUN_TIME_VECTOR_GENERATION",
+    "stopConditionConfig": {
+      "strategy": "FIXED_SUCCESS",
+      "globalMaximumRuns": 10000,
+      "amountOfSuccess": 5000
+    }
+  },
+  "probabilityEnumeration": {
+    "strategy": "ITERATIVE",
+    "minMutationProbability": 0.01,
+    "maxMutationProbability": 0.5,
+    "precisionForProbability": 0.01
+  },
+  "beginFitness": 17,
+  "endFitness": 34
+}
