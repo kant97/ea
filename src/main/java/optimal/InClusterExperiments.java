@@ -1,6 +1,6 @@
 package optimal;
 
-import optimal.configuration.loaders.OneExperimentConfigurationLoader;
+import optimal.configuration.loaders.ManyExperimentsConfigurationLoader;
 import optimal.execution.cluster.ClusterJsonConfigsGenerator;
 import optimal.execution.cluster.FitnessLevelVectorGenerator;
 import optimal.execution.cluster.Utils;
@@ -37,7 +37,7 @@ public class InClusterExperiments {
         @Override
         void handle(String[] args) {
             final ClusterJsonConfigsGenerator clusterJsonConfigsGenerator =
-                    new ClusterJsonConfigsGenerator(new OneExperimentConfigurationLoader(Utils.GLOBAL_CONFIGS_FILE_NAME_JSON));
+                    new ClusterJsonConfigsGenerator(new ManyExperimentsConfigurationLoader(Utils.GLOBAL_CONFIGS_FILE_NAME_JSON));
             clusterJsonConfigsGenerator.generateJsonConfigs();
             System.out.println("Generated " + clusterJsonConfigsGenerator.getAmountOfGeneratedFiles() + " files.\n" +
                     "Files ids lay in [" + clusterJsonConfigsGenerator.getMinFileId() + ", " +

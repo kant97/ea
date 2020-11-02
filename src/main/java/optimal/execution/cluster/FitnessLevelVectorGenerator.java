@@ -37,7 +37,7 @@ public class FitnessLevelVectorGenerator {
         myProbabilityVectorGenerator =
                 ProbabilityVectorGeneratorManager.getProbabilityVectorGeneratorInRuntime(configuration.getProbability(),
                         problem, configuration.getAlgorithmConfig(), configuration.getStopConditionConfig());
-        Utils.createResultsDirectoryInFsIfNotExists();
+        Utils.createResultsDirectoryInFsIfNotExists(configuration.getOutputDirectory());
     }
 
     private ArrayList<Double> runVectorGeneration() {
@@ -52,7 +52,7 @@ public class FitnessLevelVectorGenerator {
             throw new IllegalStateException("Set up the state at first");
         }
         try (final BufferedWriter writer =
-                     new BufferedWriter(new FileWriter(Utils.RESULTS_DIRECTORY + configuration.getOutputFileName()))) {
+                     new BufferedWriter(new FileWriter(configuration.getOutputDirectory() + configuration.getOutputFileName()))) {
             writeResultsWithWriter(probabilityVector, writer);
         } catch (IOException e) {
             try {
