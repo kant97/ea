@@ -1,10 +1,13 @@
 package optimal.configuration.algorithms;
 
+import optimal.configuration.ConfigurationVisitor;
+import optimal.configuration.VisitableConfiguration;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class TwoRateConfig extends AlgorithmConfig {
+public class TwoRateConfig extends AlgorithmConfig implements VisitableConfiguration {
     private final double lowerBound;
 
     public TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType type, int lambda,
@@ -36,5 +39,10 @@ public class TwoRateConfig extends AlgorithmConfig {
         return "TwoRateConfig{" +
                 "lowerBound=" + lowerBound +
                 "} " + super.toString();
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitTwoRateConfig(this);
     }
 }

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.naming.ConfigurationException;
 import java.util.Objects;
 
-public class AbstractSingleExperimentConfiguration implements ValidatableConfiguration {
+public abstract class AbstractSingleExperimentConfiguration implements ValidatableConfiguration, VisitableConfiguration {
     public final ProblemConfig problemConfig;
     public final AlgorithmConfig algorithmConfig;
     public final int beginFitness;

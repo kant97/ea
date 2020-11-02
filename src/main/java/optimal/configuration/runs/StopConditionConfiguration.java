@@ -1,9 +1,10 @@
 package optimal.configuration.runs;
 
 import optimal.configuration.ValidatableConfiguration;
+import optimal.configuration.VisitableConfiguration;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class StopConditionConfiguration implements ValidatableConfiguration {
+public abstract class StopConditionConfiguration implements ValidatableConfiguration, VisitableConfiguration {
     public enum Strategy {
         FIXED_RUNS {
             @Override

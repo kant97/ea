@@ -6,6 +6,7 @@ import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.runs.StopConditionConfiguration;
 import optimal.configuration.vectorGeneration.RunTimeGenerationConfiguration;
 import optimal.configuration.vectorGeneration.VectorGenerationConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.naming.ConfigurationException;
@@ -52,5 +53,10 @@ public class OptimalMutationRateSearchingSingleExperimentConfiguration extends A
     public void validate() throws ConfigurationException {
         super.validate();
         vectorGenerationConfig.validate();
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitOptimalMutationRateSearcherConfig(this);
     }
 }

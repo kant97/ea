@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.naming.ConfigurationException;
 import java.util.Objects;
 
-public class ProbabilityVectorGenerationConfiguration implements ValidatableConfiguration {
+public class ProbabilityVectorGenerationConfiguration implements ValidatableConfiguration, VisitableConfiguration {
     private final double probability;
     private final int fitness;
     private final ProblemConfig problemConfig;
@@ -93,5 +93,10 @@ public class ProbabilityVectorGenerationConfiguration implements ValidatableConf
                 ", stopConditionConfig=" + stopConditionConfig +
                 ", outputFileName='" + outputFileName + '\'' +
                 '}';
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitProbabilityVectorGenerationConfiguration(this);
     }
 }
