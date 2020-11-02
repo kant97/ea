@@ -10,7 +10,6 @@ import optimal.configuration.runs.FixedRunsConfiguration;
 import optimal.configuration.runs.FixedSuccessConfiguration;
 import optimal.configuration.vectorGeneration.PrecomputedVectorReadingConfiguration;
 import optimal.configuration.vectorGeneration.RunTimeGenerationConfiguration;
-import optimal.probability.PrecomputedProbabilityVectorsReader;
 import org.jetbrains.annotations.NotNull;
 
 public interface ConfigurationVisitor {
