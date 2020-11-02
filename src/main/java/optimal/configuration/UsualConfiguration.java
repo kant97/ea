@@ -1,11 +1,13 @@
 package optimal.configuration;
 
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.naming.ConfigurationException;
 import java.util.List;
 import java.util.Objects;
 
-public class UsualConfiguration implements ValidatableConfiguration {
+public class UsualConfiguration implements ValidatableConfiguration, VisitableConfiguration {
     public final int amountOfThreads;
     public final List<OneExperimentConfiguration> experimentConfigurations;
 
@@ -36,5 +38,10 @@ public class UsualConfiguration implements ValidatableConfiguration {
         for (OneExperimentConfiguration configuration : experimentConfigurations) {
             configuration.validate();
         }
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitUsualConfiguration(this);
     }
 }

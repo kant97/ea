@@ -1,6 +1,8 @@
 package optimal.configuration.problems;
 
 import com.google.gson.annotations.SerializedName;
+import optimal.configuration.ConfigurationVisitor;
+import org.jetbrains.annotations.NotNull;
 import problem.ProblemsManager;
 
 import javax.naming.ConfigurationException;
@@ -46,5 +48,10 @@ public class RuggednessConfig extends ProblemConfig {
         return "RuggednessConfig{" +
                 "r=" + r +
                 "} " + super.toString();
+    }
+
+    @Override
+    public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
+        return visitor.visitRuggednessConfig(this);
     }
 }
