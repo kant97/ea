@@ -1,9 +1,9 @@
 package optimal.execution;
 
 import optimal.BestMutationRateSearcher;
-import optimal.configuration.Configuration;
-import optimal.configuration.ConfigurationsLoader;
 import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.UsualConfiguration;
+import optimal.configuration.loaders.UsualConfigurationsLoader;
 import optimal.execution.events.EventType;
 import optimal.execution.events.EventsManager;
 import optimal.execution.events.ResultEntityObtainedEvent;
@@ -25,8 +25,8 @@ public class ExperimentRunner {
     }
 
     public void runExperiments() {
-        final ConfigurationsLoader configurationsLoader = new ConfigurationsLoader();
-        final Configuration configuration;
+        final UsualConfigurationsLoader configurationsLoader = new UsualConfigurationsLoader();
+        final UsualConfiguration configuration;
         try {
             configuration = configurationsLoader.getConfiguration();
         } catch (FileNotFoundException | ConfigurationException e) {

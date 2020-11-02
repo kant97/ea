@@ -1,0 +1,19 @@
+{
+  "probability": 0.01,
+  "fitness": 98,
+  "problemConfig": {
+    "r": 2,
+    "type": "ONE_MAX_RUGGEDNESS",
+    "size": 100
+  },
+  "algorithmConfig": {
+    "type": "SIMPLE_ONE_PLUS_LAMBDA",
+    "lambda": 16
+  },
+  "stopConditionConfig": {
+    "amountOfSuccess": 5000,
+    "globalMaximumRuns": 10000,
+    "strategy": "FIXED_SUCCESS"
+  },
+  "outputFileName": "output"
+}

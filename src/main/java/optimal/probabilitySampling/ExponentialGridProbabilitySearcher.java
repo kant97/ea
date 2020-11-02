@@ -15,7 +15,7 @@ public class ExponentialGridProbabilitySearcher extends ProbabilitySearcher {
     }
 
     @Override
-    public double getNextProb(double feedback) {
+    public double getNextProb() {
         myLastReturnedPrecision += myPrecision;
         return f(myLastReturnedPrecision);
     }

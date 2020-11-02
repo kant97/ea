@@ -1,6 +1,6 @@
 package optimal.execution;
 
-import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.AbstractSingleExperimentConfiguration;
 import optimal.execution.events.EventType;
 
 import java.io.BufferedWriter;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 public class ResultWriter implements AutoCloseable {
-    private final static String[] entries = {"problemType", "algorithmType", "numberOfStepRepetitions", "problemSize"
+    private final static String[] entries = {"problemType", "algorithmType", "problemSize"
             , "lambda", "beginFitness", "endFitness", "probabilityEnumerationStrategy", "fitness", "bestProbability",
             "optimizationTime"};
     private final Path outputPath;
@@ -39,23 +39,21 @@ public class ResultWriter implements AutoCloseable {
         if (myResultsType != type) {
             return;
         }
-        OneExperimentConfiguration configuration = results.configuration;
+        AbstractSingleExperimentConfiguration configuration = results.configuration;
         try {
-            writer.write(configuration.problemType.toString());
+            writer.write(configuration.problemConfig.getProblemType().toString());
             writer.write(',');
-            writer.write(configuration.algorithmType.toString());
+            writer.write(configuration.algorithmConfig.getAlgorithmType().toString());
             writer.write(',');
-            writer.write(configuration.getNumberOfStepRepetitions().toString());
+            writer.write(Integer.toString(configuration.problemConfig.getSize()));
             writer.write(',');
-            writer.write(Integer.toString(configuration.problemSize));
-            writer.write(',');
-            writer.write(Integer.toString(configuration.lambda));
+            writer.write(Integer.toString(configuration.algorithmConfig.getLambda()));
             writer.write(',');
             writer.write(Integer.toString(configuration.beginFitness));
             writer.write(',');
             writer.write(Integer.toString(configuration.endFitness));
             writer.write(',');
-            writer.write(configuration.probabilityEnumerationStrategy.toString());
+            writer.write(configuration.probabilityEnumeration.getStrategy().name());
             writer.write(',');
             writer.write(Integer.toString(results.fitness));
             writer.write(',');

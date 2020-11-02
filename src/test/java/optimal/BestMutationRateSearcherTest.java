@@ -1,9 +1,12 @@
 package optimal;
 
-import com.sun.tools.javac.util.Assert;
 import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.algorithms.AlgorithmConfig;
+import optimal.configuration.algorithms.TwoRateConfig;
 import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
+import optimal.configuration.problems.ProblemConfig;
+import optimal.configuration.runs.FixedRunsConfiguration;
 import optimal.execution.ResultEntity;
 import optimal.execution.events.EventType;
 import optimal.execution.events.EventsManager;
@@ -11,15 +14,13 @@ import optimal.execution.events.ResultEntityObtainedEvent;
 import optimal.heuristics.ExperimentState;
 import optimal.heuristics.OneMaxHeuristics;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
-import optimal.probabilitySampling.ProbabilitySamplingStrategy;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import problem.ProblemsManager;
 
 import java.util.function.Consumer;
 
 import static optimal.configuration.OneExperimentConfiguration.DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS;
-import static problem.ProblemsManager.ProblemType.ONE_MAX;
-import static problem.ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3;
 
 class BestMutationRateSearcherTest {
 
@@ -32,14 +33,14 @@ class BestMutationRateSearcherTest {
     @Test
     void testOneMaxHeuristics() {
         final OneExperimentConfiguration configuration = new OneExperimentConfiguration(
-                ONE_MAX, OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA,
-                5000, 100, 10, 99, 100,
-                ProbabilitySamplingStrategy.ITERATIVE, null,
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX, 100),
+                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 10),
+                new FixedRunsConfiguration(5000), 99, 100,
                 new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
         );
         BestMutationRateSearcher searcher = new BestMutationRateSearcher(configuration);
         Assertions.assertNotNull(searcher.myHeuristics);
-        searcher.myHeuristics.acceptNewExperimentState(new ExperimentState(configuration.problemType, 99, 0.01));
+        searcher.myHeuristics.acceptNewExperimentState(new ExperimentState(configuration.problemConfig.getProblemType(), 99, 0.01));
         searcher.myHeuristics.acceptResult(new ResultEntity(configuration, 99, 0.01, Double.MAX_VALUE));
         searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
         searcher.addListener(event -> {
@@ -52,9 +53,9 @@ class BestMutationRateSearcherTest {
     @Test
     void getBestMutationProbabilities() {
         BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                ONE_MAX_NEUTRALITY_3, OneStepAlgorithmsManager.AlgorithmType.TWO_RATE,
-                DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS, 200, 10, 33, 67,
-                ProbabilitySamplingStrategy.ITERATIVE, null,
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 200),
+                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
+                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 33, 67,
                 new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
         ));
         searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
@@ -64,8 +65,9 @@ class BestMutationRateSearcherTest {
     @Test
     void getBestMutationProbabilitiesTest2() {
         BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                ONE_MAX_NEUTRALITY_3, OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS, 100, 10, 17, 34,
-                ProbabilitySamplingStrategy.ITERATIVE, null,
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
+                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
+                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
                 new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
         ));
         searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
@@ -75,10 +77,10 @@ class BestMutationRateSearcherTest {
     @Test
     void getBestMutationProbabilitiesTest3() {
         BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                ONE_MAX_NEUTRALITY_3, OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS, 100, 10, 17, 34,
-                ProbabilitySamplingStrategy.EXPONENTIAL_GRID,
-                new ExponentialGridConfiguration(10, -2, -1, 0.1),
-                null));
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
+                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
+                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
+                new ExponentialGridConfiguration(10, -2, -1, 0.1)));
         searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
         searcher.getBestMutationProbabilities();
     }
@@ -86,9 +88,9 @@ class BestMutationRateSearcherTest {
     @Test
     void getBestMutationProbabilitiesTest4() {
         BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                ONE_MAX, OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 40000, 100, 10, 50, 100,
-                ProbabilitySamplingStrategy.ITERATIVE,
-                null,
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX, 100),
+                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 10),
+                new FixedRunsConfiguration(40000), 50, 100,
                 new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)));
         searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
         searcher.getBestMutationProbabilities();

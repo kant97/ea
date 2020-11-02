@@ -9,7 +9,7 @@ class IterativeProbabilitySearcher extends ProbabilitySearcher {
     }
 
     @Override
-    public double getNextProb(double feedback) {
+    public double getNextProb() {
         myLastReturnedPrecision = myLastReturnedPrecision + myPrecision;
         return myLastReturnedPrecision;
     }

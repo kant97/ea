@@ -1,7 +1,7 @@
 package optimal.execution;
 
-import optimal.configuration.Configuration;
-import optimal.configuration.ConfigurationsLoader;
+import optimal.configuration.UsualConfiguration;
+import optimal.configuration.loaders.UsualConfigurationsLoader;
 import optimal.execution.events.EventType;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ class ResultsConsumerTest {
         ResultsConsumer writer = ResultsConsumer.createResultsConsumer(false);
         writer.addWriter(new ResultWriter("testResults.csv", EventType.OPTIMAL_RESULT_READY));
 
-        Configuration configuration = new ConfigurationsLoader().getConfiguration();
+        UsualConfiguration configuration = new UsualConfigurationsLoader().getConfigurationFromResources();
         writer.consumeResult(new ResultEntity(configuration.experimentConfigurations.get(0), 17, 0.12, 300.14),
                 EventType.OPTIMAL_RESULT_READY);
         writer.waitAndLogResults();

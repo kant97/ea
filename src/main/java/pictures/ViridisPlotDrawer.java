@@ -115,8 +115,8 @@ public class ViridisPlotDrawer {
     }
 
     private int getRgdColor(int row, int col) {
-//        final double value01 = getValueForRgbColorModification(row, col);
-        final double value01 = getValueForRgbColorInitial(row, col);
+        final double value01 = getValueForRgbColorModification(row, col);
+//        final double value01 = getValueForRgbColorInitial(row, col);
         if (Double.isNaN(value01)) {
             throw new IllegalStateException("max value = " + myRunTimesWithSortedColumns.get(col).get(0) + ", curr " +
                     "value = " + myRunTimes.get(row, col));

@@ -2,33 +2,53 @@
   "amountOfThreads": 10,
   "experimentConfigurations": [
     {
-      "problemType": "ONE_MAX_NEUTRALITY_3",
-      "algorithmType": "TWO_RATE",
-      "problemSize": 100,
-      "lambda": 10,
-      "beginFitness": 17,
-      "endFitness": 34,
-      "probabilityEnumerationStrategy": "EXPONENTIAL_GRID",
-      "exponentialGridProbabilityConfiguration": {
+      "problemConfig": {
+        "type": "ONE_MAX_NEUTRALITY_3",
+        "size": 100
+      },
+      "algorithmConfig": {
+        "type": "TWO_RATE",
+        "lambda": 10,
+        "lowerBound": 0.01
+      },
+      "stopConditionConfig": {
+        "strategy": "FIXED_SUCCESS",
+        "globalMaximumRuns": 10000,
+        "amountOfSuccess": 5000
+      },
+      "probabilityEnumeration": {
+        "strategy": "EXPONENTIAL_GRID",
         "base": 10,
         "minPowerValue": -3,
         "maxPowerValue": -2,
         "precisionForPower": 0.1
-      }
+      },
+      "beginFitness": 17,
+      "endFitness": 34
     },
     {
-      "problemType": "ONE_MAX",
-      "algorithmType": "SIMPLE_ONE_PLUS_LAMBDA",
-      "problemSize": 100,
-      "lambda": 10,
-      "beginFitness": 50,
-      "endFitness": 100,
-      "probabilityEnumerationStrategy": "ITERATIVE",
-      "iterativeProbabilityConfiguration": {
+      "problemConfig": {
+        "type": "ONE_MAX",
+        "size": 100
+      },
+      "algorithmConfig": {
+        "type": "SIMPLE_ONE_PLUS_LAMBDA",
+        "lambda": 10,
+        "lowerBound": 0.01
+      },
+      "stopConditionConfig": {
+        "strategy": "FIXED_SUCCESS",
+        "globalMaximumRuns": 10000,
+        "amountOfSuccess": 5000
+      },
+      "probabilityEnumeration": {
+        "strategy": "ITERATIVE",
         "minMutationProbability": 0.1,
         "maxMutationProbability": 0.5,
         "precisionForProbability": 0.1
-      }
+      },
+      "beginFitness": 50,
+      "endFitness": 100
     }
   ]
 }
