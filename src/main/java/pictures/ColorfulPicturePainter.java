@@ -4,7 +4,7 @@ import optimal.configuration.probability.IterativeProbabilityConfiguration;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
-import pictures.coloring.AbstractColoring;
+import pictures.coloring.AbstractColouring;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -31,7 +31,7 @@ public class ColorfulPicturePainter extends Frame {
         final Graphics2D g2d = bufferedImage.createGraphics();
 
         final ViridisPlotDrawer viridisPlotDrawer = new ViridisPlotDrawer(0, 0, width, height, g2d, matrix,
-                AbstractColoring.createColoring(matrix, AbstractColoring.ColoringStrategy.MODIFIED),
+                AbstractColouring.createColoring(matrix, AbstractColouring.ColoringStrategy.MODIFIED),
                 ProbabilitySearcher.createProbabilitySearcher(new IterativeProbabilityConfiguration(0.01, 0.5,
                         0.01)));
         viridisPlotDrawer.drawViridisPlot();
