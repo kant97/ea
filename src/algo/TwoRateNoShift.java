@@ -2,16 +2,14 @@ package algo;
 
 import problem.Problem;
 import utils.BestCalculatedPatch;
-import utils.BestCalculatedPatchMedAverage;
-import utils.PatchCalcUtil;
+import utils.BestCalculatedPatchNoShift;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class AdaptiveDivTwoRate implements Algorithm {
-    private final double lowerBound; // 2.0 / problemLength or 2.0 / (problemLength^2)
+public class TwoRateNoShift implements Algorithm{
+    private double mutationRate;
+    private final double lowerBound;
     private final int lambda;
 
     private final Problem problem;
@@ -19,82 +17,56 @@ public class AdaptiveDivTwoRate implements Algorithm {
 
     private final Random rand;
 
-
     private int iterCount = 0;
-    private double mutationRate;
 
-
-    public int calcMultCou = 0;
-    public int calcDivCou = 0;
-    public int randDivCou = 0;
-    public int randMultCou = 0;
-
-    public double prob;
-
-    public AdaptiveDivTwoRate(double r, double lowerBound, int lambda, Problem problem) {
+    public TwoRateNoShift(double r, double lowerBound, int lambda, Problem problem) {
         this.problem = problem;
         this.problemLength = problem.getLength();
         this.mutationRate = r / problemLength;
         this.lowerBound = lowerBound;
         this.lambda = lambda;
-        rand = new Random();
+        rand = ThreadLocalRandom.current();
     }
 
     @Override
     public void makeIteration() {
         iterCount++;
-        BestCalculatedPatchMedAverage bpHalf = new BestCalculatedPatchMedAverage(mutationRate / 2, lambda / 2, problem);
-        BestCalculatedPatchMedAverage bpMult = new BestCalculatedPatchMedAverage(mutationRate * 2, lambda / 2, problem);
+        BestCalculatedPatchNoShift bpHalf = new BestCalculatedPatchNoShift(mutationRate / 2, lambda / 2, problem);
+        BestCalculatedPatchNoShift bpMult = new BestCalculatedPatchNoShift(mutationRate * 2, lambda / 2, problem);
         double newMutationRate = mutationRate;
-        double diff = Math.abs(bpHalf.average - bpMult.average);
-        double rateMult = Math.max(Math.exp(-diff/7 + 0.95), 1.2); // на этой получилось лучше tworate//Math.max(1.3, Math.pow(3.7, -diff/15 +0.7)); //Math.pow(8, diff / 10);
         if (bpHalf.fitness > bpMult.fitness) {
             if (bpHalf.fitness >= problem.getFitness()) {
                 problem.applyPatch(bpHalf.patch, bpHalf.fitness);
             }
-            newMutationRate = mutationRate / rateMult;
+            newMutationRate = mutationRate / 2;
         } else if (bpHalf.fitness < bpMult.fitness) {
             if (bpMult.fitness >= problem.getFitness()) {
                 problem.applyPatch(bpMult.patch, bpMult.fitness);
             }
-            newMutationRate = mutationRate * rateMult;
+            newMutationRate = mutationRate * 2;
         } else {
             if (rand.nextBoolean()) {
                 if (bpHalf.fitness >= problem.getFitness()) {
                     problem.applyPatch(bpHalf.patch, bpHalf.fitness);
                 }
-                newMutationRate = mutationRate / rateMult;
+                newMutationRate = mutationRate / 2;
             } else {
                 if (bpHalf.fitness >= problem.getFitness()) {
                     problem.applyPatch(bpMult.patch, bpMult.fitness);
                 }
-                newMutationRate = mutationRate * rateMult;
+                newMutationRate = mutationRate * 2;
             }
         }
-        prob = Math.pow(1.3, -diff / 3.5 - 1.6);
-        String s = problem.getFitness() + " " + diff + " " + prob + " " + mutationRate + " " + rateMult + " ";
-        if (rand.nextDouble() < prob) {
-
-            if (rand.nextDouble() < 0.5) {
-                mutationRate = mutationRate * rateMult;
-                s += "mult rand";
-                randMultCou++;
+        if (rand.nextBoolean()) {
+            if (rand.nextBoolean()) {
+                mutationRate = mutationRate / 2;
             } else {
-                mutationRate = mutationRate / rateMult;
-                s += "div rand";
-                randDivCou++;
+                mutationRate = mutationRate * 2;
             }
         } else {
-            if (newMutationRate < mutationRate) {
-                s += " calc div";
-                calcDivCou++;
-            } else {
-                s += "calc mult";
-                calcMultCou++;
-            }
             mutationRate = newMutationRate;
         }
-//        System.out.println(s);
+
         mutationRate = Math.min(Math.max(lowerBound, mutationRate), 0.25);
     }
 
@@ -105,7 +77,7 @@ public class AdaptiveDivTwoRate implements Algorithm {
 
     @Override
     public void printInfo() {
-        System.out.println("calcMultCou " + calcMultCou + " calcDivCou: " + calcDivCou + " randMultCou: " + randMultCou + " randDivCou: " +randDivCou);
+        System.out.println(iterCount + " " + problem.getFitness() + " " + mutationRate);
     }
 
     @Override

@@ -7,7 +7,8 @@ public class Plateau implements Problem {
     private boolean[] individual;
     private int fitness;
     private int onesCount;
-    private int k;
+    private final int k;
+    private final int optimum;
 
     public Plateau(int n, int k) {
         individual = new boolean[n];
@@ -21,6 +22,7 @@ public class Plateau implements Problem {
             }
         }
         fitness = (int) Math.floor(((double) onesCount) / k) + 1;
+        optimum = (int) Math.floor(((double) n) / k) + 1;;
     }
 
     public Plateau(int n, int k, int fitness) {
@@ -72,12 +74,17 @@ public class Plateau implements Problem {
 
     @Override
     public boolean isOptimized() {
-        return fitness == (int) Math.floor(((double) individual.length) / k) + 1;
+        return fitness == optimum;
     }
 
     @Override
     public String getInfo() {
         return "";
+    }
+
+    @Override
+    public int getOptimum() {
+        return 0;
     }
 }
 

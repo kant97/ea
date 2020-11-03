@@ -1,15 +1,16 @@
 package algo;
 
 import problem.Problem;
+import utils.BestCalculatedPatch;
+import utils.PatchCalcUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static utils.PatchCalcUtil.createPatch;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TwoRate implements Algorithm {
-    protected double mutationRate;
+    private double mutationRate;
     private final double lowerBound; // 2.0 / problemLength or 2.0 / (problemLength^2)
     private final int lambda;
 
@@ -18,12 +19,15 @@ public class TwoRate implements Algorithm {
 
     private final Random rand;
 
-    public int decreaseCount = 0;
-    public List<String> decreaseCountInfo = new ArrayList<>();
-    public int increaseCount = 0;
-    public int equalCount = 0;
-    private int almostTheSame = 0;
-    public int iterCount = 0;
+    private int iterCount = 0;
+    private int action;
+    private String info = "";
+
+//    public int decreaseCount = 0;
+//    public List<String> decreaseCountInfo = new ArrayList<>();
+//    public int increaseCount = 0;
+//    public int equalCount = 0;
+//    private int almostTheSame = 0;
 
     public TwoRate(double r, double lowerBound, int lambda, Problem problem) {
         this.problem = problem;
@@ -31,65 +35,66 @@ public class TwoRate implements Algorithm {
         this.mutationRate = r / problemLength;
         this.lowerBound = lowerBound;
         this.lambda = lambda;
-        this.iterCount = 0;
-        rand = new Random();
+        rand = ThreadLocalRandom.current();
     }
 
     @Override
     public void makeIteration() {
         iterCount++;
-        BestCalculatedPatch bpHalf = getHalfBest(mutationRate / 2);
-        BestCalculatedPatch bpMult = getHalfBest(mutationRate * 2);
+        BestCalculatedPatch bpHalf = new BestCalculatedPatch(mutationRate / 2, lambda / 2, problem);
+        BestCalculatedPatch bpMult = new BestCalculatedPatch(mutationRate * 2, lambda / 2, problem);
         double newMutationRate = mutationRate;
         if (bpHalf.fitness > bpMult.fitness) {
             if (bpHalf.fitness >= problem.getFitness()) {
-                updateProblemInstance(bpHalf);
+                problem.applyPatch(bpHalf.patch, bpHalf.fitness);
             } else {
-                decreaseCount++;
-                decreaseCountInfo.add(problem.getFitness() + "," + mutationRate + "'" + (problem.getFitness() - bpHalf.fitness) + "," + (problem.getFitness() - bpMult.fitness));
+//                decreaseCount++;
+//                decreaseCountInfo.add(problem.getFitness() + "," + mutationRate + "'" + (problem.getFitness() - bpHalf.fitness) + "," + (problem.getFitness() - bpMult.fitness));
             }
             newMutationRate = mutationRate / 2;
+            action = 2;
         } else if (bpHalf.fitness < bpMult.fitness) {
             if (bpMult.fitness >= problem.getFitness()) {
-                updateProblemInstance(bpMult);
+                problem.applyPatch(bpMult.patch, bpMult.fitness);
             } else {
-                increaseCount++;
+//                increaseCount++;
             }
             newMutationRate = mutationRate * 2;
+            action = 1;
         } else { // что если равны?
             if (rand.nextBoolean()) {
                 if (bpHalf.fitness >= problem.getFitness()) {
-                    updateProblemInstance(bpHalf);
+                    problem.applyPatch(bpHalf.patch, bpHalf.fitness);
                 } else {
-                    equalCount++;
+//                    equalCount++;
                 }
                 newMutationRate = mutationRate / 2;
+                action = 2;
             } else {
                 if (bpHalf.fitness >= problem.getFitness()) {
-                    updateProblemInstance(bpMult);
+                    problem.applyPatch(bpMult.patch, bpMult.fitness);
                 } else {
-                    equalCount++;
+//                    equalCount++;
                 }
                 newMutationRate = mutationRate * 2;
+                action = 1;
             }
         }
         if (rand.nextBoolean()) { //вероятность не 0.5 а регулиировать в зависимости от разницы фитнеса в левой и правой.
             //посчитать среднее и дальше как по методу отжига
-            almostTheSame++;
+//            almostTheSame++;
             if (rand.nextBoolean()) {
                 mutationRate = mutationRate / 2;
+                action = 2;
             } else {
                 mutationRate = mutationRate * 2;
+                action = 1;
             }
         } else {
             mutationRate = newMutationRate;
         }
 
         mutationRate = Math.min(Math.max(lowerBound, mutationRate), 0.25);
-    }
-
-    protected void updateProblemInstance(BestCalculatedPatch bpHalf) {
-        problem.applyPatch(bpHalf.patch, bpHalf.fitness);
     }
 
     @Override
@@ -99,11 +104,11 @@ public class TwoRate implements Algorithm {
 
     @Override
     public void printInfo() {
-        System.out.println("decCou: " + decreaseCount + " incCou: " + increaseCount + " eqCou: " + equalCount + " sameCou: " + almostTheSame);
+//        System.out.println(iterCount + " " + problem.getFitness() + " " + mutationRate);
 //        for (String s : decreaseCountInfo) {
 //            System.out.print(s + " ");
 //        }
-        System.out.println();
+//        System.out.println();
     }
 
     @Override
@@ -116,19 +121,32 @@ public class TwoRate implements Algorithm {
         return problem.getFitness();
     }
 
-    private BestCalculatedPatch getHalfBest(double mutation) {
-        List<Integer> bestPatch = null;
-        int bestFitness = -1;
-        for (int i = 0; i < lambda / 2; ++i) {
-            List<Integer> patch = createPatch(mutation, problemLength);
-            int fitness = problem.calculatePatchFitness(patch);
-            if (fitness >= bestFitness) {
-                bestFitness = fitness;
-                bestPatch = patch;
-            }
-        }
-        return new BestCalculatedPatch(bestPatch, bestFitness);
+    @Override
+    public long getFitnessCount() {
+        return iterCount * lambda;
     }
+
+    @Override
+    public int getIterCount() {
+        return iterCount;
+    }
+
+    @Override
+    public String getProblemInfo() {
+        return problem.getInfo();
+    }
+
+    @Override
+    public String getInfo() {
+        return iterCount + ", fitness, " + getFitness() +"\n" +
+               iterCount + ", action, " + action;
+    }
+
+    @Override
+    public int getOptimum() {
+        return problem.getOptimum();
+    }
+
 //@Override
 //    public void makeIteration() {
 //        BestCalculatedPatch bpHalf = getHalfBest(mutationRate / 2);
@@ -192,33 +210,4 @@ public class TwoRate implements Algorithm {
 //        return patch;
 //    }
 
-    protected class BestCalculatedPatch {
-        List<Integer> patch;
-
-        public int getFitness() {
-            return fitness;
-        }
-
-        int fitness;
-
-        BestCalculatedPatch(List<Integer> patch, int fitness) {
-            this.patch = patch;
-            this.fitness = fitness;
-        }
-    }
-
-    @Override
-    public String getProblemInfo() {
-        return problem.getInfo();
-    }
-
-    @Override
-    public int getIterCount() {
-        return iterCount;
-    }
-
-    @Override
-    public long getFitnessCount() {
-        return iterCount * lambda;
-    }
 }
