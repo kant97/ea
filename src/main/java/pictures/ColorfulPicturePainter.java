@@ -4,6 +4,7 @@ import optimal.configuration.probability.IterativeProbabilityConfiguration;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
+import pictures.coloring.AbstractColoring;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -17,7 +18,7 @@ import java.util.Random;
 public class ColorfulPicturePainter extends Frame {
 
     public static void main(String[] a) throws IOException {
-        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("data.csv", 8, 7, 9);
+        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("tmp/A1.csv", 9, 8, 10);
         matrixDataProcessor.loadData();
         drawChart(matrixDataProcessor.getProcessedData());
     }
@@ -30,7 +31,9 @@ public class ColorfulPicturePainter extends Frame {
         final Graphics2D g2d = bufferedImage.createGraphics();
 
         final ViridisPlotDrawer viridisPlotDrawer = new ViridisPlotDrawer(0, 0, width, height, g2d, matrix,
-                ProbabilitySearcher.createProbabilitySearcher(new IterativeProbabilityConfiguration(0.01, 0.5, 0.01)));
+                AbstractColoring.createColoring(matrix, AbstractColoring.ColoringStrategy.MODIFIED),
+                ProbabilitySearcher.createProbabilitySearcher(new IterativeProbabilityConfiguration(0.01, 0.5,
+                        0.01)));
         viridisPlotDrawer.drawViridisPlot();
 
 //        addChart(viridisPlotDrawer);
