@@ -1,6 +1,7 @@
-// @author mbuzdalov
+package pictures.coloring
 
-package pictures
+/* @author Maxim Buzdalov:
+ https://github.com/mbuzdalov/one-plus-lambda-on-onemax/blob/master/src/main/scala/com/github/mbuzdalov/opl/util/Viridis.scala */
 
 object Viridis {
   private val viridisColorMap = Array(

@@ -2,7 +2,6 @@ package pictures.coloring;
 
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
-import pictures.Viridis$;
 
 import java.util.ArrayList;
 
@@ -51,4 +50,6 @@ public abstract class AbstractColoring {
     }
 
     protected abstract double getValueForRgbColor(int row, int col);
+
+    public abstract @NotNull ColoringStrategy getColoringStrategy();
 }
