@@ -1,13 +1,11 @@
 package pictures;
 
-import optimal.heuristics.OneMaxHeuristics;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
-import pictures.coloring.AbstractColoring;
+import pictures.coloring.AbstractColouring;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,7 +18,7 @@ public class ViridisPlotDrawer {
     private final @NotNull Graphics myGraphics;
     private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[d, r] stores math expectation of
     generations amount to reach the global optima if starting from the distance d with the mutation rate r */
-    private final AbstractColoring myColoring;
+    private final AbstractColouring myColoring;
     private final int myOneWidth;
     private final int myOneHeight;
     private final @NotNull ProbabilitySearcher myProbabilitySampler;
@@ -29,7 +27,7 @@ public class ViridisPlotDrawer {
     public ViridisPlotDrawer(int xOffsetLeft, int yOffsetUp,
                              int plotWidth, int plotHeight, @NotNull Graphics graphics,
                              @NotNull SimpleMatrix data,
-                             AbstractColoring coloring, @NotNull ProbabilitySearcher probabilitySampler) {
+                             AbstractColouring coloring, @NotNull ProbabilitySearcher probabilitySampler) {
         this.myXOffsetLeft = xOffsetLeft;
         this.myYOffsetUp = yOffsetUp;
         this.myPlotWidth = plotWidth;

@@ -6,11 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public abstract class AbstractColoring {
+public abstract class AbstractColouring {
     protected final @NotNull SimpleMatrix myMatrix;
     protected final @NotNull ArrayList<ArrayList<Double>> myMatrixWithSortedColumns;
 
-    protected AbstractColoring(@NotNull SimpleMatrix matrix) {
+    protected AbstractColouring(@NotNull SimpleMatrix matrix) {
         myMatrix = matrix;
         myMatrixWithSortedColumns = calculateSortedColumns(matrix);
     }
@@ -19,11 +19,11 @@ public abstract class AbstractColoring {
         INITIAL, MODIFIED
     }
 
-    public static AbstractColoring createColoring(@NotNull SimpleMatrix matrix, @NotNull ColoringStrategy strategy) {
+    public static AbstractColouring createColoring(@NotNull SimpleMatrix matrix, @NotNull ColoringStrategy strategy) {
         if (strategy == ColoringStrategy.INITIAL) {
-            return new InitialColoring(matrix);
+            return new InitialColouring(matrix);
         } else if (strategy == ColoringStrategy.MODIFIED) {
-            return new ModifiedColoring(matrix);
+            return new ModifiedColouring(matrix);
         }
         throw new IllegalArgumentException("Strategy " + strategy.name() + " is not supported.");
     }
@@ -54,8 +54,8 @@ public abstract class AbstractColoring {
 
     public abstract @NotNull ColoringStrategy getColoringStrategy();
 
-    private static class InitialColoring extends AbstractColoring {
-        protected InitialColoring(@NotNull SimpleMatrix matrix) {
+    private static class InitialColouring extends AbstractColouring {
+        protected InitialColouring(@NotNull SimpleMatrix matrix) {
             super(matrix);
         }
 
@@ -72,8 +72,8 @@ public abstract class AbstractColoring {
         }
     }
 
-    private static class ModifiedColoring extends AbstractColoring {
-        protected ModifiedColoring(@NotNull SimpleMatrix matrix) {
+    private static class ModifiedColouring extends AbstractColouring {
+        protected ModifiedColouring(@NotNull SimpleMatrix matrix) {
             super(matrix);
         }
 
