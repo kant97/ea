@@ -4,7 +4,7 @@ import optimal.heuristics.OneMaxHeuristics;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
-public class ModifiedColoring extends AbstractColoring {
+class ModifiedColoring extends AbstractColoring {
     protected ModifiedColoring(@NotNull SimpleMatrix matrix) {
         super(matrix);
     }
@@ -27,5 +27,10 @@ public class ModifiedColoring extends AbstractColoring {
         final double value1 = myMatrixWithSortedColumns.get(col).get(0);
         final double m = Math.min(1, Math.log(0.5) / (value1 - valueK));
         return Math.exp(m * (value1 - value));
+    }
+
+    @Override
+    public @NotNull ColoringStrategy getColoringStrategy() {
+        return ColoringStrategy.MODIFIED;
     }
 }
