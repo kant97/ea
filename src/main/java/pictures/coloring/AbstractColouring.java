@@ -16,7 +16,7 @@ public abstract class AbstractColouring {
     }
 
     public enum ColoringStrategy {
-        INITIAL, MODIFIED
+        INITIAL, MODIFIED, ROBUSTNESS_HEATMAP
     }
 
     public static AbstractColouring createColoring(@NotNull SimpleMatrix matrix, @NotNull ColoringStrategy strategy) {
@@ -24,6 +24,8 @@ public abstract class AbstractColouring {
             return new InitialColouring(matrix);
         } else if (strategy == ColoringStrategy.MODIFIED) {
             return new ModifiedColouring(matrix);
+        } else if (strategy == ColoringStrategy.ROBUSTNESS_HEATMAP) {
+            return new RobustnessColoring(matrix);
         }
         throw new IllegalArgumentException("Strategy " + strategy.name() + " is not supported.");
     }
@@ -90,7 +92,8 @@ public abstract class AbstractColouring {
         @Override
         protected double getValueForRgbColor(int row, int col) {
             final double value = myMatrix.get(row, col);
-            final int k = calculateAmountNotPurple(col);
+            int k = calculateAmountNotPurple(col);
+            k = (k + 1) / 2;
             final double valueK = myMatrixWithSortedColumns.get(col).get(k - 1);
             final double value1 = myMatrixWithSortedColumns.get(col).get(0);
             final double m = Math.min(1, Math.log(0.5) / (value1 - valueK));
@@ -100,6 +103,25 @@ public abstract class AbstractColouring {
         @Override
         public @NotNull ColoringStrategy getColoringStrategy() {
             return ColoringStrategy.MODIFIED;
+        }
+    }
+
+    private static class RobustnessColoring extends AbstractColouring {
+
+        protected RobustnessColoring(@NotNull SimpleMatrix matrix) {
+            super(matrix);
+        }
+
+        @Override
+        protected double getValueForRgbColor(int row, int col) {
+            final ArrayList<Double> sortedColumn = myMatrixWithSortedColumns.get(col);
+            final double maxDistance = sortedColumn.get(sortedColumn.size() - 1);
+            return myMatrix.get(row, col) / maxDistance;
+        }
+
+        @Override
+        public @NotNull ColoringStrategy getColoringStrategy() {
+            return null;
         }
     }
 }
