@@ -1,6 +1,7 @@
 package pictures;
 
 import org.ejml.simple.SimpleMatrix;
+import pictures.coloring.AbstractColouring;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class DataDeviationComputation {
                 t3.set(i, j, Math.abs((t1.get(i, j)) - (t2.get(i, j))));
             }
         }
-        ColorfulPicturePainter.drawChart(t3);
+        ColorfulPicturePainter.drawChart(t3, AbstractColouring.ColoringStrategy.ROBUSTNESS_HEATMAP);
     }
 
     public static void main(String[] args) throws IOException {
