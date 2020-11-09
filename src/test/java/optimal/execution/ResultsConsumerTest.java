@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import javax.naming.ConfigurationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.StandardOpenOption;
 
 import static org.mockito.Mockito.mock;
 
@@ -16,7 +17,7 @@ class ResultsConsumerTest {
     @Test
     void waitAndLogResults() throws IOException, URISyntaxException, InterruptedException, ConfigurationException {
         ResultsConsumer writer = ResultsConsumer.createResultsConsumer(false);
-        writer.addWriter(new ResultWriter("testResults.csv", EventType.OPTIMAL_RESULT_READY));
+        writer.addWriter(new ResultWriter("testResults.csv", EventType.OPTIMAL_RESULT_READY, StandardOpenOption.APPEND));
 
         UsualConfiguration configuration = new UsualConfigurationsLoader().getConfigurationFromResources();
         writer.consumeResult(new ResultEntity(configuration.experimentConfigurations.get(0), 17, 0.12, 300.14),

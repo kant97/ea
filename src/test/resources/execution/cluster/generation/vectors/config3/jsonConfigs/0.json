@@ -1,0 +1,20 @@
+{
+  "probability": 0.2700000000000001,
+  "fitness": 98,
+  "problemConfig": {
+    "r": 2,
+    "type": "ONE_MAX_RUGGEDNESS",
+    "size": 100
+  },
+  "algorithmConfig": {
+    "type": "SIMPLE_ONE_PLUS_LAMBDA",
+    "lambda": 2
+  },
+  "stopConditionConfig": {
+    "amountOfSuccess": 50000,
+    "globalMaximumRuns": 1000000,
+    "strategy": "FIXED_SUCCESS"
+  },
+  "outputFileName": "0.csv",
+  "outputDirectory": "$#$/vectors0/"
+}

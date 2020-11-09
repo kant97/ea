@@ -11,6 +11,7 @@ import optimal.execution.events.ResultEntityObtainedEvent;
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -41,7 +42,7 @@ public class ExperimentRunner {
         final ResultWriter writer;
         try {
             writer = new ResultWriter(ResultsConsumer.ALL_MUTATION_RATES_RESULTS_FILE_NAME,
-                    EventType.INTERMEDIATE_RESULT_READY);
+                    EventType.INTERMEDIATE_RESULT_READY, StandardOpenOption.APPEND);
             resultsConsumer.addWriter(writer);
         } catch (IOException e) {
             System.err.println("Failed to add writer for intermediate results");

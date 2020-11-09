@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
 public class ResultWriter implements AutoCloseable {
     private final static String[] ENTRIES = {"problem", "algorithm", "problemSize"
@@ -19,13 +20,16 @@ public class ResultWriter implements AutoCloseable {
     private final BufferedWriter writer;
     private final EventType myResultsType;
 
-    public ResultWriter(String fileName, EventType resultsType) throws IOException {
+    public ResultWriter(String fileName, EventType resultsType, StandardOpenOption... options) throws IOException {
         myResultsType = resultsType;
         File file = new File(fileName);
-        boolean isNewFile = file.createNewFile();
+        boolean needToWriteHeader = file.createNewFile();
         outputPath = file.toPath();
-        writer = Files.newBufferedWriter(outputPath, StandardOpenOption.APPEND);
-        if (isNewFile) {
+        writer = Files.newBufferedWriter(outputPath, options);
+        if (Arrays.stream(options).noneMatch(option -> option == StandardOpenOption.APPEND)) {
+            needToWriteHeader = true;
+        }
+        if (needToWriteHeader) {
             for (int i = 0; i < ENTRIES.length - 1; i++) {
                 writer.write(ENTRIES[i]);
                 writer.write(',');
