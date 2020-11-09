@@ -26,7 +26,7 @@ public class GeneratedVectorProcessing {
         final MissedFilesRecovering missedFilesRecovering = new MissedFilesRecovering(myNameOfAllVectorsDir,
                 configuration, directory, offset);
         final int recoveredFilesCount = missedFilesRecovering.recoverMissedFiles();
-        offset = missedFilesRecovering.getMaxFileId() + 1;
+        offset += missedFilesRecovering.getMaxFileId() + 1;
         System.out.println(recoveredFilesCount + " files were recovered for directory " + directory);
     }
 

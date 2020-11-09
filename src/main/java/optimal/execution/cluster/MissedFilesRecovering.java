@@ -56,15 +56,14 @@ public class MissedFilesRecovering {
                 num++;
             }
         }
-        try {
-            for (Future<?> future : futures) {
+        for (Future<?> future : futures) {
+            try {
                 future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new IllegalStateException(e);
             }
-        } catch (InterruptedException | ExecutionException e) {
-            throw new IllegalStateException(e);
-        } finally {
-            ExecutionManager.stopThreadPool();
         }
+        ExecutionManager.stopThreadPool();
         return myNumberOfFilesRecovered;
     }
 
