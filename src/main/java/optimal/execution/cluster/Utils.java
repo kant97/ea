@@ -20,7 +20,7 @@ public class Utils {
     }
 
     @NotNull
-    private static Path createDirectory(String dir) {
+    public static Path createDirectory(String dir) {
         final Path path = Paths.get(dir);
         try {
             Files.createDirectories(path);
@@ -32,5 +32,10 @@ public class Utils {
 
     public static Path createConfigsDirectoryInFsIfNotExists() {
         return createDirectory(CONFIGURATIONS_DIRECTORY);
+    }
+
+    public static boolean doesDirectoryExist(String directory) {
+        final Path path = Paths.get(directory);
+        return Files.exists(path);
     }
 }

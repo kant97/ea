@@ -1,10 +1,13 @@
-package optimal.execution.cluster;
+package optimal.execution.cluster.generation.configs;
 
 import optimal.configuration.OneExperimentConfiguration;
 import optimal.configuration.ProbabilityVectorGenerationConfiguration;
 import optimal.configuration.loaders.ManyExperimentsConfigurationLoader;
 import optimal.configuration.loaders.OneExperimentConfigurationLoader;
 import optimal.configuration.loaders.ProbabilityVectorGenerationConfigurationLoader;
+import optimal.execution.cluster.ConfigurationToNumberTranslator;
+import optimal.execution.cluster.Utils;
+import optimal.execution.cluster.generation.VectorsDirectoryNameGenerator;
 import optimal.probabilitySampling.ProbabilitySearcher;
 
 import javax.naming.ConfigurationException;
@@ -17,11 +20,11 @@ import java.util.List;
 public class ClusterJsonConfigsGenerator {
     private final List<OneExperimentConfiguration> myExperimentConfigurations;
     private final OneExperimentConfigurationLoader myExperimentConfigurationSerializer;
+    private final VectorsDirectoryNameGenerator vectorsDirectoryNameGenerator = new VectorsDirectoryNameGenerator();
 
     private int minFileId = Integer.MAX_VALUE;
     private int maxFileId = Integer.MIN_VALUE;
     private int amountOfGeneratedFiles;
-    private int resultsDirectoryId = 0;
 
     public ClusterJsonConfigsGenerator(ManyExperimentsConfigurationLoader experimentConfigurationLoader) {
         try {
@@ -38,7 +41,7 @@ public class ClusterJsonConfigsGenerator {
         for (OneExperimentConfiguration oneExperimentConfiguration : myExperimentConfigurations) {
             final ConfigurationToNumberTranslator configurationToNumberTranslator =
                     new ConfigurationToNumberTranslator(oneExperimentConfiguration);
-            String resultDirectory = "./" + generateNewResultsDirectoryName() + "/";
+            String resultDirectory = "./" + vectorsDirectoryNameGenerator.generateNewResultsDirectoryName() + "/";
             preparePlaceForFiles(oneExperimentConfiguration, resultDirectory);
             for (int f = oneExperimentConfiguration.beginFitness; f < oneExperimentConfiguration.endFitness; f++) {
                 final ProbabilitySearcher probabilitySearcher =
@@ -51,14 +54,8 @@ public class ClusterJsonConfigsGenerator {
                     onNewFileCreation(configFileId);
                 }
             }
-            offset += maxFileId + 1;
+            offset = maxFileId + 1;
         }
-    }
-
-    private String generateNewResultsDirectoryName() {
-        final String s = Utils.RESULTS_DIRECTORY_NAME + resultsDirectoryId;
-        resultsDirectoryId++;
-        return s;
     }
 
     private void onNewFileCreation(int fileId) {

@@ -1,0 +1,24 @@
+{
+  "problemConfig": {
+    "type": "ONE_MAX_RUGGEDNESS",
+    "size": 100,
+    "r": 2
+  },
+  "algorithmConfig": {
+    "type": "SIMPLE_ONE_PLUS_LAMBDA",
+    "lambda": 2
+  },
+  "stopConditionConfig": {
+    "strategy": "FIXED_SUCCESS",
+    "globalMaximumRuns": 1000000,
+    "amountOfSuccess": 50000
+  },
+  "probabilityEnumeration": {
+    "strategy": "ITERATIVE",
+    "minMutationProbability": 0.01,
+    "maxMutationProbability": 0.5,
+    "precisionForProbability": 0.01
+  },
+  "beginFitness": 50,
+  "endFitness": 100
+}

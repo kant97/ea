@@ -4,6 +4,7 @@ import optimal.execution.events.EventType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -21,7 +22,7 @@ public class ResultsConsumer implements Runnable {
         ResultsConsumer consumer = new ResultsConsumer();
         if (addDefaultWriter) {
             // default writer
-            consumer.addWriter(new ResultWriter(OPTIMAL_MUTATION_RATE_RESULTS_FILE_NAME, EventType.OPTIMAL_RESULT_READY));
+            consumer.addWriter(new ResultWriter(OPTIMAL_MUTATION_RATE_RESULTS_FILE_NAME, EventType.OPTIMAL_RESULT_READY, StandardOpenOption.APPEND));
         }
         return consumer;
     }
