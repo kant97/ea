@@ -63,7 +63,6 @@ public class OneMax extends AbstractProblem {
             int removed = toFlip.remove(r);
             myOffspring[removed] = !myOffspring[removed];
         }
-        assert curFitness == targetFitness;
         return myOffspring;
     }
 
