@@ -16,7 +16,7 @@ public abstract class AbstractColouring {
     }
 
     public enum ColoringStrategy {
-        INITIAL, MODIFIED, ROBUSTNESS_HEATMAP
+        INITIAL, MODIFIED, ROBUSTNESS_HEATMAP, MULTIPLICATIVE
     }
 
     public static AbstractColouring createColoring(@NotNull SimpleMatrix matrix, @NotNull ColoringStrategy strategy) {
@@ -26,6 +26,8 @@ public abstract class AbstractColouring {
             return new ModifiedColouring(matrix);
         } else if (strategy == ColoringStrategy.ROBUSTNESS_HEATMAP) {
             return new RobustnessColoring(matrix);
+        } else if (strategy == ColoringStrategy.MULTIPLICATIVE) {
+            return new MultiplicativeColouring(matrix);
         }
         throw new IllegalArgumentException("Strategy " + strategy.name() + " is not supported.");
     }
@@ -122,6 +124,25 @@ public abstract class AbstractColouring {
         @Override
         public @NotNull ColoringStrategy getColoringStrategy() {
             return null;
+        }
+    }
+
+    private static class MultiplicativeColouring extends AbstractColouring {
+
+        protected MultiplicativeColouring(@NotNull SimpleMatrix matrix) {
+            super(matrix);
+        }
+
+        @Override
+        protected double getValueForRgbColor(int row, int col) {
+            final double value = myMatrix.get(row, col);
+            final double valueBest = myMatrixWithSortedColumns.get(col).get(0);
+            return valueBest / value;
+        }
+
+        @Override
+        public @NotNull ColoringStrategy getColoringStrategy() {
+            return ColoringStrategy.MULTIPLICATIVE;
         }
     }
 }

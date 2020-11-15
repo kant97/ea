@@ -5,6 +5,7 @@ import optimal.probabilitySampling.ProbabilitySearcher;
 import optimal.utils.DataProcessor;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pictures.coloring.AbstractColouring;
 
 import javax.imageio.ImageIO;
@@ -25,7 +26,7 @@ public class ColorfulPicturePainter extends Frame {
     private final Path myImageFile;
     private final AbstractColouring.ColoringStrategy myColouringStrategy;
 
-    public ColorfulPicturePainter(@NotNull Path myCsvFile, @NotNull Path myImageFile,
+    public ColorfulPicturePainter(@Nullable Path myCsvFile, @NotNull Path myImageFile,
                                   @NotNull AbstractColouring.ColoringStrategy myColouringStrategy) {
         this.myCsvFile = myCsvFile;
         this.myImageFile = myImageFile;
@@ -33,14 +34,14 @@ public class ColorfulPicturePainter extends Frame {
     }
 
     public void drawHeatMap() {
+        assert myCsvFile != null;
         final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor(myCsvFile.toAbsolutePath().toString()
-                , 9, 8,
-                10);
+                , 9, 8, 10);
         matrixDataProcessor.loadData();
         doDrawHeatMap(matrixDataProcessor.getProcessedData());
     }
 
-    private void doDrawHeatMap(@NotNull SimpleMatrix matrix) {
+    public void doDrawHeatMap(@NotNull SimpleMatrix matrix) {
         final int width = 400;
         final int height = 400;
 
@@ -72,22 +73,32 @@ public class ColorfulPicturePainter extends Frame {
     }
 
     public static void main(String[] a) {
-//        drawHeatMapsForAllSubdirectories("all2-vectors-ruggedness");
-//        drawHeatMapsOneResult("all2-vectors-ruggedness/optimal_for_lambda=16/allIntermediateResults.csv");
-        printLambdaToRuntime("all2-vectors-ruggedness");
+        final String directoryWithOptimalResults = "all3-vectors-ruggedness";
+        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MULTIPLICATIVE,
+                "multiplicativeHeatmap");
+        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
+                "modifiedHeatmap");
+        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
+                "initialHeatmap");
+
+//        drawHeatMapsOneResult("tmp/A1.csv");
+//        drawHeatMapsOneResult("tmp/A2.csv");
+//        printLambdaToRuntime("all2-vectors-ruggedness");
     }
 
     private static void drawHeatMapsOneResult(String resultFile) {
         final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor(resultFile, 9, 8, 10);
         matrixDataProcessor.loadData();
         try {
-            drawChart(matrixDataProcessor.getProcessedData(), AbstractColouring.ColoringStrategy.MODIFIED);
+            drawChart(matrixDataProcessor.getProcessedData(), AbstractColouring.ColoringStrategy.MULTIPLICATIVE);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private static void drawHeatMapsForAllSubdirectories(String directoryWithOptimalResults) {
+    private static void drawHeatMapsForAllSubdirectories(String directoryWithOptimalResults,
+                                                         AbstractColouring.ColoringStrategy colouringStrategy,
+                                                         String heatmapFileName) {
         final Path path = Paths.get(directoryWithOptimalResults);
         for (File directory : path.toFile().listFiles(File::isDirectory)) {
             if (!directory.getName().startsWith("optimal")) {
@@ -100,8 +111,8 @@ public class ColorfulPicturePainter extends Frame {
             }
             final File file = allResultsFile.get();
             new ColorfulPicturePainter(file.toPath(),
-                    Paths.get(directory.toPath().toAbsolutePath().toString() + "/heatmap.png"),
-                    AbstractColouring.ColoringStrategy.MODIFIED).drawHeatMap();
+                    Paths.get(directory.toPath().toAbsolutePath().toString() + "/" + heatmapFileName + ".png"),
+                    colouringStrategy).drawHeatMap();
         }
     }
 
