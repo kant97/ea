@@ -126,7 +126,7 @@ public class ColorfulPicturePainter extends Frame {
         private final Path resultsFilePath;
         private final Color color;
         private final int optimalValue;
-        private IterativeProbabilityConfiguration probabilitySamplingConfiguration;
+        private final IterativeProbabilityConfiguration probabilitySamplingConfiguration;
         private final int minFitness;
 
         private AlgorithmPlottableInMatrixData(Path resultsFilePath, Color color, int optimalValue,
