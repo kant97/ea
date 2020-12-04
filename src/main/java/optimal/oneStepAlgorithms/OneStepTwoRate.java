@@ -2,6 +2,7 @@ package optimal.oneStepAlgorithms;
 
 import algo.TwoRate;
 import problem.Problem;
+import utils.BestCalculatedPatch;
 
 public class OneStepTwoRate extends TwoRate implements OneStepAlgorithm {
     private int newFitnessOfOffspring;
@@ -20,8 +21,8 @@ public class OneStepTwoRate extends TwoRate implements OneStepAlgorithm {
     }
 
     @Override
-    protected void updateProblemInstance(TwoRate.BestCalculatedPatch bpHalf) {
-        newFitnessOfOffspring = bpHalf.getFitness();
+    protected void updateProblemInstance(BestCalculatedPatch bpHalf) {
+        newFitnessOfOffspring = bpHalf.fitness;
     }
 
     @Override

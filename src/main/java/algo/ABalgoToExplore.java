@@ -6,6 +6,7 @@ import utils.PatchCalcUtil;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ABalgoToExplore implements Algorithm {
     private double mutationRate;
@@ -31,7 +32,7 @@ public class ABalgoToExplore implements Algorithm {
         this.lambda = lambda;
         this.problem = problem;
         this.problemLength = problem.getLength();
-        this.rand = new Random();
+        this.rand = ThreadLocalRandom.current();
     }
 
     @Override
@@ -120,5 +121,15 @@ public class ABalgoToExplore implements Algorithm {
     @Override
     public String getProblemInfo() {
         return problem.getInfo();
+    }
+
+    @Override
+    public String getInfo() {
+        return null;
+    }
+
+    @Override
+    public int getOptimum() {
+        return problem.getOptimum();
     }
 }

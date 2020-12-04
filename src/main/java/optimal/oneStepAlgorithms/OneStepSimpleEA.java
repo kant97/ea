@@ -10,7 +10,7 @@ public class OneStepSimpleEA extends SimpleEA implements OneStepAlgorithm {
     private double initialR;
 
     public OneStepSimpleEA(double probability, int lambda, Problem problem) {
-        super(probability * problem.getLength(), lambda, problem);
+        super(probability * problem.getLength(), 1. / problem.getLength() / problem.getLength(), lambda, problem);
         newFitnessOfOffspring = problem.getFitness();
         initialFitnessOfOffspring = newFitnessOfOffspring;
         initialR = super.getMutationRate();

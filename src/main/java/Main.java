@@ -105,12 +105,12 @@ public class Main {
     }
 
     private static AlgoFactory getABImplementation() {
-        return (lambda, lowerBound, type, problemLength) -> new ABalgo(1.0 / n, 2, 0.5, lowerBound, lambda,
+        return (lambda, lowerBound, type, problemLength) -> new ABalgo(1.0 / n, 2, 0.5, lowerBound, lambda, true,
                 ProblemsManager.createProblemInstance(type, problemLength));
     }
 
     private static AlgoFactory getABSQImplementation() {
-        return (lambda, lowerBound, type, problemLength) -> new ABalgo(1.0 / (n * n), 2, 0.5, lowerBound, lambda,
+        return (lambda, lowerBound, type, problemLength) -> new ABalgo(1.0 / (n * n), 2, 0.5, lowerBound, lambda, true,
                 ProblemsManager.createProblemInstance(type, problemLength));
     }
 }

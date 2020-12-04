@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static utils.PatchCalcUtil.createPatch;
 
@@ -22,12 +23,12 @@ public class SimpleEA implements Algorithm {
 
     private int iterCount = 0;
 
-    public SimpleEA(double r, int lambda, Problem problem) {
+    public SimpleEA(double r, double lowerBound, int lambda, Problem problem) {
         this.problem = problem;
         this.problemLength = problem.getLength();
         this.mutationRate = r / problemLength;
         this.lambda = lambda;
-        rand = new Random();
+        rand = ThreadLocalRandom.current();
     }
 
     @Override
@@ -76,6 +77,16 @@ public class SimpleEA implements Algorithm {
     @Override
     public String getProblemInfo() {
         return problem.getInfo();
+    }
+
+    @Override
+    public String getInfo() {
+        return null;
+    }
+
+    @Override
+    public int getOptimum() {
+        return problem.getOptimum();
     }
 }
 

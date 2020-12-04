@@ -3,6 +3,7 @@ package problem;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Ruggedness implements Problem {
     private final int realOptimumBacket;
@@ -17,7 +18,7 @@ public class Ruggedness implements Problem {
     public Ruggedness(int n, int r) {
         individual = new boolean[n];
         length = n;
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
         this.r = r;
         int om = 0;
         realOptimumBacket = n / r;
@@ -117,5 +118,10 @@ public class Ruggedness implements Problem {
     @Override
     public String getInfo() {
         return "";
+    }
+
+    @Override
+    public int getOptimum() {
+        return optimum;
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AdaptiveDivTwoRate implements Algorithm {
     private final double lowerBound; // 2.0 / problemLength or 2.0 / (problemLength^2)
@@ -37,7 +38,7 @@ public class AdaptiveDivTwoRate implements Algorithm {
         this.mutationRate = r / problemLength;
         this.lowerBound = lowerBound;
         this.lambda = lambda;
-        rand = new Random();
+        rand = ThreadLocalRandom.current();
     }
 
     @Override
@@ -131,6 +132,16 @@ public class AdaptiveDivTwoRate implements Algorithm {
     @Override
     public String getProblemInfo() {
         return problem.getInfo();
+    }
+
+    @Override
+    public String getInfo() {
+        return null;
+    }
+
+    @Override
+    public int getOptimum() {
+        return problem.getOptimum();
     }
 
 }

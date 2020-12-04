@@ -1,5 +1,3 @@
-package algo;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +33,7 @@ public class DataToPlotFormat {
      */
     private static void createPlotFormat(String file, String out) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(out);
-        pw.println("lambda, med, q1, q2, top, bottom");
+        pw.println("lambda, med, q1, q2, top, bottom, average, dev");
         //List<Map<Integer, List<Integer>>> dataForFiles = new ArrayList<>();
         TreeMap<Integer, List<Integer>> data = readDataToMap(file);
         for (int lambda : data.keySet()) {
@@ -45,7 +43,17 @@ public class DataToPlotFormat {
             int q1 = curData.get(size / 4);
             int med = curData.get(size / 2);
             int q2 = curData.get(3 * size / 4);
-            pw.println(lambda + ", " + med + ", " + q1 + ", " + q2 + ", " + (q2 - med) + ", " + (med - q1));
+            double average = 0;
+            double dev = 0;
+            for (int gen : curData) {
+                average += (1.0 * gen) / curData.size();
+            }
+            for (int gen : curData) {
+                dev += (gen - average) * (gen - average) / curData.size();
+            }
+            dev = Math.sqrt(dev);
+
+            pw.println(lambda + ", " + med + ", " + q1 + ", " + q2 + ", " + (q2 - med) + ", " + (med - q1) + ", " + Math.round(average) + ", " + Math.round(dev));
         }
         pw.close();
     }
@@ -56,10 +64,10 @@ public class DataToPlotFormat {
         new File(args[0] + "_plots/").mkdir();
         files.forEach(x -> {
             try {
-                System.out.println((x.subpath(1, x.getNameCount() - 1)));
-                System.out.println(Paths.get(args[0] + "_plots/").resolve(x.subpath(1, x.getNameCount() - 1)));
-                Files.createDirectories(Paths.get(args[0] + "_plots/").resolve(x.subpath(1, x.getNameCount() - 1)));
-                createPlotFormat(String.valueOf(x),  args[0] + "_plots/" + String.valueOf(x.subpath(1, x.getNameCount())));
+                if (x.getNameCount() > 2) {
+                    Files.createDirectories(Paths.get(args[0] + "_plots/").resolve(x.subpath(1, x.getNameCount() - 1)));
+                }
+                createPlotFormat(String.valueOf(x), args[0] + "_plots/" + String.valueOf(x.subpath(1, x.getNameCount())));
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -98,4 +98,9 @@ public class OneMax extends AbstractProblem {
     public String getInfo() {
         return "";
     }
+
+    @Override
+    public int getOptimum() {
+        return myOffspring.length;
+    }
 }

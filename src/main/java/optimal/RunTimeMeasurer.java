@@ -12,7 +12,7 @@ public class RunTimeMeasurer {
             final Problem OneMaxInstanceWithFixedFitness =
                     ProblemsManager.createProblemInstanceWithFixedFitness(ProblemsManager.ProblemType.ONE_MAX_RUGGEDNESS,
                             100, 50);
-            final SimpleEA oPLEA = new SimpleEA(1., 16, OneMaxInstanceWithFixedFitness);
+            final SimpleEA oPLEA = new SimpleEA(1., 1., 16, OneMaxInstanceWithFixedFitness);
             while (!oPLEA.isFinished()) {
                 oPLEA.makeIteration();
             }

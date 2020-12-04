@@ -1,24 +1,39 @@
 package problem;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class LeadingOnes extends AbstractProblem {
+public class LeadingOnes implements Problem {
+    private boolean[] individual;
+    private int fitness;
 
-    public LeadingOnes(int lengthOfOffspring) {
-        super(lengthOfOffspring);
+    public LeadingOnes(int n) {
+        individual = new boolean[n];
+        Random rand = ThreadLocalRandom.current();
+        fitness = 0;
+        boolean fitnessCounted = false;
+        for (int i = 0; i < n; ++i) {
+            individual[i] = rand.nextBoolean();
+            if (!fitnessCounted) {
+                if (individual[i]) {
+                    fitness++;
+                } else {
+                    fitnessCounted = true;
+                }
+            }
+        }
     }
 
     // used for tests only
     LeadingOnes(boolean[] offspring) {
-        super(offspring.length);
-        myOffspring = offspring;
-        myFitness = getHonestFitness();
+        individual = offspring;
+        fitness = getHonestFitness();
     }
 
-    @Override
     protected int getHonestFitness() {
         int fitness = 0;
-        for (boolean bit : myOffspring) {
+        for (boolean bit : individual) {
             if (!bit) {
                 return fitness;
             }
@@ -29,43 +44,52 @@ public class LeadingOnes extends AbstractProblem {
 
     @Override
     public int calculatePatchFitness(List<Integer> patch) {
-        int patchFitness = myFitness;
-        int prevInvertedIndex = -1;
-        for (Integer invertedBitIndex : patch) {
-            if (invertedBitIndex <= prevInvertedIndex) {
-                throw new IllegalArgumentException("Patch should be sorted here, but it does not");
-            }
-            prevInvertedIndex = invertedBitIndex;
-        }
-        for (Integer invertedBitIndex : patch) {
-            if (invertedBitIndex < patchFitness) {
-                // deteriorate current offspring
-                assert myOffspring[invertedBitIndex];
-                patchFitness = invertedBitIndex;
-                return patchFitness;
-            }
-            if (invertedBitIndex == patchFitness) {
-                // improve current offspring
-                assert !myOffspring[myFitness];
-                patchFitness++;
-                for (int i = myFitness + 1; i < myOffspring.length; i++) {
-                    if (myOffspring[i]) {
-                        patchFitness++;
-                    } else {
-                        break;
-                    }
+        int newFitness = fitness;
+        for (int i : patch) {
+            if (newFitness < i) {
+                return newFitness;
+            } else if (individual[i]) { //newFitness > i;
+                return i;
+            } else if (!individual[i]) { //newFitness == i
+                newFitness++;
+                while (newFitness < individual.length && individual[newFitness]) {
+                    newFitness++;
                 }
-            } else {
-                // not change current offspring
-                return patchFitness;
             }
         }
-        return patchFitness;
+        return newFitness;
+    }
+
+    @Override
+    public void applyPatch(List<Integer> patch, int fitness) {
+        for (Integer i : patch) {
+            individual[i] = !individual[i];
+        }
+        this.fitness = fitness;
+    }
+
+    @Override
+    public int getFitness() {
+        return fitness;
+    }
+
+    @Override
+    public int getLength() {
+        return individual.length;
+    }
+
+    @Override
+    public boolean isOptimized() {
+        return fitness == individual.length;
     }
 
     @Override
     public String getInfo() {
-        return null;
+        return "";
     }
 
+    @Override
+    public int getOptimum() {
+        return individual.length;
+    }
 }

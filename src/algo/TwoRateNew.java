@@ -1,15 +1,12 @@
 package algo;
 
 import problem.Problem;
-import utils.BestCalculatedPatchOneBitMarker;
-import utils.BestCalculatedPatchOneBitMarkerByPercentage;
+import utils.BestCalculatedPatchOneBitPercent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TwoRateToExplore implements Algorithm {
+public class TwoRateNew implements Algorithm {
     private double mutationRate;
     private final double lowerBound; // 2.0 / problemLength or 2.0 / (problemLength^2)
     private final int lambda;
@@ -19,12 +16,16 @@ public class TwoRateToExplore implements Algorithm {
 
     private final Random rand;
 
+    private final int maxStagnation = 10;
+    private int curStagnation = 0;
+
     private int iterCount = 0;
+
 
     private String info = "";
     private boolean oneBit = false; //true if one random bit inverted in createPatch
 
-    public TwoRateToExplore(double r, double lowerBound, int lambda, Problem problem) {
+    public TwoRateNew(double r, double lowerBound, int lambda, Problem problem) {
         this.problem = problem;
         this.problemLength = problem.getLength();
         this.mutationRate = r / problemLength;
@@ -36,42 +37,70 @@ public class TwoRateToExplore implements Algorithm {
     @Override
     public void makeIteration() {
         iterCount++;
-        BestCalculatedPatchOneBitMarker bpHalf = new BestCalculatedPatchOneBitMarkerByPercentage(mutationRate / 2, lambda / 2, problem, rand);
-        BestCalculatedPatchOneBitMarker bpMult = new BestCalculatedPatchOneBitMarkerByPercentage(mutationRate * 2, lambda / 2, problem, rand);
+        BestCalculatedPatchOneBitPercent bpHalf = new BestCalculatedPatchOneBitPercent(mutationRate / 2, lambda / 2, problem, rand);
+        BestCalculatedPatchOneBitPercent bpMult = new BestCalculatedPatchOneBitPercent(mutationRate * 2, lambda / 2, problem, rand);
         double newMutationRate = mutationRate;
         info = "";
+        if (bpHalf.fitness > problem.getFitness() || bpMult.fitness > problem.getFitness()) {
+            curStagnation = 0;
+        } else {
+            curStagnation++;
+        }
+
+        if (curStagnation > maxStagnation) {
+            curStagnation = 0;
+            BestCalculatedPatchOneBitPercent bpHalfNew = new BestCalculatedPatchOneBitPercent(Math.max(mutationRate / 8, lowerBound), lambda / 2, problem, rand);
+            BestCalculatedPatchOneBitPercent bpMultNew = new BestCalculatedPatchOneBitPercent(Math.min(mutationRate * 8, 0.25), lambda / 2, problem, rand);
+            iterCount++;
+            if (Math.max(bpHalfNew.fitness, bpMultNew.fitness) > problem.getFitness()) {
+                if (bpHalfNew.fitness == bpMultNew.fitness) {
+                    double prob = rand.nextDouble();
+                    if (prob < 0.5) {
+                        mutationRate /= 8;
+                    } else {
+                        mutationRate *= 8;
+                    }
+                } else if (bpHalfNew.fitness > problem.getFitness()) {
+                    mutationRate /= 8;
+                } else if (bpMultNew.fitness > problem.getFitness()) {
+                    mutationRate *= 8;
+                }
+                mutationRate = Math.min(Math.max(lowerBound, mutationRate), 0.25);
+                return;
+            }
+        }
         if (bpHalf.fitness > bpMult.fitness) {
             if (bpHalf.fitness >= problem.getFitness()) {
                 problem.applyPatch(bpHalf.patch, bpHalf.fitness);
             }
-            if (! (bpHalf.isOneBit && bpMult.isOneBit)) {
+            if (! (bpHalf.oneBitPercent >= 0.5 && bpMult.oneBitPercent >= 0.5)) {
                 newMutationRate = mutationRate / 2;
-                info = "div     calc" + (bpHalf.isOneBit ? " onebit" : "       ") + (bpMult.isOneBit ? " onebit" : "       ");
+                info = "div     calc" + (bpHalf.oneBitPercent >= 0.5 ? " onebit" : "       ") + (bpMult.oneBitPercent >= 0.5 ? " onebit" : "       ");
             }
         } else if (bpHalf.fitness < bpMult.fitness) {
             if (bpMult.fitness >= problem.getFitness()) {
                 problem.applyPatch(bpMult.patch, bpMult.fitness);
             }
-            if (! (bpHalf.isOneBit && bpMult.isOneBit)) {
+            if (! (bpHalf.oneBitPercent >= 0.5 && bpMult.oneBitPercent >= 0.5)) {
                 newMutationRate = mutationRate * 2;
-                info = "mult    calc" + (bpMult.isOneBit ? " onebit" : "       ") + (bpHalf.isOneBit ? " onebit" : "       ");
+                info = "mult    calc" + (bpMult.oneBitPercent >= 0.5 ? " onebit" : "       ") + (bpHalf.oneBitPercent >= 0.5 ? " onebit" : "       ");
             }
         } else {
             if (rand.nextDouble() < 0.5) {
                 if (bpHalf.fitness >= problem.getFitness()) {
                     problem.applyPatch(bpHalf.patch, bpHalf.fitness);
                 }
-                if (! (bpHalf.isOneBit && bpMult.isOneBit)) {
+                if (! (bpHalf.oneBitPercent >= 0.5 && bpMult.oneBitPercent >= 0.5)) {
                     newMutationRate = mutationRate / 2;
-                    info = "div  eq calc" + (bpHalf.isOneBit ? " onebit" : "       ") + (bpMult.isOneBit ? " onebit" : "       ");
+                    info = "div  eq calc" + (bpHalf.oneBitPercent >= 0.5 ? " onebit" : "       ") + (bpMult.oneBitPercent >= 0.5 ? " onebit" : "       ");
                 }
             } else {
                 if (bpHalf.fitness >= problem.getFitness()) {
                     problem.applyPatch(bpMult.patch, bpMult.fitness);
                 }
-                if (! (bpHalf.isOneBit && bpMult.isOneBit)) {
+                if (! (bpHalf.oneBitPercent >= 0.5 && bpMult.oneBitPercent >= 0.5)) {
                     newMutationRate = mutationRate * 2;
-                    info = "mult eq calc" + (bpMult.isOneBit ? " onebit" : "       ") + (bpHalf.isOneBit ? " onebit" : "       ");
+                    info = "mult eq calc" + (bpMult.oneBitPercent >= 0.5 ? " onebit" : "       ") + (bpHalf.oneBitPercent >= 0.5 ? " onebit" : "       ");
                 }
             }
         }
@@ -80,8 +109,8 @@ public class TwoRateToExplore implements Algorithm {
 //                newMutationRate = mutationRate / 2; //убрали уменьшение мутации когда она и так мала
 //                info = "unchan both onebit rand   ";
 //            } else {
-                newMutationRate = mutationRate * 2;
-                info = "mult both onebit rand     ";
+            newMutationRate = mutationRate * (2.66 * Math.max(bpHalf.oneBitPercent, bpMult.oneBitPercent));
+            info = "mult both onebit rand     ";
 //            }
         }
         double prob = rand.nextDouble();
@@ -89,8 +118,8 @@ public class TwoRateToExplore implements Algorithm {
             mutationRate = mutationRate / 2;
             info = "div     rand              ";
         } else if (prob < 0.5){
-                mutationRate = mutationRate * 2;
-                info = "mult    rand              ";
+            mutationRate = mutationRate * 2;
+            info = "mult    rand              ";
         } else {
             mutationRate = newMutationRate;
         }
@@ -130,7 +159,7 @@ public class TwoRateToExplore implements Algorithm {
 
     @Override
     public String getProblemInfo() {
-       return problem.getInfo();
+        return problem.getInfo();
     }
 
     @Override
