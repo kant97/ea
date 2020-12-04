@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TwoRate implements Algorithm {
     protected double mutationRate;
+    private double usedMutationRate;
     private final double lowerBound; // 2.0 / problemLength or 2.0 / (problemLength^2)
     private final int lambda;
 
@@ -35,6 +36,7 @@ public class TwoRate implements Algorithm {
         this.mutationRate = r / problemLength;
         this.lowerBound = lowerBound;
         this.lambda = lambda;
+        this.usedMutationRate = mutationRate;
         rand = ThreadLocalRandom.current();
     }
 
@@ -80,6 +82,7 @@ public class TwoRate implements Algorithm {
                 action = 1;
             }
         }
+        usedMutationRate = mutationRate;
         if (rand.nextBoolean()) { //вероятность не 0.5 а регулиировать в зависимости от разницы фитнеса в левой и правой.
             //посчитать среднее и дальше как по методу отжига
 //            almostTheSame++;
@@ -118,6 +121,10 @@ public class TwoRate implements Algorithm {
     @Override
     public double getMutationRate() {
         return mutationRate;
+    }
+
+    public double getMutationRateUsedInBestMutation() {
+        return usedMutationRate;
     }
 
     @Override

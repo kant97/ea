@@ -1,27 +1,83 @@
 package optimal;
 
-import algo.SimpleEA;
-import problem.Problem;
-import problem.ProblemsManager;
+import algo.ABalgo;
+import algo.TwoRate;
+import org.jetbrains.annotations.NotNull;
+import problem.Ruggedness;
 
-public class RunTimeMeasurer {
-    public static void main(String[] args) {
-        final int RUNS = 1000;
-        long sumGenerations = 0;
-        for (int i = 0; i < RUNS; i++) {
-            final Problem OneMaxInstanceWithFixedFitness =
-                    ProblemsManager.createProblemInstanceWithFixedFitness(ProblemsManager.ProblemType.ONE_MAX_RUGGEDNESS,
-                            100, 50);
-            final SimpleEA oPLEA = new SimpleEA(1., 1., 16, OneMaxInstanceWithFixedFitness);
-            while (!oPLEA.isFinished()) {
-                oPLEA.makeIteration();
-            }
-            final long iterCount = oPLEA.getIterCount();
-            System.out.println("Generations amount of run " + i + " is: " + iterCount);
-            sumGenerations += iterCount;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class RunTimeMeasurer implements AutoCloseable {
+    private final @NotNull BufferedWriter myWriter;
+
+    public RunTimeMeasurer(@NotNull String fileName) {
+        try {
+            myWriter = new BufferedWriter(new FileWriter(fileName));
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
-        System.out.println("-------------------------------------- Finished");
-        System.out.println("Average generations amount is: " + sumGenerations / RUNS);
+        logHeader();
+    }
 
+    public static void main(String[] args) {
+        {
+            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("abRun.csv");
+            twoRateRunTimeMeasurer.runAb();
+            twoRateRunTimeMeasurer.close();
+        }
+        {
+            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("twoRateRun.csv");
+            twoRateRunTimeMeasurer.runTwoRate();
+            twoRateRunTimeMeasurer.close();
+        }
+    }
+
+    public void runTwoRate() {
+        final TwoRate twoRate = new TwoRate(1., 1. / 10_000., 32, new Ruggedness(100, 2, 50));
+        int iterationNumber = 0;
+        log(iterationNumber, twoRate.getFitness(), twoRate.getMutationRate());
+        while (!twoRate.isFinished()) {
+            twoRate.makeIteration();
+            iterationNumber++;
+            log(iterationNumber, twoRate.getFitness(), twoRate.getMutationRateUsedInBestMutation());
+        }
+    }
+
+    public void runAb() {
+        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 100., 32, true, new Ruggedness(100, 2, 50));
+        int iterationNumber = 0;
+        log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRate());
+        while (!aBalgo.isFinished()) {
+            aBalgo.makeIteration();
+            iterationNumber++;
+            log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRateUsedInBestMutation());
+        }
+    }
+
+    private void logHeader() {
+        try {
+            myWriter.write("iterationNumber,fitness,mutationRate\n");
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private void log(int iterationNumber, int fitness, double usedMutationRate) {
+        try {
+            myWriter.write(iterationNumber + "," + fitness + "," + usedMutationRate + "\n");
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            myWriter.close();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

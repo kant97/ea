@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class ABalgo implements Algorithm {
     private double mutationRate;
+    private double usedMutationRate;
     private final double a; //a = 2
     private final double b; //b = 0.5
     private final double lowerBound; // 1 / problemLength or 1 / (problemLength^2)
@@ -31,6 +32,7 @@ public class ABalgo implements Algorithm {
         this.problemLength = problem.getLength();
         this.rand = ThreadLocalRandom.current();
         this.strict = strict;
+        this.usedMutationRate = mutationRate;
     }
 
     @Override
@@ -39,6 +41,7 @@ public class ABalgo implements Algorithm {
         List<Integer> bestPatch = null;
         int bestFitness = problem.getFitness();
         int numberOfBetter = 0;
+        usedMutationRate = mutationRate;
         for (int i = 0; i < lambda; ++i) {
             List<Integer> patch = PatchCalcUtil.createPatch(mutationRate, problemLength);
             int fitness = problem.calculatePatchFitness(patch);
@@ -73,6 +76,10 @@ public class ABalgo implements Algorithm {
     @Override
     public double getMutationRate() {
         return mutationRate;
+    }
+
+    public double getMutationRateUsedInBestMutation() {
+        return usedMutationRate;
     }
 
     @Override
