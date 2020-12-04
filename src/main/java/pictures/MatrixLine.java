@@ -5,7 +5,7 @@ import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
 public class MatrixLine {
-    private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[d, r] stores math expectation of
+    private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[r][d] stores math expectation of
     generations amount to reach the global optima if starting from the distance d with the mutation rate r */
     private final @NotNull ProbabilitySearcher myProbabilitySampler;
 

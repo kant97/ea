@@ -15,7 +15,7 @@ public class ViridisPlotDrawer {
     private final int myPlotWidth;
     private final int myPlotHeight;
     private final @NotNull Graphics myGraphics;
-    private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[d, r] stores math expectation of
+    private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[r][d] stores math expectation of
     generations amount to reach the global optima if starting from the distance d with the mutation rate r */
     private final AbstractColouring myColoring;
     private final int myOneWidth;
