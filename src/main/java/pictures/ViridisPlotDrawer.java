@@ -43,7 +43,7 @@ public class ViridisPlotDrawer {
         this.myLineStroke = new BasicStroke(1f);
     }
 
-    public void drawViridisPlot() {
+    public void drawViridisHeatmap() {
         for (int i = 0; i < myRunTimes.numRows(); i++) {
             for (int j = 0; j < myRunTimes.numCols(); j++) {
                 drawRect(i, j, myColoring.getRgdColor(i, j));
@@ -78,6 +78,22 @@ public class ViridisPlotDrawer {
             final int matrixRowEnd = matrixLine.getMatrixRowIndOfMutationRate(curMutationRate);
             drawSegment(matrixRowBegin, matrixColumnBegin, matrixRowEnd, matrixColumnEnd, colorRGB);
             prevFitness = curFitness;
+        }
+    }
+
+    public void addChart(@NotNull PlottableInMatrixData data, @NotNull Color color) {
+        final int colorRGB = color.getRGB();
+        final List<HeatmapCellCoordinate> orderedMatrixCoordinates = data.getOrderedMatrixCoordinates(myRunTimes);
+        int prevColumn = -1;
+        int prevRow = -1;
+        for (HeatmapCellCoordinate coordinate : orderedMatrixCoordinates) {
+            final int col = coordinate.getCol();
+            final int row = coordinate.getRow();
+            if (prevRow != -1) {
+                drawSegment(prevRow, prevColumn, row, col, colorRGB);
+            }
+            prevColumn = col;
+            prevRow = row;
         }
     }
 

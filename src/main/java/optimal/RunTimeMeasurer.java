@@ -27,11 +27,11 @@ public class RunTimeMeasurer implements AutoCloseable {
             twoRateRunTimeMeasurer.runAb();
             twoRateRunTimeMeasurer.close();
         }
-        {
-            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("twoRateRun.csv");
-            twoRateRunTimeMeasurer.runTwoRate();
-            twoRateRunTimeMeasurer.close();
-        }
+//        {
+//            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("twoRateRun.csv");
+//            twoRateRunTimeMeasurer.runTwoRate();
+//            twoRateRunTimeMeasurer.close();
+//        }
     }
 
     public void runTwoRate() {
@@ -46,7 +46,7 @@ public class RunTimeMeasurer implements AutoCloseable {
     }
 
     public void runAb() {
-        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 100., 32, true, new Ruggedness(100, 2, 50));
+        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 10_000., 32, true, new Ruggedness(100, 2, 50));
         int iterationNumber = 0;
         log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRate());
         while (!aBalgo.isFinished()) {

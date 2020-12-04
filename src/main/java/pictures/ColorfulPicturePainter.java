@@ -51,7 +51,7 @@ public class ColorfulPicturePainter extends Frame {
         final ViridisPlotDrawer viridisPlotDrawer = new ViridisPlotDrawer(0, 0, width, height, g2d, matrix,
                 AbstractColouring.createColoring(matrix, myColouringStrategy)
         );
-        viridisPlotDrawer.drawViridisPlot();
+        viridisPlotDrawer.drawViridisHeatmap();
 
 //        addChart(viridisPlotDrawer);
 
@@ -74,25 +74,139 @@ public class ColorfulPicturePainter extends Frame {
 
     public static void main(String[] a) {
         final String directoryWithOptimalResults = "all3-vectors-ruggedness";
-        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MULTIPLICATIVE,
-                "multiplicativeHeatmap");
-        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
-                "modifiedHeatmap");
-        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
-                "initialHeatmap");
-
+//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy
+//        .MULTIPLICATIVE,
+//                "multiplicativeHeatmap");
+//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
+//                "modifiedHeatmap");
+//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
+//                "initialHeatmap");
+//
 //        drawHeatMapsOneResult("tmp/A1.csv");
 //        drawHeatMapsOneResult("tmp/A2.csv");
+//        drawHeatMapsOneResult("all2-vectors-ruggedness/optimal_for_lambda=32/allIntermediateResults.csv");
 //        printLambdaToRuntime("all2-vectors-ruggedness");
+        drawHeatMapOneResult();
     }
 
     private static void drawHeatMapsOneResult(String resultFile) {
         final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor(resultFile, 9, 8, 10);
         matrixDataProcessor.loadData();
         try {
-            drawChart(matrixDataProcessor.getProcessedData(), AbstractColouring.ColoringStrategy.MULTIPLICATIVE);
+            drawChart(matrixDataProcessor.getProcessedData(), AbstractColouring.ColoringStrategy.MODIFIED);
         } catch (IOException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    private static void drawHeatMapOneResult() {
+        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("all2-vectors-ruggedness" +
+                "/optimal_for_lambda=32/allIntermediateResults.csv", 9, 8, 10);
+        matrixDataProcessor.loadData();
+        final HeatmapPainter heatmapPainter = new HeatmapPainter(matrixDataProcessor.getProcessedData());
+        heatmapPainter.addHeatmap(AbstractColouring.ColoringStrategy.MODIFIED);
+        final IterativeProbabilityConfiguration probabilitySamplingConfiguration =
+                new IterativeProbabilityConfiguration(0.01, 0.5, 0.01);
+        final int optimalValue = 100;
+        final int minFitness = 50;
+        heatmapPainter.addLineChart(new AlgorithmPlottableInMatrixData(Paths.get("abRun.csv"), Color.RED, optimalValue,
+                probabilitySamplingConfiguration, minFitness));
+        heatmapPainter.addLineChart(new AlgorithmPlottableInMatrixData(Paths.get("twoRateRun.csv"), Color.BLACK,
+                optimalValue,
+                probabilitySamplingConfiguration, minFitness));
+        try {
+            heatmapPainter.draw();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static final class AlgorithmPlottableInMatrixData implements PlottableInMatrixData {
+
+        private final Path resultsFilePath;
+        private final Color color;
+        private final int optimalValue;
+        private IterativeProbabilityConfiguration probabilitySamplingConfiguration;
+        private final int minFitness;
+
+        private AlgorithmPlottableInMatrixData(Path resultsFilePath, Color color, int optimalValue,
+                                               IterativeProbabilityConfiguration probabilitySamplingConfiguration,
+                                               int minFitness) {
+            this.resultsFilePath = resultsFilePath;
+            this.color = color;
+            this.optimalValue = optimalValue;
+            this.probabilitySamplingConfiguration = probabilitySamplingConfiguration;
+            this.minFitness = minFitness;
+        }
+
+        private static final class AlgorithmData implements Comparable<AlgorithmData> {
+            final int iterationNumber, fitnessDistance;
+            final double mutationRate;
+
+            public AlgorithmData(int iterationNumber, int fitnessDistance, double mutationRate) {
+                this.iterationNumber = iterationNumber;
+                this.fitnessDistance = fitnessDistance;
+                this.mutationRate = mutationRate;
+            }
+
+            @Override
+            public int compareTo(@NotNull ColorfulPicturePainter.AlgorithmPlottableInMatrixData.AlgorithmData o) {
+                if (fitnessDistance == o.fitnessDistance) {
+                    return Integer.compare(iterationNumber, o.iterationNumber);
+                }
+                return Integer.compare(fitnessDistance, o.fitnessDistance);
+            }
+        }
+
+        private final class AlgorithmLogDataProcessor extends DataProcessor<ArrayList<AlgorithmData>> {
+            public AlgorithmLogDataProcessor(@NotNull String csvFileName) {
+                super(csvFileName);
+            }
+
+            @Override
+            public ArrayList<AlgorithmData> getProcessedData() {
+                final ArrayList<AlgorithmData> algorithmData = new ArrayList<>();
+                final int thresholdFitness = optimalValue - minFitness;
+                for (List<String> records : myRecords) {
+                    final int iterationNumber = Integer.parseInt(records.get(0));
+                    final int fitnessDistance = optimalValue - Integer.parseInt(records.get(1));
+                    if (fitnessDistance > thresholdFitness) continue;
+                    final double v = Double.parseDouble(records.get(2));
+                    if (fitnessDistance > 0) {
+                        algorithmData.add(new AlgorithmData(iterationNumber, fitnessDistance, v));
+                    }
+                }
+                return algorithmData;
+            }
+        }
+
+        @Override
+        public @NotNull List<HeatmapCellCoordinate> getOrderedMatrixCoordinates(@NotNull SimpleMatrix matrix) {
+            final ArrayList<AlgorithmData> algorithmLogData = getAlgorithmLogData();
+            final MatrixLine matrixLine = new MatrixLine(matrix, ProbabilitySearcher.createProbabilitySearcher(
+                    probabilitySamplingConfiguration));
+            ArrayList<HeatmapCellCoordinate> coordinates = new ArrayList<>();
+            for (AlgorithmData algorithmData : algorithmLogData) {
+                final int matrixColumnIndOfFitnessDistance =
+                        matrixLine.getMatrixColumnIndOfFitnessDistance(algorithmData.fitnessDistance);
+                final int matrixRowIndOfMutationRate =
+                        matrixLine.getMatrixRowIndOfMutationRate(algorithmData.mutationRate);
+                coordinates.add(new HeatmapCellCoordinate(matrixRowIndOfMutationRate,
+                        matrixColumnIndOfFitnessDistance));
+            }
+            return coordinates;
+        }
+
+        private ArrayList<AlgorithmData> getAlgorithmLogData() {
+            final AlgorithmLogDataProcessor algorithmLogDataProcessor =
+                    new AlgorithmLogDataProcessor(resultsFilePath.toAbsolutePath().toString());
+            algorithmLogDataProcessor.loadData();
+            return algorithmLogDataProcessor.getProcessedData();
+        }
+
+        @Override
+        public @NotNull Color getDataInPlotColor() {
+            return color;
         }
     }
 
@@ -192,9 +306,10 @@ public class ColorfulPicturePainter extends Frame {
 
         final ViridisPlotDrawer viridisPlotDrawer = new ViridisPlotDrawer(0, 0, width, height, g2d, matrix,
                 AbstractColouring.createColoring(matrix, coloringStrategy));
-        viridisPlotDrawer.drawViridisPlot();
+        viridisPlotDrawer.drawViridisHeatmap();
 
-//        addChart(viridisPlotDrawer);
+        addChart(viridisPlotDrawer, "twoRateRun.csv", Color.BLACK);
+        addChart(viridisPlotDrawer, "abRun.csv", Color.RED);
 
         g2d.dispose();
         // Save as PNG
@@ -202,12 +317,12 @@ public class ColorfulPicturePainter extends Frame {
         ImageIO.write(bufferedImage, "png", file);
     }
 
-    public static void addChart(ViridisPlotDrawer viridisPlotDrawer) {
+    public static void addChart(ViridisPlotDrawer viridisPlotDrawer, String csvFileName, Color color) {
         //        final Map<Integer, Double> mp = getIntegerDoubleMap();
-        final ChartDataProcessor chartDataProcessor = new ChartDataProcessor("twoRateMap.csv", 100);
+        final ChartDataProcessor chartDataProcessor = new ChartDataProcessor(csvFileName, 100);
         chartDataProcessor.loadData();
         final Map<Integer, Double> mp = chartDataProcessor.getProcessedData();
-        viridisPlotDrawer.addChart(mp, Color.BLACK, new MatrixLine(viridisPlotDrawer.getMyRunTimes(),
+        viridisPlotDrawer.addChart(mp, color, new MatrixLine(viridisPlotDrawer.getMyRunTimes(),
                 ProbabilitySearcher.createProbabilitySearcher(
                         new IterativeProbabilityConfiguration(0.01, 0.5, 0.01))));
     }

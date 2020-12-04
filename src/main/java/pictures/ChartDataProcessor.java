@@ -1,7 +1,7 @@
 package pictures;
 
-import org.jetbrains.annotations.NotNull;
 import optimal.utils.DataProcessor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +17,13 @@ public class ChartDataProcessor extends DataProcessor<Map<Integer, Double>> {
 
     @Override
     public Map<Integer, Double> getProcessedData() {
-        int prevFitness = Integer.parseInt(myRecords.get(0).get(0));
-        double prevMutationRate = Double.parseDouble(myRecords.get(0).get(1));
         Map<Integer, Double> ans = new HashMap<>();
         for (List<String> record : myRecords) {
-            final int fitness = Integer.parseInt(record.get(0));
-            if (prevFitness != fitness) {
-                ans.put(myOptimalValue - prevFitness, prevMutationRate);
+            final int fitness = myOptimalValue - Integer.parseInt(record.get(1));
+            final double mutationRate = Double.parseDouble(record.get(2));
+            if (fitness > 0) {
+                ans.put(fitness, mutationRate);
             }
-            prevFitness = fitness;
-            prevMutationRate = Double.parseDouble(record.get(1));
         }
         return ans;
     }
