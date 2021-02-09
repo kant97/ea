@@ -1,6 +1,7 @@
 package optimal.configuration.loaders.adapters;
 
 import com.google.gson.*;
+import optimal.configuration.problems.PlateauConfig;
 import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 import problem.ProblemsManager;
@@ -17,6 +18,10 @@ public class ProblemConfigurationAdapter implements JsonDeserializer<ProblemConf
         if (problemType == ProblemsManager.ProblemType.ONE_MAX_RUGGEDNESS) {
             final int r = jsonObject.get("r").getAsInt();
             return new RuggednessConfig(problemType, problemSize, r);
+        }
+        if (problemType == ProblemsManager.ProblemType.ONE_MAX_PLATEAU) {
+            final int k = jsonObject.get("k").getAsInt();
+            return new PlateauConfig(problemType, problemSize, k);
         }
         return new ProblemConfig(problemType, problemSize);
     }

@@ -106,6 +106,11 @@ public class Ruggedness implements Problem {
     }
 
     @Override
+    public int getOnesCount(int fitness) {
+        return countFitness(fitness);
+    }
+
+    @Override
     public int getLength() {
         return length;
     }

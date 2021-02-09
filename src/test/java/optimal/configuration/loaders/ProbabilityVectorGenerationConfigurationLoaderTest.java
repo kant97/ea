@@ -1,6 +1,7 @@
 package optimal.configuration.loaders;
 
 import optimal.configuration.ProbabilityVectorGenerationConfiguration;
+import optimal.configuration.problems.PlateauConfig;
 import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 import optimal.configuration.runs.FixedRunsConfiguration;
@@ -41,6 +42,15 @@ class ProbabilityVectorGenerationConfigurationLoaderTest {
     }
 
     @Test
+    public void testConfigurationOfPlateau() throws Exception {
+        final ProbabilityVectorGenerationConfiguration configuration = loadConfigFromTestFile("5.json");
+        final ProblemConfig problemConfig = configuration.getProblemConfig();
+        Assertions.assertEquals(ProblemsManager.ProblemType.ONE_MAX_PLATEAU, problemConfig.getProblemType());
+        final PlateauConfig config = (PlateauConfig) problemConfig;
+        Assertions.assertEquals(3, config.getK());
+    }
+
+    @Test
     public void testConfigurationOfOutputFileName() throws Exception {
         final ProbabilityVectorGenerationConfiguration configuration = loadConfigFromTestFile("4.json");
         Assertions.assertEquals("output", configuration.getOutputFileName());
@@ -64,7 +74,7 @@ class ProbabilityVectorGenerationConfigurationLoaderTest {
     }
 
     @NotNull
-    private ProbabilityVectorGenerationConfiguration loadConfigFromTestFile(String testFileName) throws FileNotFoundException,
+    private ProbabilityVectorGenerationConfiguration loadConfigFromTestFile(String testFileName) throws IOException,
             ConfigurationException {
         final ProbabilityVectorGenerationConfigurationLoader probabilityVectorGenerationConfigurationLoader =
                 new ProbabilityVectorGenerationConfigurationLoader(

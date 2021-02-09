@@ -4,6 +4,7 @@ import optimal.configuration.algorithms.AlgorithmConfig;
 import optimal.configuration.algorithms.TwoRateConfig;
 import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
+import optimal.configuration.problems.PlateauConfig;
 import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 import optimal.configuration.runs.FixedRunsConfiguration;
@@ -11,6 +12,7 @@ import optimal.configuration.runs.FixedSuccessConfiguration;
 import optimal.configuration.vectorGeneration.PrecomputedVectorReadingConfiguration;
 import optimal.configuration.vectorGeneration.RunTimeGenerationConfiguration;
 import org.jetbrains.annotations.NotNull;
+import problem.Plateau;
 
 public interface ConfigurationVisitor {
     @NotNull String visitAlgorithmConfig(@NotNull AlgorithmConfig algorithmConfig);
@@ -24,6 +26,8 @@ public interface ConfigurationVisitor {
     @NotNull String visitProblemConfig(@NotNull ProblemConfig problemConfig);
 
     @NotNull String visitRuggednessConfig(@NotNull RuggednessConfig ruggednessConfig);
+
+    @NotNull String visitPlateauConfig(@NotNull PlateauConfig plateauConfig);
 
     @NotNull String visitFixedRunsConfig(@NotNull FixedRunsConfiguration fixedRunsConfiguration);
 

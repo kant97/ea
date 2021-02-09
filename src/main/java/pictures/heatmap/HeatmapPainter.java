@@ -1,7 +1,8 @@
-package pictures;
+package pictures.heatmap;
 
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
+import pictures.PlottableInMatrixData;
 import pictures.coloring.AbstractColouring;
 
 import javax.imageio.ImageIO;
@@ -14,8 +15,8 @@ public class HeatmapPainter {
 
     private final @NotNull SimpleMatrix matrix;
 
-    private final static int WIDTH = 400;
-    private final static int HEIGHT = 400;
+    private final static int WIDTH = 800;
+    private final static int HEIGHT = 800;
 
     /* Mutable */
     private ViridisPlotDrawer viridisPlotDrawer = null;

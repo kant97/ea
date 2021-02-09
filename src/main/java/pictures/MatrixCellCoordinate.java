@@ -1,10 +1,10 @@
 package pictures;
 
-public class HeatmapCellCoordinate {
+public class MatrixCellCoordinate {
     private final int row;
     private final int col;
 
-    public HeatmapCellCoordinate(int row, int col) {
+    public MatrixCellCoordinate(int row, int col) {
         this.row = row;
         this.col = col;
     }

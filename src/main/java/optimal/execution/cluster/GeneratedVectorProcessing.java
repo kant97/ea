@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.StandardOpenOption;
 
 public class GeneratedVectorProcessing {
@@ -39,7 +40,7 @@ public class GeneratedVectorProcessing {
         final OneExperimentConfiguration configuration;
         try {
             configuration = loader.getConfiguration();
-        } catch (FileNotFoundException | ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             throw new IllegalStateException(e);
         }
         recoverMissedFilesInDirectory(configuration, directory);

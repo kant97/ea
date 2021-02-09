@@ -95,6 +95,11 @@ public class OneMax extends AbstractProblem {
     }
 
     @Override
+    public int getOnesCount(int fitness) {
+        return fitness;
+    }
+
+    @Override
     public String getInfo() {
         return "";
     }

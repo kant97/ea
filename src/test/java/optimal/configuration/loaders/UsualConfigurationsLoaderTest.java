@@ -13,6 +13,7 @@ import problem.ProblemsManager;
 
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static optimal.oneStepAlgorithms.OneStepAlgorithmsManager.AlgorithmType.TWO_RATE;
@@ -33,7 +34,7 @@ class UsualConfigurationsLoaderTest {
     }
 
     @Test
-    void loadConfiguration() throws FileNotFoundException, URISyntaxException, ConfigurationException {
+    void loadConfiguration() throws IOException, URISyntaxException, ConfigurationException {
         UsualConfiguration configuration = loadConfigFromTestFile("configTest5.json");
         OneExperimentConfiguration configuration1 = configuration.experimentConfigurations.get(0);
         Assertions.assertEquals(ProbabilitySamplingStrategy.EXPONENTIAL_GRID,
@@ -62,7 +63,7 @@ class UsualConfigurationsLoaderTest {
 
     @NotNull
     private UsualConfiguration loadConfigFromTestFile(String testFileName) throws URISyntaxException,
-            FileNotFoundException, ConfigurationException {
+            IOException, ConfigurationException {
         UsualConfigurationsLoader mockedConfigurationLoaderSpy = Mockito.spy(new UsualConfigurationsLoader());
         when(mockedConfigurationLoaderSpy.getConfigurationFilename()).thenReturn("configuration/" + testFileName);
         return mockedConfigurationLoaderSpy.loadConfigurationFromResources();

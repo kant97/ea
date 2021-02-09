@@ -29,7 +29,7 @@ public class ClusterJsonConfigsGenerator {
     public ClusterJsonConfigsGenerator(ManyExperimentsConfigurationLoader experimentConfigurationLoader) {
         try {
             this.myExperimentConfigurations = experimentConfigurationLoader.getConfiguration().getConfigurations();
-        } catch (FileNotFoundException | ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             throw new IllegalStateException("Failed to load global configurations");
         }
         this.myExperimentConfigurationSerializer =

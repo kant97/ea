@@ -234,6 +234,11 @@ public class OneMaxNeutral3 implements Problem {
     }
 
     @Override
+    public int getOnesCount(int fitness) {
+        throw new IllegalStateException("Not implemented yet");
+    }
+
+    @Override
     public int getLength() {
         return individual.length;
     }

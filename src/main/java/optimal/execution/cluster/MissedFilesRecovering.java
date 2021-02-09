@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,8 +40,8 @@ public class MissedFilesRecovering {
 
     public int recoverMissedFiles() {
         myNumberOfFilesRecovered = 0;
-        ExecutionManager.createThreadPool(4);
-        int num = 50;
+        ExecutionManager.createThreadPool(1);
+        int num = 101;
         final List<Future<?>> futures = new ArrayList<>();
         for (int f = myOneExperimentConfiguration.endFitness - 1; f >= myOneExperimentConfiguration.beginFitness; f--) {
             final ProbabilitySearcher probabilitySearcher =
@@ -89,7 +90,7 @@ public class MissedFilesRecovering {
         final ProbabilityVectorGenerationConfiguration configuration;
         try {
             configuration = loader.getConfiguration();
-        } catch (FileNotFoundException | ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             throw new IllegalStateException(e);
         }
         if (!isConfigurationGood(configuration)) {

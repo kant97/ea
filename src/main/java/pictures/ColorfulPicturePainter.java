@@ -7,6 +7,10 @@ import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pictures.coloring.AbstractColouring;
+import pictures.heatmap.PlottableInHeatmapAlgorithmData;
+import pictures.heatmap.HeatmapPainter;
+import pictures.heatmap.MatrixLine;
+import pictures.heatmap.ViridisPlotDrawer;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -43,7 +47,7 @@ public class ColorfulPicturePainter extends Frame {
 
     public void doDrawHeatMap(@NotNull SimpleMatrix matrix) {
         final int width = 400;
-        final int height = 400;
+        final int height = 404;
 
         final BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         final Graphics2D g2d = bufferedImage.createGraphics();
@@ -73,20 +77,20 @@ public class ColorfulPicturePainter extends Frame {
     }
 
     public static void main(String[] a) {
-        final String directoryWithOptimalResults = "all3-vectors-ruggedness";
-//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy
-//        .MULTIPLICATIVE,
-//                "multiplicativeHeatmap");
-//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
-//                "modifiedHeatmap");
-//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
-//                "initialHeatmap");
+        final String directoryWithOptimalResults = "all7-vectors-ruggedness";
+        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy
+        .MULTIPLICATIVE,
+                "multiplicativeHeatmap");
+        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
+                "modifiedHeatmap");
+        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
+                "initialHeatmap");
 //
 //        drawHeatMapsOneResult("tmp/A1.csv");
 //        drawHeatMapsOneResult("tmp/A2.csv");
 //        drawHeatMapsOneResult("all2-vectors-ruggedness/optimal_for_lambda=32/allIntermediateResults.csv");
 //        printLambdaToRuntime("all2-vectors-ruggedness");
-        drawHeatMapOneResult();
+//        drawHeatMapOneResult();
     }
 
     private static void drawHeatMapsOneResult(String resultFile) {
@@ -100,113 +104,25 @@ public class ColorfulPicturePainter extends Frame {
     }
 
     private static void drawHeatMapOneResult() {
-        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("all2-vectors-ruggedness" +
-                "/optimal_for_lambda=32/allIntermediateResults.csv", 9, 8, 10);
+        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("all-vectors-plateau" +
+                "/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
         matrixDataProcessor.loadData();
         final HeatmapPainter heatmapPainter = new HeatmapPainter(matrixDataProcessor.getProcessedData());
-        heatmapPainter.addHeatmap(AbstractColouring.ColoringStrategy.MODIFIED);
+        heatmapPainter.addHeatmap(AbstractColouring.ColoringStrategy.MULTIPLICATIVE);
         final IterativeProbabilityConfiguration probabilitySamplingConfiguration =
                 new IterativeProbabilityConfiguration(0.01, 0.5, 0.01);
-        final int optimalValue = 100;
-        final int minFitness = 50;
-        heatmapPainter.addLineChart(new AlgorithmPlottableInMatrixData(Paths.get("abRun.csv"), Color.RED, optimalValue,
-                probabilitySamplingConfiguration, minFitness));
-        heatmapPainter.addLineChart(new AlgorithmPlottableInMatrixData(Paths.get("twoRateRun.csv"), Color.BLACK,
-                optimalValue,
-                probabilitySamplingConfiguration, minFitness));
+        final int optimalValue = 51;
+        final int minFitness = 26;
+        for (int i = 0; i < 1; i++) {
+            heatmapPainter.addLineChart(new PlottableInHeatmapAlgorithmData(Paths.get("abRun" + i + ".csv"),
+                    Color.RED, optimalValue, probabilitySamplingConfiguration, minFitness));
+            heatmapPainter.addLineChart(new PlottableInHeatmapAlgorithmData(Paths.get("twoRateRun" + i + ".csv"),
+                    Color.BLACK, optimalValue, probabilitySamplingConfiguration, minFitness));
+        }
         try {
             heatmapPainter.draw();
         } catch (IOException e) {
             throw new IllegalStateException(e);
-        }
-    }
-
-    private static final class AlgorithmPlottableInMatrixData implements PlottableInMatrixData {
-
-        private final Path resultsFilePath;
-        private final Color color;
-        private final int optimalValue;
-        private final IterativeProbabilityConfiguration probabilitySamplingConfiguration;
-        private final int minFitness;
-
-        private AlgorithmPlottableInMatrixData(Path resultsFilePath, Color color, int optimalValue,
-                                               IterativeProbabilityConfiguration probabilitySamplingConfiguration,
-                                               int minFitness) {
-            this.resultsFilePath = resultsFilePath;
-            this.color = color;
-            this.optimalValue = optimalValue;
-            this.probabilitySamplingConfiguration = probabilitySamplingConfiguration;
-            this.minFitness = minFitness;
-        }
-
-        private static final class AlgorithmData implements Comparable<AlgorithmData> {
-            final int iterationNumber, fitnessDistance;
-            final double mutationRate;
-
-            public AlgorithmData(int iterationNumber, int fitnessDistance, double mutationRate) {
-                this.iterationNumber = iterationNumber;
-                this.fitnessDistance = fitnessDistance;
-                this.mutationRate = mutationRate;
-            }
-
-            @Override
-            public int compareTo(@NotNull ColorfulPicturePainter.AlgorithmPlottableInMatrixData.AlgorithmData o) {
-                if (fitnessDistance == o.fitnessDistance) {
-                    return Integer.compare(iterationNumber, o.iterationNumber);
-                }
-                return Integer.compare(fitnessDistance, o.fitnessDistance);
-            }
-        }
-
-        private final class AlgorithmLogDataProcessor extends DataProcessor<ArrayList<AlgorithmData>> {
-            public AlgorithmLogDataProcessor(@NotNull String csvFileName) {
-                super(csvFileName);
-            }
-
-            @Override
-            public ArrayList<AlgorithmData> getProcessedData() {
-                final ArrayList<AlgorithmData> algorithmData = new ArrayList<>();
-                final int thresholdFitness = optimalValue - minFitness;
-                for (List<String> records : myRecords) {
-                    final int iterationNumber = Integer.parseInt(records.get(0));
-                    final int fitnessDistance = optimalValue - Integer.parseInt(records.get(1));
-                    if (fitnessDistance > thresholdFitness) continue;
-                    final double v = Double.parseDouble(records.get(2));
-                    if (fitnessDistance > 0) {
-                        algorithmData.add(new AlgorithmData(iterationNumber, fitnessDistance, v));
-                    }
-                }
-                return algorithmData;
-            }
-        }
-
-        @Override
-        public @NotNull List<HeatmapCellCoordinate> getOrderedMatrixCoordinates(@NotNull SimpleMatrix matrix) {
-            final ArrayList<AlgorithmData> algorithmLogData = getAlgorithmLogData();
-            final MatrixLine matrixLine = new MatrixLine(matrix, ProbabilitySearcher.createProbabilitySearcher(
-                    probabilitySamplingConfiguration));
-            ArrayList<HeatmapCellCoordinate> coordinates = new ArrayList<>();
-            for (AlgorithmData algorithmData : algorithmLogData) {
-                final int matrixColumnIndOfFitnessDistance =
-                        matrixLine.getMatrixColumnIndOfFitnessDistance(algorithmData.fitnessDistance);
-                final int matrixRowIndOfMutationRate =
-                        matrixLine.getMatrixRowIndOfMutationRate(algorithmData.mutationRate);
-                coordinates.add(new HeatmapCellCoordinate(matrixRowIndOfMutationRate,
-                        matrixColumnIndOfFitnessDistance));
-            }
-            return coordinates;
-        }
-
-        private ArrayList<AlgorithmData> getAlgorithmLogData() {
-            final AlgorithmLogDataProcessor algorithmLogDataProcessor =
-                    new AlgorithmLogDataProcessor(resultsFilePath.toAbsolutePath().toString());
-            algorithmLogDataProcessor.loadData();
-            return algorithmLogDataProcessor.getProcessedData();
-        }
-
-        @Override
-        public @NotNull Color getDataInPlotColor() {
-            return color;
         }
     }
 

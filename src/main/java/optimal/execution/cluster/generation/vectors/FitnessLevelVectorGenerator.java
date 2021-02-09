@@ -71,7 +71,7 @@ public class FitnessLevelVectorGenerator {
                 new ProbabilityVectorGenerationConfigurationLoader(myConfigFileName);
         try {
             configuration = probabilityVectorGenerationConfigurationLoader.getConfiguration();
-        } catch (FileNotFoundException | ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             throw new IllegalStateException(e);
         }
     }

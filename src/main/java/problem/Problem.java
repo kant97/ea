@@ -10,6 +10,8 @@ public interface Problem {
 
     int getFitness();
 
+    int getOnesCount(int fitness);
+
     int getLength();
 
     boolean isOptimized();

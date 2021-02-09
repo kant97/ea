@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static optimal.configuration.runs.StopConditionConfiguration.Strategy.FIXED_SUCCESS;
 import static optimal.configuration.vectorGeneration.VectorGenerationConfiguration.VectorGenerationStrategy.RUN_TIME_VECTOR_GENERATION;
@@ -26,7 +27,7 @@ class OptimalMutationRateSearchingSingleExperimentConfigurationLoaderTest {
     }
 
     @NotNull
-    private OptimalMutationRateSearchingSingleExperimentConfiguration loadConfigFromTestFile(String testFileName) throws FileNotFoundException,
+    private OptimalMutationRateSearchingSingleExperimentConfiguration loadConfigFromTestFile(String testFileName) throws IOException,
             ConfigurationException {
         final OptimalMutationRateSearchingSingleExperimentConfigurationLoader mockedConfigurationLoaderSpy =
                 new OptimalMutationRateSearchingSingleExperimentConfigurationLoader("configuration/optimalMRSearching" +

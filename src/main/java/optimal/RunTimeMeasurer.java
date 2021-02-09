@@ -3,6 +3,7 @@ package optimal;
 import algo.ABalgo;
 import algo.TwoRate;
 import org.jetbrains.annotations.NotNull;
+import problem.Plateau;
 import problem.Ruggedness;
 
 import java.io.BufferedWriter;
@@ -22,20 +23,20 @@ public class RunTimeMeasurer implements AutoCloseable {
     }
 
     public static void main(String[] args) {
-        {
-            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("abRun.csv");
+        for (int i = 0; i < 3; i++) {
+            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("abRun" + i + ".csv");
             twoRateRunTimeMeasurer.runAb();
             twoRateRunTimeMeasurer.close();
         }
-//        {
-//            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("twoRateRun.csv");
-//            twoRateRunTimeMeasurer.runTwoRate();
-//            twoRateRunTimeMeasurer.close();
-//        }
+        for (int i = 0; i < 3; i++) {
+            final RunTimeMeasurer twoRateRunTimeMeasurer = new RunTimeMeasurer("twoRateRun" + i + ".csv");
+            twoRateRunTimeMeasurer.runTwoRate();
+            twoRateRunTimeMeasurer.close();
+        }
     }
 
     public void runTwoRate() {
-        final TwoRate twoRate = new TwoRate(1., 1. / 10_000., 32, new Ruggedness(100, 2, 50));
+        final TwoRate twoRate = new TwoRate(1., 1. / 10_0., 512, new Plateau(100, 2, 26));
         int iterationNumber = 0;
         log(iterationNumber, twoRate.getFitness(), twoRate.getMutationRate());
         while (!twoRate.isFinished()) {
@@ -46,7 +47,7 @@ public class RunTimeMeasurer implements AutoCloseable {
     }
 
     public void runAb() {
-        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 10_000., 32, true, new Ruggedness(100, 2, 50));
+        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 10_0., 512, true, new Plateau(100, 2, 26));
         int iterationNumber = 0;
         log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRate());
         while (!aBalgo.isFinished()) {

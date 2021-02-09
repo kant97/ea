@@ -30,7 +30,7 @@ public class ExperimentRunner {
         final UsualConfiguration configuration;
         try {
             configuration = configurationsLoader.getConfiguration();
-        } catch (FileNotFoundException | ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             e.printStackTrace();
             return;
         }

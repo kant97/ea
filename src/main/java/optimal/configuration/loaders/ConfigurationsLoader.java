@@ -20,10 +20,13 @@ public abstract class ConfigurationsLoader<T extends ValidatableConfiguration> {
     private volatile T CONFIGURATION = null;
 
     @NotNull
-    protected T loadConfigurationFromResources() throws FileNotFoundException, ConfigurationException {
+    protected T loadConfigurationFromResources() throws IOException, ConfigurationException {
         final InputStream resourceAsStream =
                 getClass().getClassLoader().getResourceAsStream(getConfigurationFilename());
-        return doLoadConfigurations(resourceAsStream);
+        assert resourceAsStream != null;
+        T configuration = doLoadConfigurations(resourceAsStream);
+        resourceAsStream.close();
+        return configuration;
     }
 
     @NotNull
@@ -50,16 +53,18 @@ public abstract class ConfigurationsLoader<T extends ValidatableConfiguration> {
 
     protected abstract Class<T> getConfigurationTypeClass();
 
-    protected T loadConfigurationFromFs() throws FileNotFoundException, ConfigurationException {
-        final InputStream inputStream = new FileInputStream(new File(getConfigurationFilename()));
-        return doLoadConfigurations(inputStream);
+    protected T loadConfigurationFromFs() throws IOException, ConfigurationException {
+        final InputStream inputStream = new FileInputStream(getConfigurationFilename());
+        T configuration = doLoadConfigurations(inputStream);
+        inputStream.close();
+        return configuration;
     }
 
     @NotNull
     protected abstract String getConfigurationFilename();
 
     @NotNull
-    public T getConfiguration() throws FileNotFoundException, ConfigurationException {
+    public T getConfiguration() throws IOException, ConfigurationException {
         if (CONFIGURATION == null) {
             CONFIGURATION = loadConfigurationFromFs();
         }
@@ -67,7 +72,7 @@ public abstract class ConfigurationsLoader<T extends ValidatableConfiguration> {
     }
 
     @NotNull
-    public T getConfigurationFromResources() throws FileNotFoundException, ConfigurationException {
+    public T getConfigurationFromResources() throws IOException, ConfigurationException {
         if (CONFIGURATION == null) {
             CONFIGURATION = loadConfigurationFromResources();
         }

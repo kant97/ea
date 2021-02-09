@@ -28,7 +28,7 @@ class OneExperimentConfigurationLoaderTest {
     }
 
     @NotNull
-    private OneExperimentConfiguration loadConfigFromTestFile(String testFileName) throws FileNotFoundException,
+    private OneExperimentConfiguration loadConfigFromTestFile(String testFileName) throws IOException,
             ConfigurationException {
         final OneExperimentConfigurationLoader mockedConfigurationLoaderSpy =
                 new OneExperimentConfigurationLoader("configuration/oneExperiment/" + testFileName);

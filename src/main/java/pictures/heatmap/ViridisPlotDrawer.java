@@ -1,7 +1,10 @@
-package pictures;
+package pictures.heatmap;
 
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
+import pictures.MatrixCellCoordinate;
+import pictures.MatrixDrawer;
+import pictures.PlottableInMatrixData;
 import pictures.coloring.AbstractColouring;
 
 import java.awt.*;
@@ -9,18 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ViridisPlotDrawer {
-    private final int myXOffsetLeft;
-    private final int myYOffsetUp;
-    private final int myPlotWidth;
-    private final int myPlotHeight;
-    private final @NotNull Graphics myGraphics;
+public class ViridisPlotDrawer extends MatrixDrawer {
     private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[r][d] stores math expectation of
     generations amount to reach the global optima if starting from the distance d with the mutation rate r */
-    private final AbstractColouring myColoring;
-    private final int myOneWidth;
-    private final int myOneHeight;
-    private final Stroke myLineStroke;
 
     @NotNull
     public SimpleMatrix getMyRunTimes() {
@@ -31,16 +25,8 @@ public class ViridisPlotDrawer {
                              int plotWidth, int plotHeight, @NotNull Graphics graphics,
                              @NotNull SimpleMatrix data,
                              AbstractColouring coloring) {
-        this.myXOffsetLeft = xOffsetLeft;
-        this.myYOffsetUp = yOffsetUp;
-        this.myPlotWidth = plotWidth;
-        this.myPlotHeight = plotHeight;
-        this.myGraphics = graphics;
+        super(xOffsetLeft, yOffsetUp, plotWidth, plotHeight, graphics, coloring, data.numCols(), data.numRows());
         this.myRunTimes = data;
-        this.myOneWidth = myPlotWidth / data.numCols();
-        this.myOneHeight = myPlotHeight / data.numRows();
-        this.myColoring = coloring;
-        this.myLineStroke = new BasicStroke(1f);
     }
 
     public void drawViridisHeatmap() {
@@ -83,10 +69,10 @@ public class ViridisPlotDrawer {
 
     public void addChart(@NotNull PlottableInMatrixData data, @NotNull Color color) {
         final int colorRGB = color.getRGB();
-        final List<HeatmapCellCoordinate> orderedMatrixCoordinates = data.getOrderedMatrixCoordinates(myRunTimes);
+        final List<MatrixCellCoordinate> orderedMatrixCoordinates = data.getOrderedMatrixCoordinates(myRunTimes);
         int prevColumn = -1;
         int prevRow = -1;
-        for (HeatmapCellCoordinate coordinate : orderedMatrixCoordinates) {
+        for (MatrixCellCoordinate coordinate : orderedMatrixCoordinates) {
             final int col = coordinate.getCol();
             final int row = coordinate.getRow();
             if (prevRow != -1) {
@@ -97,51 +83,4 @@ public class ViridisPlotDrawer {
         }
     }
 
-    private void drawRect(int matrixRowInd, int matrixColInd, int rgdColor) {
-        final int x = getXCoordinateByMatrixColumnIndex(matrixColInd);
-        final int y = getYCoordinateByMatrixRowIndex(matrixRowInd);
-        myGraphics.setColor(new Color(rgdColor));
-        myGraphics.fillRect(x, y, myOneWidth, myOneHeight);
-    }
-
-    private int getYCoordinateByMatrixRowIndex(int matrixRowInd) {
-        return myYOffsetUp + myPlotHeight - matrixRowInd * myOneHeight - myOneHeight;
-    }
-
-    private int getXCoordinateByMatrixColumnIndex(int matrixColInd) {
-        return myXOffsetLeft + matrixColInd * myOneWidth;
-    }
-
-    private void drawCenteredCircle(int x, int y, int d) {
-        x = x - (d / 2);
-        y = y - (d / 2);
-        myGraphics.fillOval(x, y, d, d);
-    }
-
-    private int getXCenterOfSquare(int matrixColInd) {
-        return getXCoordinateByMatrixColumnIndex(matrixColInd) + myOneWidth / 2;
-    }
-
-    private int getYCenterOfSquare(int matrixRowInd) {
-        return getYCoordinateByMatrixRowIndex(matrixRowInd) + myOneWidth / 2;
-    }
-
-    private void drawSegment(int matrixRowIndBegin, int matrixColIndBegin,
-                             int matrixRowIndEnd, int matrixColIndEnd,
-                             int rgbColor) {
-        final int xBegin = getXCenterOfSquare(matrixColIndBegin);
-        final int yBegin = getYCenterOfSquare(matrixRowIndBegin);
-        final int xEnd = getXCenterOfSquare(matrixColIndEnd);
-        final int yEnd = getYCenterOfSquare(matrixRowIndEnd);
-        myGraphics.setColor(new Color(rgbColor));
-        final Graphics2D graphics = (Graphics2D) myGraphics;
-        final Stroke defaultStroke = graphics.getStroke();
-        graphics.setStroke(myLineStroke);
-        myGraphics.drawLine(xBegin, yBegin, xEnd, yEnd);
-        graphics.setStroke(defaultStroke);
-        final int minL = Math.min(myOneHeight, myOneWidth);
-        final int d = 4 * minL / 8;
-        drawCenteredCircle(xBegin, yBegin, d);
-        drawCenteredCircle(xEnd, yEnd, d);
-    }
 }

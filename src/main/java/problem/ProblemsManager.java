@@ -1,5 +1,6 @@
 package problem;
 
+import optimal.configuration.problems.PlateauConfig;
 import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 
@@ -70,7 +71,7 @@ public class ProblemsManager {
             final RuggednessConfig config = (RuggednessConfig) problemConfig;
             return new Ruggedness(config.getSize(), config.getR(), fitness);
         } else if (type == ProblemType.ONE_MAX_PLATEAU) {
-            return new Plateau(size, 2, fitness);
+            return new Plateau(size, ((PlateauConfig) problemConfig).getK(), fitness);
         }
         throw new IllegalArgumentException("Problem with type: " + type.toString() + " is not supported yet");
     }

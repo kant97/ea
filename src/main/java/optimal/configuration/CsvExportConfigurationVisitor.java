@@ -4,6 +4,7 @@ import optimal.configuration.algorithms.AlgorithmConfig;
 import optimal.configuration.algorithms.TwoRateConfig;
 import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
+import optimal.configuration.problems.PlateauConfig;
 import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 import optimal.configuration.runs.FixedRunsConfiguration;
@@ -48,6 +49,12 @@ public class CsvExportConfigurationVisitor implements ConfigurationVisitor {
     public @NotNull String visitRuggednessConfig(@NotNull RuggednessConfig ruggednessConfig) {
         return "{type=" + ruggednessConfig.getProblemType() +
                 "; r=" + ruggednessConfig.getR() + "}";
+    }
+
+    @Override
+    public @NotNull String visitPlateauConfig(@NotNull PlateauConfig plateauConfig) {
+        return "{type=" + plateauConfig.getProblemType() +
+                "; k=" + plateauConfig.getK() + "}";
     }
 
     @Override

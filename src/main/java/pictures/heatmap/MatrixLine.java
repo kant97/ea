@@ -1,4 +1,4 @@
-package pictures;
+package pictures.heatmap;
 
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.ejml.simple.SimpleMatrix;

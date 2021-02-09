@@ -9,13 +9,14 @@ import org.junit.jupiter.api.RepeatedTest;
 
 import javax.naming.ConfigurationException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Random;
 import java.util.function.BiConsumer;
 
 class ConfigurationToNumberTranslatorTest {
 
     @RepeatedTest(50)
-    public void testTranslationToNumber() throws FileNotFoundException, ConfigurationException {
+    public void testTranslationToNumber() throws IOException, ConfigurationException {
         final OneExperimentConfiguration configuration = getExperimentConfiguration("basicConfig.json");
         final ConfigurationToNumberTranslator configurationToNumberTranslator =
                 new ConfigurationToNumberTranslator(configuration);
@@ -35,7 +36,7 @@ class ConfigurationToNumberTranslatorTest {
     }
 
     @RepeatedTest(1000)
-    public void testTranslationToNumberWithShiftOfProbability() throws FileNotFoundException,
+    public void testTranslationToNumberWithShiftOfProbability() throws IOException,
             ConfigurationException {
         final OneExperimentConfiguration configuration = getExperimentConfiguration("basicConfig.json");
         final ConfigurationToNumberTranslator translator = new ConfigurationToNumberTranslator(configuration);
@@ -69,7 +70,7 @@ class ConfigurationToNumberTranslatorTest {
     }
 
     @NotNull
-    private OneExperimentConfiguration getExperimentConfiguration(@NotNull String fileName) throws FileNotFoundException,
+    private OneExperimentConfiguration getExperimentConfiguration(@NotNull String fileName) throws IOException,
             ConfigurationException {
         final OneExperimentConfigurationLoader loader = new OneExperimentConfigurationLoader("configuration/cluster" +
                 "/translationToNumber/" + fileName);

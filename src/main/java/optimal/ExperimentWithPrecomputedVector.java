@@ -87,7 +87,7 @@ public class ExperimentWithPrecomputedVector {
         final OptimalMutationRateSearchingSingleExperimentConfiguration configuration;
         try {
             configuration = configurationLoader.getConfiguration();
-        } catch (FileNotFoundException | ConfigurationException e) {
+        } catch (ConfigurationException | IOException e) {
             throw new IllegalStateException("Failed to load configurations", e);
         }
         new ExperimentWithPrecomputedVector("optimal_results", configuration,
