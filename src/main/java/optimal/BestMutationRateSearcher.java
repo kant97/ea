@@ -36,7 +36,6 @@ public class BestMutationRateSearcher {
     private final StopConditionConfiguration myStopConditionConfiguration;
     private final AbstractSingleExperimentConfiguration myConfiguration;
     private final EventsManager myEventsManager;
-    protected final @Nullable Heuristics myHeuristics;
     private final VectorGenerationConfiguration.VectorGenerationStrategy myVectorGenerationStrategy;
 
     private BestMutationRateSearcher(@NotNull AbstractSingleExperimentConfiguration configuration,
@@ -50,12 +49,6 @@ public class BestMutationRateSearcher {
         myProbabilityEnumerationConfiguration = configuration.getProbabilityEnumerationConfiguration();
         myConfiguration = configuration;
         myEventsManager = new EventsManager();
-        myHeuristics = Heuristics.createHeuristics(configuration.problemConfig.getProblemType());
-        addListener(event -> {
-            if (myHeuristics != null) {
-                myHeuristics.acceptResult(((ResultEntityObtainedEvent) event).getResultEntity());
-            }
-        }, EventType.INTERMEDIATE_RESULT_READY);
         this.myStopConditionConfiguration = stopConditionConfiguration;
         this.myVectorGenerationStrategy = vectorGenerationStrategy;
     }
@@ -110,15 +103,6 @@ public class BestMutationRateSearcher {
             Problem problem = ProblemsManager.createProblemInstanceWithFixedFitness(myProblemType, myProblemSize, fitness);
             ProbabilitySearcher ps = getProbabilitySearcher();
             for (double p = ps.getInitialProbability(); !ps.isFinished(); p = ps.getNextProb()) {
-                if (myHeuristics != null) {
-                    myHeuristics.acceptNewExperimentState(new ExperimentState(myProblemType, fitness, p));
-                    if (myHeuristics.isSupposedToBeInfOnThisExperiment()) {
-                        update(T, pOpt, INFINITY, p, fitness);
-                        notifyResultsListeners(new ResultEntity(myConfiguration, fitness, p, INFINITY),
-                                EventType.INTERMEDIATE_RESULT_READY);
-                        continue;
-                    }
-                }
                 ArrayList<Double> v = getProbabilityVectorGenerator(p, problem, fitness).getProbabilityVector();
                 Double p0Tilda = v.get(0);
                 double tFP = INFINITY;
