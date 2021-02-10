@@ -62,7 +62,6 @@ class ProbabilityVectorGenerationConfigurationLoaderTest {
         final ProbabilityVectorGenerationConfigurationLoader loader =
                 new ProbabilityVectorGenerationConfigurationLoader("ignore");
         final String s = loader.serializeConfiguration(configuration);
-        System.out.println(s);
         File file = File.createTempFile( "some-prefix", "some-ext");
         file.deleteOnExit();
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));

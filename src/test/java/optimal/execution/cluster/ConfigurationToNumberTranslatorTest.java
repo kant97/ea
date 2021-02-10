@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 
 import javax.naming.ConfigurationException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
 import java.util.function.BiConsumer;
@@ -32,7 +31,7 @@ class ConfigurationToNumberTranslatorTest {
                 num++;
             }
         }
-        System.out.println(num);
+        Assertions.assertEquals(2550, num);
     }
 
     @RepeatedTest(1000)

@@ -30,69 +30,49 @@ class BestMutationRateSearcherTest {
         }
     };
 
-    @Test
-    void testOneMaxHeuristics() {
-        final OneExperimentConfiguration configuration = new OneExperimentConfiguration(
-                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX, 100),
-                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 10),
-                new FixedRunsConfiguration(5000), 99, 100,
-                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
-        );
-        BestMutationRateSearcher searcher = new BestMutationRateSearcher(configuration);
-        Assertions.assertNotNull(searcher.myHeuristics);
-        searcher.myHeuristics.acceptNewExperimentState(new ExperimentState(configuration.problemConfig.getProblemType(), 99, 0.01));
-        searcher.myHeuristics.acceptResult(new ResultEntity(configuration, 99, 0.01, Double.MAX_VALUE));
-        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
-        searcher.addListener(event -> {
-            final ResultEntity resultEntity = ((ResultEntityObtainedEvent) event).getResultEntity();
-            Assertions.assertTrue(OneMaxHeuristics.isTooBig(resultEntity));
-        }, EventType.INTERMEDIATE_RESULT_READY);
-        searcher.getBestMutationProbabilities();
-    }
-
-    @Test
-    void getBestMutationProbabilities() {
-        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 200),
-                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
-                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 33, 67,
-                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
-        ));
-        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
-        searcher.getBestMutationProbabilities();
-    }
-
-    @Test
-    void getBestMutationProbabilitiesTest2() {
-        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
-                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
-                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
-                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
-        ));
-        searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
-        searcher.getBestMutationProbabilities();
-    }
-
-    @Test
-    void getBestMutationProbabilitiesTest3() {
-        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
-                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
-                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
-                new ExponentialGridConfiguration(10, -2, -1, 0.1)));
-        searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
-        searcher.getBestMutationProbabilities();
-    }
-
-    @Test
-    void getBestMutationProbabilitiesTest4() {
-        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX, 100),
-                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 10),
-                new FixedRunsConfiguration(40000), 50, 100,
-                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)));
-        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
-        searcher.getBestMutationProbabilities();
-    }
+//    @Test
+//    void getBestMutationProbabilities() {
+//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
+//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 200),
+//                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
+//                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 33, 67,
+//                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
+//        ));
+//        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
+//        searcher.getBestMutationProbabilities();
+//    }
+//
+//    @Test
+//    void getBestMutationProbabilitiesTest2() {
+//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
+//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
+//                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
+//                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
+//                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
+//        ));
+//        searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
+//        searcher.getBestMutationProbabilities();
+//    }
+//
+//    @Test
+//    void getBestMutationProbabilitiesTest3() {
+//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
+//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
+//                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
+//                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
+//                new ExponentialGridConfiguration(10, -2, -1, 0.1)));
+//        searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
+//        searcher.getBestMutationProbabilities();
+//    }
+//
+//    @Test
+//    void getBestMutationProbabilitiesTest4() {
+//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
+//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX, 100),
+//                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 10),
+//                new FixedRunsConfiguration(40000), 50, 100,
+//                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)));
+//        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
+//        searcher.getBestMutationProbabilities();
+//    }
 }

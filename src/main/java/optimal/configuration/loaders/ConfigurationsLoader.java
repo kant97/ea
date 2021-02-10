@@ -23,7 +23,9 @@ public abstract class ConfigurationsLoader<T extends ValidatableConfiguration> {
     protected T loadConfigurationFromResources() throws IOException, ConfigurationException {
         final InputStream resourceAsStream =
                 getClass().getClassLoader().getResourceAsStream(getConfigurationFilename());
-        assert resourceAsStream != null;
+        if (resourceAsStream == null) {
+            throw new FileNotFoundException("No such file in resources " + getConfigurationFilename());
+        }
         T configuration = doLoadConfigurations(resourceAsStream);
         resourceAsStream.close();
         return configuration;

@@ -90,15 +90,4 @@ class LeadingOnesTest {
         int patchFitness = leadingOnes.calculatePatchFitness(Arrays.asList(5, 6));
         Assertions.assertEquals(4, patchFitness);
     }
-
-    @Test
-    void calculatePatchFitnessTestBadPatchCase() {
-        boolean[] offspring = new boolean[10];
-        Arrays.fill(offspring, true);
-        offspring[9] = false;
-        LeadingOnes leadingOnes = new LeadingOnes(offspring);
-        Assertions.assertEquals(9, leadingOnes.getFitness());
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> leadingOnes.calculatePatchFitness(Arrays.asList(6, 5)));
-    }
 }

@@ -140,69 +140,69 @@ class EpistasisTest {
                 1);
     }
 
-    @Test
-    public void testEpistatisBuffTransformationPatch1() {
-        doTestEpistasisWithPatch(
-                new boolean[]{true, false, false, true},
-                Arrays.asList(0, 3),
-                new boolean[]{false, false, false, false});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch2() {
-        doTestEpistasisWithPatch(
-                new boolean[]{false, true, true, true},
-                Arrays.asList(1, 2),
-                new boolean[]{true, true, false, true});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch3() {
-        doTestEpistasisWithPatch(
-                new boolean[]{false, false, true, true},
-                Arrays.asList(3),
-                new boolean[]{true, false, true, true});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch4() {
-        doTestEpistasisWithPatch(
-                new boolean[]{true, false, false, false},
-                Arrays.asList(0, 1),
-                new boolean[]{false, true, true, true});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch5() {
-        doTestEpistasisWithPatch(
-                new boolean[]{false, false, true, true},
-                Arrays.asList(2),
-                new boolean[]{false, false, false, true});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch6() {
-        doTestEpistasisWithPatch(
-                new boolean[]{false, true, true, true},
-                Arrays.asList(1),
-                new boolean[]{false, true, true, false});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch7() {
-        doTestEpistasisWithPatch(
-                new boolean[]{true, false, true, false},
-                Arrays.asList(0,1,2,3),
-                new boolean[]{true, false, true, false});
-    }
-
-    @Test
-    public void testEpistatisBuffTransformationPatch8() {
-        doTestEpistasisWithPatch(
-                new boolean[]{false, true, false, true},
-                Arrays.asList(2,3),
-                new boolean[]{true, true, false, false});
-    }
+//    @Test
+//    public void testEpistatisBuffTransformationPatch1() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{true, false, false, true},
+//                Arrays.asList(0, 3),
+//                new boolean[]{false, false, false, false});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch2() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{false, true, true, true},
+//                Arrays.asList(1, 2),
+//                new boolean[]{true, true, false, true});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch3() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{false, false, true, true},
+//                Arrays.asList(3),
+//                new boolean[]{true, false, true, true});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch4() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{true, false, false, false},
+//                Arrays.asList(0, 1),
+//                new boolean[]{false, true, true, true});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch5() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{false, false, true, true},
+//                Arrays.asList(2),
+//                new boolean[]{false, false, false, true});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch6() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{false, true, true, true},
+//                Arrays.asList(1),
+//                new boolean[]{false, true, true, false});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch7() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{true, false, true, false},
+//                Arrays.asList(0,1,2,3),
+//                new boolean[]{true, false, true, false});
+//    }
+//
+//    @Test
+//    public void testEpistatisBuffTransformationPatch8() {
+//        doTestEpistasisWithPatch(
+//                new boolean[]{false, true, false, true},
+//                Arrays.asList(2,3),
+//                new boolean[]{true, true, false, false});
+//    }
 
     private void doTestEpistasisWithPatch(boolean[] individual, List<Integer> patch, boolean[] expectedAfter) {
         Epistasis epistasis = new Epistasis(individual, 4);
