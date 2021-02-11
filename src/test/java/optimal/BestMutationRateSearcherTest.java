@@ -1,26 +1,27 @@
 package optimal;
 
-import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.OptimalMutationRateSearchingSingleExperimentConfiguration;
 import optimal.configuration.algorithms.AlgorithmConfig;
-import optimal.configuration.algorithms.TwoRateConfig;
-import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
 import optimal.configuration.problems.ProblemConfig;
-import optimal.configuration.runs.FixedRunsConfiguration;
+import optimal.configuration.vectorGeneration.PrecomputedVectorReadingConfiguration;
 import optimal.execution.ResultEntity;
 import optimal.execution.events.EventType;
 import optimal.execution.events.EventsManager;
 import optimal.execution.events.ResultEntityObtainedEvent;
-import optimal.heuristics.ExperimentState;
-import optimal.heuristics.OneMaxHeuristics;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import problem.ProblemsManager;
 
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-
-import static optimal.configuration.OneExperimentConfiguration.DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS;
 
 class BestMutationRateSearcherTest {
 
@@ -30,49 +31,44 @@ class BestMutationRateSearcherTest {
         }
     };
 
-//    @Test
-//    void getBestMutationProbabilities() {
-//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 200),
-//                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
-//                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 33, 67,
-//                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
-//        ));
-//        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
-//        searcher.getBestMutationProbabilities();
-//    }
-//
-//    @Test
-//    void getBestMutationProbabilitiesTest2() {
-//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
-//                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
-//                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
-//                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)
-//        ));
-//        searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
-//        searcher.getBestMutationProbabilities();
-//    }
-//
-//    @Test
-//    void getBestMutationProbabilitiesTest3() {
-//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
-//                new TwoRateConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10, 0.01),
-//                new FixedRunsConfiguration(DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS), 17, 34,
-//                new ExponentialGridConfiguration(10, -2, -1, 0.1)));
-//        searcher.addListener(consumer, EventType.INTERMEDIATE_RESULT_READY);
-//        searcher.getBestMutationProbabilities();
-//    }
-//
-//    @Test
-//    void getBestMutationProbabilitiesTest4() {
-//        BestMutationRateSearcher searcher = new BestMutationRateSearcher(new OneExperimentConfiguration(
-//                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX, 100),
-//                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 10),
-//                new FixedRunsConfiguration(40000), 50, 100,
-//                new IterativeProbabilityConfiguration(0.1, 0.5, 0.1)));
-//        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
-//        searcher.getBestMutationProbabilities();
-//    }
+    private void doTestMutationProbabilities(OptimalMutationRateSearchingSingleExperimentConfiguration configuration, String filename) throws IOException {
+        URL resource = getClass().getClassLoader().getResource("optimalData/" + filename);
+        assert resource != null;
+        String resourcePath = resource.getPath();
+        List<String> expectedStrings = Files.readAllLines(Paths.get(resourcePath));
+        ArrayList<Double> firstElements = new ArrayList<>();
+        ArrayList<Double> secondElements = new ArrayList<>();
+        for (String line : expectedStrings) {
+            String[] s = line.split(" ");
+            firstElements.add(Double.parseDouble(s[0]));
+            secondElements.add(Double.parseDouble(s[1]));
+        }
+        AtomicInteger cnt = new AtomicInteger(0);
+        final double EPS = 0.01;
+        final Consumer<EventsManager.Event> consumer = event -> {
+            if (event instanceof ResultEntityObtainedEvent) {
+                ResultEntity resultEntity = ((ResultEntityObtainedEvent) event).getResultEntity();
+                Assertions.assertEquals(firstElements.get(cnt.get()), resultEntity.bestProbability);
+                Assertions.assertTrue(Math.abs(secondElements.get(cnt.get()) - resultEntity.optimizationTime) < EPS);
+                cnt.incrementAndGet();
+            }
+        };
+        final BestMutationRateSearcher searcher = new BestMutationRateSearcher(configuration);
+        searcher.addListener(consumer, EventType.OPTIMAL_RESULT_READY);
+        searcher.getBestMutationProbabilities();
+    }
+
+    @Test
+    void getBestMutationProbabilities() throws IOException {
+        URL resource = getClass().getClassLoader().getResource("optimalData/vectors0");
+        assert resource != null;
+        String resourcePath = resource.getPath();
+        doTestMutationProbabilities(new OptimalMutationRateSearchingSingleExperimentConfiguration(
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_RUGGEDNESS, 100),
+                new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 2),
+                80, 100,
+                new IterativeProbabilityConfiguration(0.001, 0.05, 0.001),
+                new PrecomputedVectorReadingConfiguration("", resourcePath)), "bestMutationProbCorrect.csv");
+    }
+
 }

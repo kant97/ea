@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 
 class ConfigurationToNumberTranslatorTest {
 
-    @RepeatedTest(50)
+    @RepeatedTest(5)
     public void testTranslationToNumber() throws IOException, ConfigurationException {
         final OneExperimentConfiguration configuration = getExperimentConfiguration("basicConfig.json");
         final ConfigurationToNumberTranslator configurationToNumberTranslator =
@@ -34,7 +34,7 @@ class ConfigurationToNumberTranslatorTest {
         Assertions.assertEquals(2550, num);
     }
 
-    @RepeatedTest(1000)
+    @RepeatedTest(10)
     public void testTranslationToNumberWithShiftOfProbability() throws IOException,
             ConfigurationException {
         final OneExperimentConfiguration configuration = getExperimentConfiguration("basicConfig.json");
