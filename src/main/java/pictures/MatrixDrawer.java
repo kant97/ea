@@ -30,7 +30,9 @@ public class MatrixDrawer {
         this.myOneWidth = myPlotWidth / this.numCols;
         this.numRows = numRows;
         this.myOneHeight = myPlotHeight / this.numRows;
-        this.myLineStroke = new BasicStroke(1f);
+        System.setProperty("awt.useSystemAAFontSettings","on");
+        System.setProperty("swing.aatext", "true");
+        this.myLineStroke = new BasicStroke(3f);
     }
 
     protected void drawRect(int matrixRowInd, int matrixColInd, int rgdColor) {
@@ -76,7 +78,7 @@ public class MatrixDrawer {
         myGraphics.drawLine(xBegin, yBegin, xEnd, yEnd);
         graphics.setStroke(defaultStroke);
         final int minL = Math.min(myOneHeight, myOneWidth);
-        final int d = 4 * minL / 8;
+        final int d = 6 * minL / 8;
         drawCenteredCircle(xBegin, yBegin, d);
         drawCenteredCircle(xEnd, yEnd, d);
     }

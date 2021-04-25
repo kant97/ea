@@ -1,5 +1,6 @@
 package pictures;
 
+import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
 import org.ejml.simple.SimpleMatrix;
 import pictures.processing.AlgorithmData;
@@ -9,34 +10,34 @@ import java.util.*;
 
 public class MyNewMain {
     public static void main(String[] args) {
-        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("/home/kirill.antonov/itmo/Research" +
-                "/IrasEngine/ea/all-vectors-plateau/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
+        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("all8-vectors-ruggedness/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
         matrixDataProcessor.loadData();
         final SimpleMatrix matrix = matrixDataProcessor.getProcessedData();
-        final MatrixDataProcessor matrixDataProcessor2 = new MatrixDataProcessor("/home/kirill.antonov/itmo/Research" +
-                "/IrasEngine/ea/all-vectors-plateau/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
+        final MatrixDataProcessor matrixDataProcessor2 = new MatrixDataProcessor("all7-vectors-ruggedness/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
         matrixDataProcessor2.loadData();
-        final AlgorithmLogDataProcessor dataProcessor = new AlgorithmLogDataProcessor("/home/kirill" +
-                ".antonov/itmo/Research/IrasEngine/ea/twoRateRun0.csv");
+        final MatrixDataProcessor matrixDataProcessor3 = new MatrixDataProcessor("all6-vectors-ruggedness/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
+        matrixDataProcessor3.loadData();
+        final AlgorithmLogDataProcessor dataProcessor = new AlgorithmLogDataProcessor("abRun0.csv");
         dataProcessor.loadData();
         final ArrayList<AlgorithmData> processedData1 = dataProcessor.getProcessedData();
-        final MatrixWrapper matrixWrapper = new MatrixWrapper(matrix, new IterativeProbabilityConfiguration(0.01, 0.5
-                , 0.01));
-        final MatrixWrapper matrixWrapper2 = new MatrixWrapper(matrixDataProcessor2.getProcessedData(),
-                new IterativeProbabilityConfiguration(0.0001, 0.01, 0.0001));
-        final int optimalValue = 51;
+//        final MatrixWrapper matrixWrapper = new MatrixWrapper(matrix, new ExponentialGridConfiguration(2.718281828459045, -4.6, 0.0, 0.046));
+        final MatrixWrapper matrixWrapper2 = new MatrixWrapper(matrixDataProcessor.getProcessedData(),
+                new ExponentialGridConfiguration(2.718281828459045, -9.210340371976182, 0.0, 0.09210340371976182));
+//        final MatrixWrapper matrixWrapper3 = new MatrixWrapper(matrixDataProcessor3.getProcessedData(),
+//                new IterativeProbabilityConfiguration(0.01,0.5,0.01));
+        final int optimalValue = 100;
         final int lambda = 512;
-        Map<Integer, Double> fitnessToBestRunTime = new HashMap<>();
+        Map<Integer, Double> fitnessDistToBestRunTime = new HashMap<>();
         for (int i = 0; i < matrix.numCols(); i++) {
             double bestRunTime = Double.MAX_VALUE;
             for (int j = 0; j < matrix.numRows(); j++) {
                 bestRunTime = Math.min(matrix.get(j, i), bestRunTime);
             }
-            fitnessToBestRunTime.put(i + 1, bestRunTime);
+            fitnessDistToBestRunTime.put(i + 1, bestRunTime);
         }
 
         final ArrayList<Pair<Integer, Double>> diff = new ArrayList<>();
-        final List<MatrixWrapper> wrappers = Arrays.asList(matrixWrapper, matrixWrapper2);
+        final List<MatrixWrapper> wrappers = Arrays.asList( matrixWrapper2);
         for (AlgorithmData algorithmData : processedData1) {
             final int fitnessDist = optimalValue - algorithmData.getFitness();
             if (fitnessDist == 0) continue;
@@ -57,7 +58,7 @@ public class MyNewMain {
                 return;
             }
             final Double runTime = myWrapper.getExpectedTime(fitnessDist, algorithmData.getMutationRate());
-            final Double bestRunTime = fitnessToBestRunTime.get(fitnessDist);
+            final Double bestRunTime = fitnessDistToBestRunTime.get(fitnessDist);
             double runTimeDiff = runTime - bestRunTime;
             if (Math.abs(Double.MAX_VALUE - runTime) < 1.) runTimeDiff = Double.MAX_VALUE;
             diff.add(new Pair<>(algorithmData.getIterationNumber(), runTimeDiff));
@@ -68,13 +69,13 @@ public class MyNewMain {
             throw new IllegalStateException("No max non inf in diff");
         }
         final double maxNonInf = maxNonInfOptional.get();
-        System.out.println("Max non inf: " + maxNonInf / lambda);
+        System.out.println("Max non inf: " + maxNonInf);
         final double newInf = 2 * maxNonInf;
         System.out.println("IterationNumber,FitnessDiff");
         for (Pair<Integer, Double> integerDoublePair : diff) {
             double element = integerDoublePair.second;
             if (Math.abs(Double.MAX_VALUE - integerDoublePair.second) < 1.) element = newInf;
-            element = element / lambda;
+//            element = element / lambda;
             System.out.println(integerDoublePair.first + "," + element);
         }
     }

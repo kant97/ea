@@ -6,6 +6,8 @@ import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
 public class MatrixWrapper {
+    private static final double EPS = 0.00000001;
+
     @NotNull
     private final SimpleMatrix matrix;
     @NotNull
@@ -44,7 +46,7 @@ public class MatrixWrapper {
         while (rightK - leftK > 1) {
             final int m = (leftK + rightK) / 2;
             final double curBoxMutationRate = probabilitySearcher.getProbabilityOnStepN(m);
-            if (curBoxMutationRate <= mutationRate) {
+            if (curBoxMutationRate <= mutationRate || Math.abs(curBoxMutationRate - mutationRate) < EPS) {
                 leftK = m;
             } else {
                 rightK = m;
@@ -52,7 +54,7 @@ public class MatrixWrapper {
         }
         final double curBoxMutationRate = probabilitySearcher.getProbabilityOnStepN(leftK);
         final double nextBoxMutationRate = probabilitySearcher.getProbabilityOnStepN(leftK + 1);
-        if (!(curBoxMutationRate <= mutationRate) || !(mutationRate < nextBoxMutationRate)) {
+        if (!(curBoxMutationRate <= mutationRate || Math.abs(curBoxMutationRate - mutationRate) < EPS) || !(mutationRate < nextBoxMutationRate)) {
             throw new IllegalStateException("Failed to correctly calculate box for mutation rate " + mutationRate);
         }
         return leftK;

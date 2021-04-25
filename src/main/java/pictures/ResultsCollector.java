@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class ResultsCollector {
     public static void main(String[] args) {
-        new ResultsCollector().printLambdaToRuntime("all2-vectors-ruggedness");
+        new ResultsCollector().printLambdaToRuntime("all8-vectors-ruggedness");
     }
 
     public static class Table {
@@ -48,7 +48,7 @@ public class ResultsCollector {
 
     private void printLambdaToRuntime(String directoryWithOptimalResults) {
         final Collection<Table> tables = collectResults(directoryWithOptimalResults);
-        final Path directoryPath = Paths.get("/home/kirill.antonov/itmo/Research/data");
+        final Path directoryPath = Paths.get("/home/kirant/Projects/Research/IrasEngine/data");
         final String texStringTemplate = "\t\\addplot table [x=fitness, y=mutationRate, col sep=comma] " +
                 "{data/l$LAMBDA_VALUE$.csv};\n" +
                 "\t\\addlegendentry{$ \\lambda = $LAMBDA_VALUE$ $}\n";

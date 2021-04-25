@@ -1,5 +1,6 @@
 package pictures;
 
+import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import optimal.utils.DataProcessor;
@@ -7,9 +8,9 @@ import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pictures.coloring.AbstractColouring;
-import pictures.heatmap.PlottableInHeatmapAlgorithmData;
 import pictures.heatmap.HeatmapPainter;
 import pictures.heatmap.MatrixLine;
+import pictures.heatmap.PlottableInHeatmapAlgorithmData;
 import pictures.heatmap.ViridisPlotDrawer;
 
 import javax.imageio.ImageIO;
@@ -77,20 +78,20 @@ public class ColorfulPicturePainter extends Frame {
     }
 
     public static void main(String[] a) {
-        final String directoryWithOptimalResults = "all7-vectors-ruggedness";
-        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy
-        .MULTIPLICATIVE,
-                "multiplicativeHeatmap");
-        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
-                "modifiedHeatmap");
-        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
-                "initialHeatmap");
+        final String directoryWithOptimalResults = "all8-vectors-ruggedness";
+//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy
+//        .MULTIPLICATIVE,
+//                "multiplicativeHeatmap");
+//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.MODIFIED,
+//                "modifiedHeatmap");
+//        drawHeatMapsForAllSubdirectories(directoryWithOptimalResults, AbstractColouring.ColoringStrategy.INITIAL,
+//                "initialHeatmap");
 //
 //        drawHeatMapsOneResult("tmp/A1.csv");
 //        drawHeatMapsOneResult("tmp/A2.csv");
 //        drawHeatMapsOneResult("all2-vectors-ruggedness/optimal_for_lambda=32/allIntermediateResults.csv");
 //        printLambdaToRuntime("all2-vectors-ruggedness");
-//        drawHeatMapOneResult();
+        drawHeatMapOneResult();
     }
 
     private static void drawHeatMapsOneResult(String resultFile) {
@@ -104,15 +105,15 @@ public class ColorfulPicturePainter extends Frame {
     }
 
     private static void drawHeatMapOneResult() {
-        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("all-vectors-plateau" +
+        final MatrixDataProcessor matrixDataProcessor = new MatrixDataProcessor("all8-vectors-ruggedness" +
                 "/optimal_for_lambda=512/allIntermediateResults.csv", 9, 8, 10);
         matrixDataProcessor.loadData();
         final HeatmapPainter heatmapPainter = new HeatmapPainter(matrixDataProcessor.getProcessedData());
-        heatmapPainter.addHeatmap(AbstractColouring.ColoringStrategy.MULTIPLICATIVE);
-        final IterativeProbabilityConfiguration probabilitySamplingConfiguration =
-                new IterativeProbabilityConfiguration(0.01, 0.5, 0.01);
-        final int optimalValue = 51;
-        final int minFitness = 26;
+        heatmapPainter.addHeatmap(AbstractColouring.ColoringStrategy.MODIFIED);
+        final ExponentialGridConfiguration probabilitySamplingConfiguration =
+                new ExponentialGridConfiguration(2.718281828459045, -9.210340371976182, 0, 0.09210340371976182);
+        final int optimalValue = 100;
+        final int minFitness = 0;
         for (int i = 0; i < 1; i++) {
             heatmapPainter.addLineChart(new PlottableInHeatmapAlgorithmData(Paths.get("abRun" + i + ".csv"),
                     Color.RED, optimalValue, probabilitySamplingConfiguration, minFitness));

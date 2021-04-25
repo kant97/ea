@@ -1,6 +1,7 @@
 package optimal.oneStepAlgorithms;
 
 import algo.TwoRate;
+import org.jetbrains.annotations.Nullable;
 import problem.Problem;
 import utils.BestCalculatedPatch;
 
@@ -29,6 +30,11 @@ public class OneStepTwoRate extends TwoRate implements OneStepAlgorithm {
     public void resetState() {
         newFitnessOfOffspring = initialFitnessOfOffspring;
         mutationRate = initialR;
+    }
+
+    @Override
+    public @Nullable BestCalculatedPatch getMutatedIndividual() {
+        return null;
     }
 
     @Override

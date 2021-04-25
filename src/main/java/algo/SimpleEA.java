@@ -35,7 +35,7 @@ public class SimpleEA implements Algorithm {
     public void makeIteration() {
         iterCount++;
         BestCalculatedPatch best = new BestCalculatedPatch(mutationRate, lambda, problem);
-        if (best.fitness > problem.getFitness()) {
+        if (best.fitness >= problem.getFitness()) {
             updateProblemInstance(best);
         }
     }

@@ -25,18 +25,18 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class BestMutationRateSearcher {
-    private final ProblemsManager.ProblemType myProblemType;
-    private final double INFINITY = Double.MAX_VALUE;
-    private final int myProblemSize;
-    private final int myLambda;
-    private final int myBeginFitness;
-    private final int myEndFitness;
-    private final ProbabilitySamplingConfiguration myProbabilityEnumerationConfiguration;
-    private static final Double EPS = 0.0000000001;
-    private final StopConditionConfiguration myStopConditionConfiguration;
-    private final AbstractSingleExperimentConfiguration myConfiguration;
-    private final EventsManager myEventsManager;
-    private final VectorGenerationConfiguration.VectorGenerationStrategy myVectorGenerationStrategy;
+    protected final ProblemsManager.ProblemType myProblemType;
+    protected final double INFINITY = Double.MAX_VALUE;
+    protected final int myProblemSize;
+    protected final int myLambda;
+    protected final int myBeginFitness;
+    protected final int myEndFitness;
+    protected final ProbabilitySamplingConfiguration myProbabilityEnumerationConfiguration;
+    protected static final Double EPS = 0.0000000001;
+    protected final StopConditionConfiguration myStopConditionConfiguration;
+    protected final AbstractSingleExperimentConfiguration myConfiguration;
+    protected final EventsManager myEventsManager;
+    protected final VectorGenerationConfiguration.VectorGenerationStrategy myVectorGenerationStrategy;
 
     private BestMutationRateSearcher(@NotNull AbstractSingleExperimentConfiguration configuration,
                                      StopConditionConfiguration stopConditionConfiguration,

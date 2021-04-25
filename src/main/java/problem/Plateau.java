@@ -38,16 +38,24 @@ public class Plateau implements Problem {
 
     @Override
     public int calculatePatchFitness(List<Integer> patch) {
-        int newFitness = onesCount;
+        int res = (int) Math.floor(((double) getPatchOnesCount(patch)) / k) + 1;
+        return res;
+    }
+
+    public int getPatchOnesCount(List<Integer> patch) {
+        int newOnesCount = onesCount;
         for (Integer i : patch) {
             if (individual[i]) {
-                newFitness--;
+                newOnesCount--;
             } else {
-                newFitness++;
+                newOnesCount++;
             }
         }
-        int res = (int) Math.floor(((double) newFitness) / k) + 1;
-        return res;
+        return newOnesCount;
+    }
+
+    public boolean[] getIndividual() {
+        return individual;
     }
 
     @Override
@@ -71,7 +79,7 @@ public class Plateau implements Problem {
 
     @Override
     public int getOnesCount(int fitness) {
-        throw new IllegalStateException("Not implemented yet");
+        return onesCount;
     }
 
     @Override

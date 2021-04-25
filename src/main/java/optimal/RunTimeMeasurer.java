@@ -36,7 +36,7 @@ public class RunTimeMeasurer implements AutoCloseable {
     }
 
     public void runTwoRate() {
-        final TwoRate twoRate = new TwoRate(1., 1. / 10_0., 512, new Plateau(100, 2, 26));
+        final TwoRate twoRate = new TwoRate(1., 1. / 100., 512, new Ruggedness(100, 2, 0));
         int iterationNumber = 0;
         log(iterationNumber, twoRate.getFitness(), twoRate.getMutationRate());
         while (!twoRate.isFinished()) {
@@ -47,7 +47,7 @@ public class RunTimeMeasurer implements AutoCloseable {
     }
 
     public void runAb() {
-        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 10_0., 512, true, new Plateau(100, 2, 26));
+        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 10000., 512, true, new Ruggedness(100, 2, 0));
         int iterationNumber = 0;
         log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRate());
         while (!aBalgo.isFinished()) {

@@ -152,7 +152,7 @@ public class MathExpectationsCalc {
         final MathExpectationsCalc mathExpectationsCalc = new MathExpectationsCalc(size, problem);
 //        final Map<Integer, Double> lambdaToRuntime = getLambdaToRuntime("all7-vectors-ruggedness", optimal,
 //                mathExpectationsCalc);
-        final Map<Integer, Double> lambdaToRuntime = getExpectedRuntimesForAllLambdas(Arrays.asList(Paths.get("all7-vectors-ruggedness"), Paths.get("all4-vectors-ruggedness")), optimal, mathExpectationsCalc);
+        final Map<Integer, Double> lambdaToRuntime = getExpectedRuntimesForAllLambdas(Arrays.asList(Paths.get("all8-vectors-ruggedness"), Paths.get("all7-vectors-ruggedness")), optimal, mathExpectationsCalc);
         System.out.println("lambda, time");
         final List<Integer> sortedLambdas = lambdaToRuntime.keySet().stream().sorted().collect(Collectors.toList());
         for (int lambda : sortedLambdas) {

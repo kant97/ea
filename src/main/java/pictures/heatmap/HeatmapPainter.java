@@ -16,7 +16,7 @@ public class HeatmapPainter {
     private final @NotNull SimpleMatrix matrix;
 
     private final static int WIDTH = 800;
-    private final static int HEIGHT = 800;
+    private final static int HEIGHT = 808;
 
     /* Mutable */
     private ViridisPlotDrawer viridisPlotDrawer = null;

@@ -1,6 +1,7 @@
 package pictures.heatmap;
 
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
+import optimal.configuration.probability.ProbabilitySamplingConfiguration;
 import optimal.probabilitySampling.ProbabilitySearcher;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +17,11 @@ import java.util.List;
 public class PlottableInHeatmapAlgorithmData extends PlottableInMatrixData {
 
     private final int optimalValue;
-    private final IterativeProbabilityConfiguration probabilitySamplingConfiguration;
+    private final ProbabilitySamplingConfiguration probabilitySamplingConfiguration;
     private final int minFitness;
 
     public PlottableInHeatmapAlgorithmData(Path resultsFilePath, Color color, int optimalValue,
-                                           IterativeProbabilityConfiguration probabilitySamplingConfiguration,
+                                           ProbabilitySamplingConfiguration probabilitySamplingConfiguration,
                                            int minFitness) {
         super(resultsFilePath, color);
         this.optimalValue = optimalValue;
