@@ -17,21 +17,21 @@ public class RecoveryFitnessLevelVectorGenerator extends FitnessLevelVectorGener
         if (!Files.exists(Paths.get(vectorFqn))) {
             return true;
         }
-        final ProbabilityVectorProcessorImpl probabilityVectorProcessor = new ProbabilityVectorProcessorImpl(vectorFqn);
+        final RecoveryProbabilityVectorProcessorImpl probabilityVectorProcessor = new RecoveryProbabilityVectorProcessorImpl(vectorFqn);
         probabilityVectorProcessor.loadData();
         probabilityVectorProcessor.getProcessedData();
         return probabilityVectorProcessor.needRecovering;
     }
 
-    private final static class ProbabilityVectorProcessorImpl extends ProbabilityVectorProcessor {
-        boolean needRecovering = false;
+    public final static class RecoveryProbabilityVectorProcessorImpl extends ProbabilityVectorProcessor {
+        public boolean needRecovering = false;
 
-        public ProbabilityVectorProcessorImpl(@NotNull String csvFileName) {
+        public RecoveryProbabilityVectorProcessorImpl(@NotNull String csvFileName) {
             super(csvFileName);
         }
 
         @Override
-        protected void onParseNumberError(NumberFormatException e, @NotNull List<String> record) {
+        protected void onParseNumberError(Exception e, @NotNull List<String> record) {
             needRecovering = true;
         }
 

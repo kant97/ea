@@ -13,7 +13,7 @@ public class PlateauConfig extends ProblemConfig {
     private final int k;
 
     public PlateauConfig(ProblemsManager.ProblemType myType, int size, int k) {
-        super(myType, size);
+        super(myType, size, true);
         this.k = k;
     }
 

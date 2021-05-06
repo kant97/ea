@@ -16,7 +16,7 @@ public abstract class StopConditionConfiguration implements ValidatableConfigura
             public String toString() {
                 return "FIXED_SUCCESS";
             }
-        }
+        }, PI_EXIST_FIXED_RUNS , PI_EXIST_FIXED_SUCCESS
     }
 
     @NotNull

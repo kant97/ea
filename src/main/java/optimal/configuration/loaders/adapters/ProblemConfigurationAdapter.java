@@ -23,6 +23,8 @@ public class ProblemConfigurationAdapter implements JsonDeserializer<ProblemConf
             final int k = jsonObject.get("k").getAsInt();
             return new PlateauConfig(problemType, problemSize, k);
         }
-        return new ProblemConfig(problemType, problemSize);
+        final JsonElement isNonAcyclicFunctionJson = jsonObject.get("isNonAcyclicFunction");
+        final boolean haveCycles = isNonAcyclicFunctionJson != null && isNonAcyclicFunctionJson.getAsBoolean();
+        return new ProblemConfig(problemType, problemSize, haveCycles);
     }
 }

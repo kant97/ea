@@ -21,7 +21,7 @@ public class SingleExperiment {
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
         BestMutationRateSearcher searcher =
-                new BestMutationRateSearcher(new OneExperimentConfiguration(new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100),
+                new BestMutationRateSearcher(new OneExperimentConfiguration(new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_NEUTRALITY_3, 100, false),
                         new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.TWO_RATE, 10),
                         new FixedRunsConfiguration(OneExperimentConfiguration.DEFAULT_NUMBER_OF_ONE_STEP_REPETITIONS),
                         17, 34, new IterativeProbabilityConfiguration(0.1, 0.5,

@@ -1,12 +1,20 @@
 package optimal;
 
+import optimal.configuration.PiExistenceTransitionClusterConfiguration;
 import optimal.configuration.loaders.ManyExperimentsConfigurationLoader;
+import optimal.configuration.loaders.PiExistenceVectorGenerationLoader;
 import optimal.execution.cluster.GeneratedVectorProcessing;
 import optimal.execution.cluster.Utils;
 import optimal.execution.cluster.generation.configs.ClusterJsonConfigsGenerator;
 import optimal.execution.cluster.generation.vectors.FitnessLevelVectorGenerator;
+import optimal.optimal2.generation.ClusterPlacesManager;
+import optimal.optimal2.generation.InClusterTransitionsGenerator;
+import optimal.optimal2.generation.PiExistenceTransitionsWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import javax.naming.ConfigurationException;
+import java.io.IOException;
 
 public class InClusterExperiments {
     private static final Tool[] TOOLS = new Tool[]{new ConfigsGenerator(), new VectorGenerator(),
@@ -35,7 +43,7 @@ public class InClusterExperiments {
 
     private static final class ConfigsGenerator extends Tool {
         ConfigsGenerator() {
-            super("configsGenerator");
+            super("generateConfigs");
         }
 
         @Override
@@ -55,24 +63,13 @@ public class InClusterExperiments {
     }
 
     private static final class VectorGenerator extends Tool {
-        private static final String[] MODES = new String[]{"recovery", "usual"};
+        private static final String[] MODES = new String[]{"piExist", "piRecovery", "usualRecovery", "usual"};
 
         private @Nullable String myConfigFileName = null;
         private @Nullable String myMode = null;
 
         VectorGenerator() {
-            super("vectorGenerator");
-        }
-
-        @NotNull
-        private FitnessLevelVectorGenerator.Strategy getGenerationStrategy() {
-            if (myMode == null || myMode.equals(MODES[1])) {
-                return FitnessLevelVectorGenerator.Strategy.GENERATE_ALL;
-            }
-            if (myMode.equals(MODES[0])) {
-                return FitnessLevelVectorGenerator.Strategy.RECOVERY;
-            }
-            throw new IllegalStateException("Unknown mode " + myMode);
+            super("generateTransitions");
         }
 
         private void parseArguments(String[] args) {
@@ -98,14 +95,49 @@ public class InClusterExperiments {
             }
         }
 
+        void runMode() {
+            assert myConfigFileName != null;
+            if (myMode == null || myMode.equals(MODES[3])) {
+                FitnessLevelVectorGenerator fitnessLevelVectorGenerator = FitnessLevelVectorGenerator.createFitnessLevelVectorGenerator(myConfigFileName, FitnessLevelVectorGenerator.Strategy.GENERATE_ALL);
+                fitnessLevelVectorGenerator.generateFitnessIncreasesVector();
+                return;
+            }
+            if (myMode.equals(MODES[2])) {
+                FitnessLevelVectorGenerator fitnessLevelVectorGenerator = FitnessLevelVectorGenerator.createFitnessLevelVectorGenerator(myConfigFileName, FitnessLevelVectorGenerator.Strategy.RECOVERY);
+                fitnessLevelVectorGenerator.generateFitnessIncreasesVector();
+                return;
+            }
+            if (myMode.equals(MODES[0])) {
+                final InClusterTransitionsGenerator inClusterTransitionsGenerator = new InClusterTransitionsGenerator();
+                final PiExistenceVectorGenerationLoader piExistenceVectorGenerationLoader = new PiExistenceVectorGenerationLoader(myConfigFileName);
+                try {
+                    final PiExistenceTransitionClusterConfiguration configuration = piExistenceVectorGenerationLoader.getConfiguration();
+                    final ClusterPlacesManager clusterPlacesManager = new ClusterPlacesManager(".", configuration.getOutputDirectory(), configuration.getOutputFileName());
+                    final PiExistenceTransitionsWriter transitionsWriter = new PiExistenceTransitionsWriter(clusterPlacesManager);
+                    inClusterTransitionsGenerator.generateTransitions(configuration, transitionsWriter);
+                } catch (IOException | ConfigurationException e) {
+                    throw new IllegalStateException(e);
+                }
+                return;
+            }
+            if (myMode.equals(MODES[1])) {
+                final InClusterTransitionsGenerator inClusterTransitionsGenerator = new InClusterTransitionsGenerator();
+                final PiExistenceVectorGenerationLoader piExistenceVectorGenerationLoader = new PiExistenceVectorGenerationLoader(myConfigFileName);
+                try {
+                    final PiExistenceTransitionClusterConfiguration configuration = piExistenceVectorGenerationLoader.getConfiguration();
+                    final ClusterPlacesManager clusterPlacesManager = new ClusterPlacesManager(".", configuration.getOutputDirectory(), configuration.getOutputFileName());
+                    inClusterTransitionsGenerator.recoveryTransitions(configuration, clusterPlacesManager);
+                } catch (IOException | ConfigurationException e) {
+                    throw new IllegalStateException(e);
+                }
+                return;
+            }
+        }
+
         @Override
         void handle(String[] args) {
             parseArguments(args);
-            assert myConfigFileName != null;
-            final FitnessLevelVectorGenerator fitnessLevelVectorGenerator =
-                    FitnessLevelVectorGenerator.createFitnessLevelVectorGenerator(myConfigFileName,
-                            getGenerationStrategy());
-            fitnessLevelVectorGenerator.generateFitnessIncreasesVector();
+            runMode();
         }
 
         @Override

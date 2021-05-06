@@ -1,6 +1,8 @@
-package optimal.optimal2;
+package optimal.optimal2.generation;
 
 import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.algorithms.AlgorithmConfig;
+import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.runs.StopConditionConfiguration;
 import optimal.configuration.vectorGeneration.VectorGenerationConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -11,13 +13,16 @@ import static optimal.configuration.runs.StopConditionConfiguration.Strategy.FIX
 import static optimal.configuration.runs.StopConditionConfiguration.Strategy.FIXED_SUCCESS;
 
 public abstract class AbstractTransitionsGenerator {
-    public static AbstractTransitionsGenerator create(@NotNull OneExperimentConfiguration configuration,@NotNull VectorGenerationConfiguration.VectorGenerationStrategy strategy) {
+    public static AbstractTransitionsGenerator create(@NotNull StopConditionConfiguration stopConditionConfiguration,
+                                                      @NotNull ProblemConfig problemConfig,
+                                                      @NotNull AlgorithmConfig algorithmConfig,
+                                                      @NotNull VectorGenerationConfiguration.VectorGenerationStrategy strategy) {
         if (strategy == VectorGenerationConfiguration.VectorGenerationStrategy.RUN_TIME_VECTOR_GENERATION) {
-            StopConditionConfiguration.Strategy configMyStrategy = configuration.stopConditionConfig.getMyStrategy();
+            StopConditionConfiguration.Strategy configMyStrategy = stopConditionConfiguration.getMyStrategy();
             if (configMyStrategy == FIXED_RUNS) {
-                return new TransitionsGeneratorFixedRuns(configuration);
+                return new TransitionsGeneratorFixedRuns(stopConditionConfiguration, problemConfig, algorithmConfig);
             } else if (configMyStrategy == FIXED_SUCCESS) {
-                throw new IllegalStateException("Strategy " + configMyStrategy + " is not supported");
+                return new TransitionGenerationFixedSuccess(stopConditionConfiguration, problemConfig, algorithmConfig);
             }
             throw new IllegalStateException("Strategy " + configMyStrategy + " is not supported");
         } else if (strategy == VectorGenerationConfiguration.VectorGenerationStrategy.PRECOMPUTED_VECTOR_READING) {

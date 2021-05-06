@@ -41,11 +41,9 @@ public abstract class ProbabilityVectorGeneratorInRuntime implements Probability
                                                                                                  @NotNull AlgorithmConfig algorithmConfig,
                                                                                                  @NotNull StopConditionConfiguration stopConditionConfiguration) {
         if (stopConditionConfiguration.getMyStrategy() == StopConditionConfiguration.Strategy.FIXED_RUNS) {
-            return new ProbabilityVectorGeneratorInRuntimeFixedRuns(probability, problem, algorithmConfig,
-                    ((FixedRunsConfiguration) stopConditionConfiguration));
+            return new ProbabilityVectorGeneratorInRuntimeFixedRuns(probability, problem, algorithmConfig, ((FixedRunsConfiguration) stopConditionConfiguration));
         } else if (stopConditionConfiguration.getMyStrategy() == StopConditionConfiguration.Strategy.FIXED_SUCCESS) {
-            return new ProbabilityVectorGeneratorInRuntimeFixedSuccess(probability, problem,
-                    algorithmConfig, ((FixedSuccessConfiguration) stopConditionConfiguration));
+            return new ProbabilityVectorGeneratorInRuntimeFixedSuccess(probability, problem, algorithmConfig, ((FixedSuccessConfiguration) stopConditionConfiguration));
         }
         throw new IllegalArgumentException("Probability vector generator with strategy " + stopConditionConfiguration.getMyStrategy() + " is not supported");
     }

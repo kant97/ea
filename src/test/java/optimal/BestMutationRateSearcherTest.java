@@ -64,7 +64,7 @@ class BestMutationRateSearcherTest {
         assert resource != null;
         String resourcePath = resource.getPath();
         doTestMutationProbabilities(new OptimalMutationRateSearchingSingleExperimentConfiguration(
-                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_RUGGEDNESS, 100),
+                new ProblemConfig(ProblemsManager.ProblemType.ONE_MAX_RUGGEDNESS, 100, false),
                 new AlgorithmConfig(OneStepAlgorithmsManager.AlgorithmType.SIMPLE_ONE_PLUS_LAMBDA, 2),
                 80, 100,
                 new IterativeProbabilityConfiguration(0.001, 0.05, 0.001),

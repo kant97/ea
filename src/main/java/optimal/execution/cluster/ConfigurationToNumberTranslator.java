@@ -53,7 +53,7 @@ public class ConfigurationToNumberTranslator {
         return a < b;
     }
 
-    private int getMutationRateDistance(double mutationRate) {
+    public int getMutationRateDistance(double mutationRate) {
         final ProbabilitySearcher probabilitySearcher = getProbabilitySearcher(myCurrentConfiguration);
         int left = 0;
         int right = myProbabilityDistance + 1;

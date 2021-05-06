@@ -17,9 +17,12 @@ public class ProblemConfig implements ValidatableConfiguration, VisitableConfigu
     @SerializedName(value = "size", alternate = "mySize")
     private final int mySize;
 
-    public ProblemConfig(ProblemsManager.ProblemType myType, int size) {
+    private final boolean isNonAcyclicFunction;
+
+    public ProblemConfig(ProblemsManager.ProblemType myType, int size, boolean isNonAcyclicFunction) {
         this.myType = myType;
         this.mySize = size;
+        this.isNonAcyclicFunction = isNonAcyclicFunction;
     }
 
     public ProblemsManager.ProblemType getProblemType() {
@@ -62,5 +65,9 @@ public class ProblemConfig implements ValidatableConfiguration, VisitableConfigu
     @Override
     public @NotNull String accept(@NotNull ConfigurationVisitor visitor) {
         return visitor.visitProblemConfig(this);
+    }
+
+    public boolean isNonAcyclicFunction() {
+        return isNonAcyclicFunction;
     }
 }

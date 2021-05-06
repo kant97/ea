@@ -13,7 +13,7 @@ public class RuggednessConfig extends ProblemConfig {
     private final int r;
 
     public RuggednessConfig(ProblemsManager.ProblemType myType, int size, int r) {
-        super(myType, size);
+        super(myType, size, false);
         this.r = r;
     }
 

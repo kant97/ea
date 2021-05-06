@@ -13,7 +13,7 @@ public abstract class ProbabilityVectorProcessor extends DataProcessor<ArrayList
         super(csvFileName);
     }
 
-    protected abstract void onParseNumberError(NumberFormatException e, @NotNull List<String> record);
+    protected abstract void onParseNumberError(Exception e, @NotNull List<String> record);
 
     protected abstract boolean shouldContinue();
 
@@ -35,7 +35,7 @@ public abstract class ProbabilityVectorProcessor extends DataProcessor<ArrayList
             try {
                 fitnessIncrease = Integer.parseInt(record.get(0));
                 probability = Double.parseDouble(record.get(1));
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                 onParseNumberError(e, record);
                 if (shouldContinue()) {
                     continue;

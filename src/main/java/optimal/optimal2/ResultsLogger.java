@@ -46,6 +46,7 @@ public class ResultsLogger implements AutoCloseable {
         final AbstractSingleExperimentConfiguration configuration = results.getConfiguration();
         try {
             writer.write(configuration.accept(new CsvExportConfigurationVisitor()));
+            writer.write(extraDataLen == 0 ? '\n' : ',');
             for (int i = 0; i < extraDataLen; i++) {
                 writer.write(results.getExtraDataValue(ENTRIES[ENTRIES.length - extraDataLen + i]));
                 writer.write(i == extraDataLen - 1 ? '\n' : ',');

@@ -45,7 +45,7 @@ public class PrecomputedProbabilityVectorsReader implements ProbabilityVectorGen
         }
 
         @Override
-        protected void onParseNumberError(NumberFormatException e, @NotNull List<String> record) {
+        protected void onParseNumberError(Exception e, @NotNull List<String> record) {
             System.err.println("Failed to parse " + record + " for file " + csvFileName);
         }
 

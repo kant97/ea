@@ -1,9 +1,12 @@
 package optimal.optimal2;
 
 import algo.Algorithm;
-import optimal.configuration.OneExperimentConfiguration;
+import optimal.configuration.algorithms.AlgorithmConfig;
+import optimal.configuration.problems.ProblemConfig;
+import optimal.configuration.runs.StopConditionConfiguration;
 import optimal.oneStepAlgorithms.OneStepAlgorithm;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
+import optimal.optimal2.generation.AbstractTransitionsGenerator;
 import org.jetbrains.annotations.NotNull;
 import problem.Problem;
 import utils.BestCalculatedPatch;
@@ -12,18 +15,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class TransitionGenerationRunTime extends AbstractTransitionsGenerator {
-    private final OneExperimentConfiguration myConfiguration;
+    private final StopConditionConfiguration myStopConditionConfiguration;
+    private final AlgorithmConfig myAlgorithmConfiguration;
     private final AbstractPiExistenceClassesManager myPiExistenceClassesManager;
 
-    protected TransitionGenerationRunTime(@NotNull OneExperimentConfiguration configuration) {
-        myConfiguration = configuration;
-        myPiExistenceClassesManager = AbstractPiExistenceClassesManager.create(configuration.problemConfig);
+    protected TransitionGenerationRunTime(@NotNull StopConditionConfiguration stopConditionConfiguration, @NotNull ProblemConfig problemConfig, @NotNull AlgorithmConfig algorithmConfig) {
+        myStopConditionConfiguration = stopConditionConfiguration;
+        myAlgorithmConfiguration = algorithmConfig;
+        myPiExistenceClassesManager = AbstractPiExistenceClassesManager.create(problemConfig);
     }
 
     @Override
     public @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId) {
         final Problem individual = myPiExistenceClassesManager.getAnyIndividualById(piExistenceClassId);
-        final OneStepAlgorithm algorithm = OneStepAlgorithmsManager.createAlgorithm(r, myConfiguration.algorithmConfig, individual);
+        final OneStepAlgorithm algorithm = OneStepAlgorithmsManager.createAlgorithm(r, myAlgorithmConfiguration, individual);
         final int beginFitness = individual.getFitness();
         final Map<Integer, Integer> cntOfId = new HashMap<>();
         int runNumber = 0;
@@ -31,11 +36,8 @@ public abstract class TransitionGenerationRunTime extends AbstractTransitionsGen
             algorithm.makeIteration();
             final BestCalculatedPatch patch = algorithm.getMutatedIndividual();
             final int newFitness = patch == null ? beginFitness : patch.fitness;
-            if (newFitness > beginFitness) {
-                update(cntOfId, myPiExistenceClassesManager.getIdByIndividual(individual, patch));
-            } else {
-                update(cntOfId, piExistenceClassId);
-            }
+            final int newClassId = patch == null ? piExistenceClassId : myPiExistenceClassesManager.getIdByIndividual(individual, patch);
+            update(cntOfId, newClassId);
             onIterationFinished(beginFitness, newFitness, algorithm);
             algorithm.resetState();
         }
