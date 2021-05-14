@@ -9,10 +9,11 @@ import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 import optimal.configuration.runs.FixedRunsConfiguration;
 import optimal.configuration.runs.FixedSuccessConfiguration;
+import optimal.configuration.transitionsGeneration.PrecomputedTransitionsReadingConfiguration;
+import optimal.configuration.transitionsGeneration.TransitionsGenerationConfiguration;
 import optimal.configuration.vectorGeneration.PrecomputedVectorReadingConfiguration;
 import optimal.configuration.vectorGeneration.RunTimeGenerationConfiguration;
 import org.jetbrains.annotations.NotNull;
-import problem.Plateau;
 
 public interface ConfigurationVisitor {
     @NotNull String visitAlgorithmConfig(@NotNull AlgorithmConfig algorithmConfig);
@@ -44,4 +45,8 @@ public interface ConfigurationVisitor {
     @NotNull String visitProbabilityVectorGenerationConfiguration(@NotNull ProbabilityVectorGenerationConfiguration configuration);
 
     @NotNull String visitUsualConfiguration(@NotNull UsualConfiguration configuration);
+
+    @NotNull String visitTransitionsGenerationConfiguration(@NotNull TransitionsGenerationConfiguration configuration);
+
+    @NotNull String visitMainConfiguration(@NotNull MainConfiguration configuration);
 }

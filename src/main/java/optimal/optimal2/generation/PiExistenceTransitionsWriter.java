@@ -15,8 +15,7 @@ public class PiExistenceTransitionsWriter {
     }
 
     public void writeResults(@NotNull Map<Integer, Double> transitions) {
-        try (final BufferedWriter writer =
-                     new BufferedWriter(new FileWriter(filePath.toFile()))) {
+        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
             writeResultsWithWriter(transitions, writer);
         } catch (IOException e) {
             try {

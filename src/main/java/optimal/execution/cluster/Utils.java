@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Utils {
-    public final static String RESULTS_DIRECTORY_NAME = "vectors";
+    public final static String RESULTS_DIRECTORY_NAME = "transitions";
 //    public static final String RESULTS_DIRECTORY = "./" + RESULTS_DIRECTORY_NAME + "/";
     private static final String CONFIGURATIONS_DIRECTORY_NAME = "jsonConfigs";
     public static final String CONFIGURATIONS_DIRECTORY = "./" + CONFIGURATIONS_DIRECTORY_NAME + "/";

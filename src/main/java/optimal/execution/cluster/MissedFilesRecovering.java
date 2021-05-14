@@ -6,11 +6,10 @@ import optimal.configuration.loaders.ProbabilityVectorGenerationConfigurationLoa
 import optimal.execution.ExecutionManager;
 import optimal.execution.cluster.generation.vectors.FitnessLevelVectorGenerator;
 import optimal.execution.cluster.generation.vectors.VectorGenerationEvent;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -44,10 +43,10 @@ public class MissedFilesRecovering {
         int num = 101;
         final List<Future<?>> futures = new ArrayList<>();
         for (int f = myOneExperimentConfiguration.endFitness - 1; f >= myOneExperimentConfiguration.beginFitness; f--) {
-            final ProbabilitySearcher probabilitySearcher =
-                    ProbabilitySearcher.createProbabilitySearcher(myOneExperimentConfiguration.probabilityEnumeration);
-            for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished();
-                 p = probabilitySearcher.getNextProb()) {
+            final ProbabilitySpace probabilitySpace =
+                    ProbabilitySpace.createProbabilitySpace(myOneExperimentConfiguration.probabilityEnumeration);
+            for (double p = probabilitySpace.getInitialProbability(); !probabilitySpace.isFinished();
+                 p = probabilitySpace.getNextProb()) {
                 final int fileId = myConfigurationToNumberTranslator.translateFitnessAndMutationRateToNumber(f, p);
                 if (fileId != num) {
                     throw new IllegalStateException("Everything is broken");

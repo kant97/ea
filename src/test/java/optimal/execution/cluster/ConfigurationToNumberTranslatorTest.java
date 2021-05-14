@@ -2,7 +2,7 @@ package optimal.execution.cluster;
 
 import optimal.configuration.OneExperimentConfiguration;
 import optimal.configuration.loaders.OneExperimentConfigurationLoader;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
@@ -21,10 +21,10 @@ class ConfigurationToNumberTranslatorTest {
                 new ConfigurationToNumberTranslator(configuration);
         int num = 50;
         for (int fitness = configuration.endFitness - 1; fitness >= configuration.beginFitness; fitness--) {
-            final ProbabilitySearcher probabilitySearcher =
-                    ProbabilitySearcher.createProbabilitySearcher(configuration.probabilityEnumeration);
-            for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished(); p =
-                    probabilitySearcher.getNextProb()) {
+            final ProbabilitySpace probabilitySpace =
+                    ProbabilitySpace.createProbabilitySpace(configuration.probabilityEnumeration);
+            for (double p = probabilitySpace.getInitialProbability(); !probabilitySpace.isFinished(); p =
+                    probabilitySpace.getNextProb()) {
                 final int actualNumber =
                         configurationToNumberTranslator.translateFitnessAndMutationRateToNumber(fitness, p);
                 Assertions.assertEquals(num, actualNumber);
@@ -59,10 +59,10 @@ class ConfigurationToNumberTranslatorTest {
     private void iterateFitnessAndProbability(@NotNull OneExperimentConfiguration configuration,
                                               @NotNull BiConsumer<Integer, Double> consumer) {
         for (int fitness = configuration.endFitness - 1; fitness >= configuration.beginFitness; fitness--) {
-            final ProbabilitySearcher probabilitySearcher =
-                    ProbabilitySearcher.createProbabilitySearcher(configuration.probabilityEnumeration);
-            for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished(); p =
-                    probabilitySearcher.getNextProb()) {
+            final ProbabilitySpace probabilitySpace =
+                    ProbabilitySpace.createProbabilitySpace(configuration.probabilityEnumeration);
+            for (double p = probabilitySpace.getInitialProbability(); !probabilitySpace.isFinished(); p =
+                    probabilitySpace.getNextProb()) {
                 consumer.accept(fitness, p);
             }
         }

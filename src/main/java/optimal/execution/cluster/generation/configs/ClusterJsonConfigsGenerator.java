@@ -10,7 +10,8 @@ import optimal.execution.cluster.ConfigurationToNumberTranslator;
 import optimal.execution.cluster.Utils;
 import optimal.execution.cluster.generation.VectorsDirectoryNameGenerator;
 import optimal.optimal2.AbstractPiExistenceClassesManager;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.optimal2.generation.MyConventionCsvNamesGenerator;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.ConfigurationException;
@@ -51,16 +52,16 @@ public class ClusterJsonConfigsGenerator {
 
     //    Files will be c<pi existence class id>_r<mutation rate distance value>.json
     private void generateForNonAcyclicFitnessFunction(@NotNull OneExperimentConfiguration oneExperimentConfiguration) {
-        final ConfigurationToNumberTranslator configurationToNumberTranslator = new ConfigurationToNumberTranslator(oneExperimentConfiguration);
         final String resultDirectory = "./" + vectorsDirectoryNameGenerator.generateNewResultsDirectoryName() + "/";
+        final MyConventionCsvNamesGenerator namesGenerator = new MyConventionCsvNamesGenerator(oneExperimentConfiguration.getProbabilityEnumerationConfiguration());
         preparePlaceForFiles(oneExperimentConfiguration, resultDirectory);
         final AbstractPiExistenceClassesManager piExistenceClassesManager = AbstractPiExistenceClassesManager.create(oneExperimentConfiguration.problemConfig);
         for (int fitness = oneExperimentConfiguration.endFitness - 1; fitness >= oneExperimentConfiguration.beginFitness; fitness--) {
-            final ProbabilitySearcher ps = ProbabilitySearcher.createProbabilitySearcher(oneExperimentConfiguration.probabilityEnumeration);
+            final ProbabilitySpace ps = ProbabilitySpace.createProbabilitySpace(oneExperimentConfiguration.probabilityEnumeration);
             for (double r = ps.getInitialProbability(); !ps.isFinished(); r = ps.getNextProb()) {
                 final List<Integer> curPiExistenceClasses = piExistenceClassesManager.getPiExistenceClassesWithFitness(fitness);
                 for (int piExistenceClassId : curPiExistenceClasses) {
-                    final String fileName = "c" + piExistenceClassId + "_r" + configurationToNumberTranslator.getMutationRateDistance(r);
+                    final String fileName = namesGenerator.getCsvFileName(piExistenceClassId, r);
                     writeNonAcyclicConfigToFile(new PiExistenceTransitionClusterConfiguration(
                                     r,
                                     fitness,
@@ -83,10 +84,10 @@ public class ClusterJsonConfigsGenerator {
         String resultDirectory = "./" + vectorsDirectoryNameGenerator.generateNewResultsDirectoryName() + "/";
         preparePlaceForFiles(oneExperimentConfiguration, resultDirectory);
         for (int f = oneExperimentConfiguration.beginFitness; f < oneExperimentConfiguration.endFitness; f++) {
-            final ProbabilitySearcher probabilitySearcher =
-                    ProbabilitySearcher.createProbabilitySearcher(oneExperimentConfiguration.getProbabilityEnumerationConfiguration());
-            for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished(); p =
-                    probabilitySearcher.getNextProb()) {
+            final ProbabilitySpace probabilitySpace =
+                    ProbabilitySpace.createProbabilitySpace(oneExperimentConfiguration.getProbabilityEnumerationConfiguration());
+            for (double p = probabilitySpace.getInitialProbability(); !probabilitySpace.isFinished(); p =
+                    probabilitySpace.getNextProb()) {
                 final int number = configurationToNumberTranslator.translateFitnessAndMutationRateToNumber(f, p);
                 final int configFileId = offset + number;
                 writeConfigToFile(oneExperimentConfiguration, f, p, configFileId, number, resultDirectory);

@@ -2,7 +2,7 @@ package pictures;
 
 import optimal.configuration.probability.ExponentialGridConfiguration;
 import optimal.configuration.probability.IterativeProbabilityConfiguration;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import optimal.utils.DataProcessor;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
@@ -240,7 +240,7 @@ public class ColorfulPicturePainter extends Frame {
         chartDataProcessor.loadData();
         final Map<Integer, Double> mp = chartDataProcessor.getProcessedData();
         viridisPlotDrawer.addChart(mp, color, new MatrixLine(viridisPlotDrawer.getMyRunTimes(),
-                ProbabilitySearcher.createProbabilitySearcher(
+                ProbabilitySpace.createProbabilitySpace(
                         new IterativeProbabilityConfiguration(0.01, 0.5, 0.01))));
     }
 

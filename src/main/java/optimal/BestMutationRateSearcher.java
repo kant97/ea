@@ -10,13 +10,10 @@ import optimal.execution.ResultEntity;
 import optimal.execution.events.EventType;
 import optimal.execution.events.EventsManager;
 import optimal.execution.events.ResultEntityObtainedEvent;
-import optimal.heuristics.ExperimentState;
-import optimal.heuristics.Heuristics;
 import optimal.probability.ProbabilityVectorGenerator;
 import optimal.probability.ProbabilityVectorGeneratorManager;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import problem.Problem;
 import problem.ProblemsManager;
 
@@ -78,8 +75,8 @@ public class BestMutationRateSearcher {
                 " not supported");
     }
 
-    protected ProbabilitySearcher getProbabilitySearcher() {
-        return ProbabilitySearcher.createProbabilitySearcher(myProbabilityEnumerationConfiguration);
+    protected ProbabilitySpace getProbabilitySearcher() {
+        return ProbabilitySpace.createProbabilitySpace(myProbabilityEnumerationConfiguration);
     }
 
     public void addListener(Consumer<EventsManager.Event> listener, @NotNull EventType eventType) {
@@ -101,7 +98,7 @@ public class BestMutationRateSearcher {
         HashMap<Integer, Double> pOpt = new HashMap<>(); // optimal mutation probability for any fitness
         for (int fitness = myEndFitness - 1; fitness >= myBeginFitness; fitness--) {
             Problem problem = ProblemsManager.createProblemInstanceWithFixedFitness(myProblemType, myProblemSize, fitness);
-            ProbabilitySearcher ps = getProbabilitySearcher();
+            ProbabilitySpace ps = getProbabilitySearcher();
             for (double p = ps.getInitialProbability(); !ps.isFinished(); p = ps.getNextProb()) {
                 ArrayList<Double> v = getProbabilityVectorGenerator(p, problem, fitness).getProbabilityVector();
                 Double p0Tilda = v.get(0);

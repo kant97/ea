@@ -2,10 +2,10 @@ package optimal.probabilitySampling;
 
 import optimal.configuration.probability.ExponentialGridConfiguration;
 
-public class ExponentialGridProbabilitySearcher extends ProbabilitySearcher {
+public class ExponentialGridProbabilitySpace extends ProbabilitySpace {
     private final double a;
 
-    protected ExponentialGridProbabilitySearcher(ExponentialGridConfiguration configuration) {
+    protected ExponentialGridProbabilitySpace(ExponentialGridConfiguration configuration) {
         super(configuration.minPowerValue, configuration.maxPowerValue, configuration.precisionForPower);
         a = configuration.base;
     }
@@ -28,5 +28,15 @@ public class ExponentialGridProbabilitySearcher extends ProbabilitySearcher {
     @Override
     public double getProbabilityOnStepN(int n) {
         return f(myLeftProb + myPrecision * n);
+    }
+
+    @Override
+    public IntegerToProbabilityBijectiveMapping createBijectionToIntegers() {
+        return new IncreasingIntegersBijectiveProbabilitySpace(this) {
+            @Override
+            public double integerToProbability(int n) {
+                return f(myLeftProb + myPrecision * n);
+            }
+        };
     }
 }

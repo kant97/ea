@@ -14,4 +14,10 @@ public abstract class ProbabilitySamplingConfiguration implements ValidatableCon
                 "strategy=" + getStrategy().toString() +
                 '}';
     }
+
+    @Override
+    public abstract boolean equals(Object obj);
+
+    @Override
+    public abstract int hashCode();
 }

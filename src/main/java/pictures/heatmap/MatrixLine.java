@@ -1,15 +1,15 @@
 package pictures.heatmap;
 
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
 public class MatrixLine {
     private final @NotNull SimpleMatrix myRunTimes; /* myRunTimes[r][d] stores math expectation of
     generations amount to reach the global optima if starting from the distance d with the mutation rate r */
-    private final @NotNull ProbabilitySearcher myProbabilitySampler;
+    private final @NotNull ProbabilitySpace myProbabilitySampler;
 
-    public MatrixLine(@NotNull SimpleMatrix myRunTimes, @NotNull ProbabilitySearcher myProbabilitySampler) {
+    public MatrixLine(@NotNull SimpleMatrix myRunTimes, @NotNull ProbabilitySpace myProbabilitySampler) {
         this.myRunTimes = myRunTimes;
         this.myProbabilitySampler = myProbabilitySampler;
     }

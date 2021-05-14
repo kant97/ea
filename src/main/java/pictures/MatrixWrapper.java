@@ -1,7 +1,7 @@
 package pictures;
 
 import optimal.configuration.probability.ProbabilitySamplingConfiguration;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,27 +33,27 @@ public class MatrixWrapper {
     }
 
     public int getRow(double mutationRate) {
-        final ProbabilitySearcher probabilitySearcher =
-                ProbabilitySearcher.createProbabilitySearcher(probabilityConfiguration);
-        if (mutationRate < probabilitySearcher.getInitialProbability()) {
+        final ProbabilitySpace probabilitySpace =
+                ProbabilitySpace.createProbabilitySpace(probabilityConfiguration);
+        if (mutationRate < probabilitySpace.getInitialProbability()) {
             return 0;
         }
-        if (mutationRate >= probabilitySearcher.getProbabilityOnStepN(matrix.numRows())) {
+        if (mutationRate >= probabilitySpace.getProbabilityOnStepN(matrix.numRows())) {
             return matrix.numRows();
         }
         int leftK = 0;
         int rightK = matrix.numRows();
         while (rightK - leftK > 1) {
             final int m = (leftK + rightK) / 2;
-            final double curBoxMutationRate = probabilitySearcher.getProbabilityOnStepN(m);
+            final double curBoxMutationRate = probabilitySpace.getProbabilityOnStepN(m);
             if (curBoxMutationRate <= mutationRate || Math.abs(curBoxMutationRate - mutationRate) < EPS) {
                 leftK = m;
             } else {
                 rightK = m;
             }
         }
-        final double curBoxMutationRate = probabilitySearcher.getProbabilityOnStepN(leftK);
-        final double nextBoxMutationRate = probabilitySearcher.getProbabilityOnStepN(leftK + 1);
+        final double curBoxMutationRate = probabilitySpace.getProbabilityOnStepN(leftK);
+        final double nextBoxMutationRate = probabilitySpace.getProbabilityOnStepN(leftK + 1);
         if (!(curBoxMutationRate <= mutationRate || Math.abs(curBoxMutationRate - mutationRate) < EPS) || !(mutationRate < nextBoxMutationRate)) {
             throw new IllegalStateException("Failed to correctly calculate box for mutation rate " + mutationRate);
         }
@@ -69,7 +69,7 @@ public class MatrixWrapper {
     }
 
     public double getMinMutationRate() {
-        return ProbabilitySearcher.createProbabilitySearcher(probabilityConfiguration).getInitialProbability();
+        return ProbabilitySpace.createProbabilitySpace(probabilityConfiguration).getInitialProbability();
     }
 
     public int getMaxFitnessDist() {

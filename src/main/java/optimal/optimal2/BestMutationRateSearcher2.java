@@ -1,10 +1,9 @@
 package optimal.optimal2;
 
-import optimal.configuration.OneExperimentConfiguration;
-import optimal.configuration.vectorGeneration.VectorGenerationConfiguration;
+import optimal.configuration.MainConfiguration;
 import optimal.optimal2.generation.AbstractTransitionsGenerator;
 import optimal.optimal2.systems.GraphComponentsEquationsSystemBuilder;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -23,20 +22,20 @@ public class BestMutationRateSearcher2 {
         return resultListeners.remove(listener);
     }
 
-    public void runExperimentWithConfiguration(@NotNull OneExperimentConfiguration oneExperimentConfiguration, @NotNull VectorGenerationConfiguration.VectorGenerationStrategy strategy) {
+    public void runExperimentWithConfiguration(@NotNull MainConfiguration oneExperimentConfiguration) {
         final Map<Integer, Double> dp = new HashMap<>();
-        final AbstractPiExistenceClassesManager piExistenceClassesManager = AbstractPiExistenceClassesManager.create(oneExperimentConfiguration.problemConfig);
-        for (int id : piExistenceClassesManager.getPiExistenceClassesWithFitness(oneExperimentConfiguration.endFitness)) {
+        final AbstractPiExistenceClassesManager piExistenceClassesManager = AbstractPiExistenceClassesManager.create(oneExperimentConfiguration.getProblemConfig());
+        for (int id : piExistenceClassesManager.getPiExistenceClassesWithFitness(oneExperimentConfiguration.getEndFitness())) {
             dp.put(id, 0.);
         }
-        for (int fitness = oneExperimentConfiguration.endFitness - 1; fitness >= oneExperimentConfiguration.beginFitness; fitness--) {
-            final ProbabilitySearcher ps = ProbabilitySearcher.createProbabilitySearcher(oneExperimentConfiguration.probabilityEnumeration);
+        for (int fitness = oneExperimentConfiguration.getEndFitness() - 1; fitness >= oneExperimentConfiguration.getBeginFitness(); fitness--) {
+            final ProbabilitySpace ps = ProbabilitySpace.createProbabilitySpace(oneExperimentConfiguration.getTransitionsGeneration().getProbabilityEnumeration());
             for (double r = ps.getInitialProbability(); !ps.isFinished(); r = ps.getNextProb()) {
                 final List<Integer> curPiExistenceClasses = piExistenceClassesManager.getPiExistenceClassesWithFitness(fitness);
                 final GraphComponentsEquationsSystemBuilder systemBuilder = new GraphComponentsEquationsSystemBuilder(curPiExistenceClasses, dp);
                 for (int i = 0; i < curPiExistenceClasses.size(); i++) {
                     int piExistenceClassId = curPiExistenceClasses.get(i);
-                    final Map<Integer, Double> pk = AbstractTransitionsGenerator.create(oneExperimentConfiguration.stopConditionConfig, oneExperimentConfiguration.problemConfig, oneExperimentConfiguration.algorithmConfig, strategy).getTransitionsProbabilities(r, piExistenceClassId);
+                    final Map<Integer, Double> pk = AbstractTransitionsGenerator.create(oneExperimentConfiguration).getTransitionsProbabilities(r, piExistenceClassId);
                     systemBuilder.addLine(i, pk);
                 }
                 final List<Double> T = systemBuilder.buildSystem().solveSystem();

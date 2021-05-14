@@ -1,7 +1,7 @@
 package optimal.execution.cluster;
 
 import optimal.configuration.AbstractSingleExperimentConfiguration;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.jetbrains.annotations.NotNull;
 
 public class ConfigurationToNumberTranslator {
@@ -12,11 +12,11 @@ public class ConfigurationToNumberTranslator {
     public ConfigurationToNumberTranslator(AbstractSingleExperimentConfiguration currentConfiguration) {
         this.myCurrentConfiguration = currentConfiguration;
         int probabilityDistance = 0;
-        final ProbabilitySearcher probabilitySearcher = getProbabilitySearcher(currentConfiguration);
+        final ProbabilitySpace probabilitySpace = getProbabilitySearcher(currentConfiguration);
         double prevP = 0.;
         double epsilon = Double.MAX_VALUE;
-        for (double p = probabilitySearcher.getInitialProbability(); !probabilitySearcher.isFinished(); p =
-                probabilitySearcher.getNextProb()) {
+        for (double p = probabilitySpace.getInitialProbability(); !probabilitySpace.isFinished(); p =
+                probabilitySpace.getNextProb()) {
             epsilon = Math.min(epsilon, Math.abs(prevP - p) / 4.);
             prevP = p;
             probabilityDistance++;
@@ -26,8 +26,8 @@ public class ConfigurationToNumberTranslator {
     }
 
     @NotNull
-    private ProbabilitySearcher getProbabilitySearcher(AbstractSingleExperimentConfiguration currentConfiguration) {
-        return ProbabilitySearcher.createProbabilitySearcher(currentConfiguration.getProbabilityEnumerationConfiguration());
+    private ProbabilitySpace getProbabilitySearcher(AbstractSingleExperimentConfiguration currentConfiguration) {
+        return ProbabilitySpace.createProbabilitySpace(currentConfiguration.getProbabilityEnumerationConfiguration());
     }
 
     public int translateFitnessAndMutationRateToNumber(int fitness, double mutationRate) {
@@ -54,12 +54,12 @@ public class ConfigurationToNumberTranslator {
     }
 
     public int getMutationRateDistance(double mutationRate) {
-        final ProbabilitySearcher probabilitySearcher = getProbabilitySearcher(myCurrentConfiguration);
+        final ProbabilitySpace probabilitySpace = getProbabilitySearcher(myCurrentConfiguration);
         int left = 0;
         int right = myProbabilityDistance + 1;
         while (right - left > 1) {
             int m = (left + right) / 2;
-            if (isALessOrInAreaOfB(probabilitySearcher.getProbabilityOnStepN(m), mutationRate)) {
+            if (isALessOrInAreaOfB(probabilitySpace.getProbabilityOnStepN(m), mutationRate)) {
                 left = m;
             } else {
                 right = m;

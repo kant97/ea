@@ -1,0 +1,27 @@
+{
+  "problemConfig": {
+    "type": "ONE_MAX_PLATEAU",
+    "k": 2,
+    "size": 100
+  },
+  "algorithmConfig": {
+    "type": "SIMPLE_ONE_PLUS_LAMBDA",
+    "lambda": 1
+  },
+  "transitionsGeneration": {
+    "stopConditionConfig": {
+      "strategy": "FIXED_SUCCESS",
+      "globalMaximumRuns": 10000,
+      "amountOfSuccess": 5000
+    },
+    "probabilityEnumeration": {
+      "strategy": "ITERATIVE",
+      "minMutationProbability": 0.01,
+      "maxMutationProbability": 0.5,
+      "precisionForProbability": 0.01
+    },
+    "strategy": "RUN_TIME_TRANSITIONS_GENERATION"
+  },
+  "beginFitness": 1,
+  "endFitness": 51
+}

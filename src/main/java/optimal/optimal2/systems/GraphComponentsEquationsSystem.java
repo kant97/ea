@@ -43,8 +43,8 @@ public class GraphComponentsEquationsSystem extends EquationsSystem {
             int u = queue.poll();
             for (int i = 0; i < innerGraphTransposition.length; i++) {
                 if (i != u && innerGraphTransposition[u][i] && nodeTypes[i] == NodeType.UNKNOWN) {
-                    nodeTypes[u] = type;
-                    queue.add(u);
+                    nodeTypes[i] = type;
+                    queue.add(i);
                 }
             }
         }

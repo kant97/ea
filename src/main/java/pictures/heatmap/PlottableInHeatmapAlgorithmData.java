@@ -1,8 +1,7 @@
 package pictures.heatmap;
 
-import optimal.configuration.probability.IterativeProbabilityConfiguration;
 import optimal.configuration.probability.ProbabilitySamplingConfiguration;
-import optimal.probabilitySampling.ProbabilitySearcher;
+import optimal.probabilitySampling.ProbabilitySpace;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 import pictures.MatrixCellCoordinate;
@@ -32,7 +31,7 @@ public class PlottableInHeatmapAlgorithmData extends PlottableInMatrixData {
     @Override
     public @NotNull List<MatrixCellCoordinate> getOrderedMatrixCoordinates(@NotNull SimpleMatrix matrix) {
         final ArrayList<AlgorithmData> algorithmLogData = getAlgorithmLogData();
-        final MatrixLine matrixLine = new MatrixLine(matrix, ProbabilitySearcher.createProbabilitySearcher(
+        final MatrixLine matrixLine = new MatrixLine(matrix, ProbabilitySpace.createProbabilitySpace(
                 probabilitySamplingConfiguration));
         ArrayList<MatrixCellCoordinate> coordinates = new ArrayList<>();
         for (AlgorithmData algorithmData : algorithmLogData) {

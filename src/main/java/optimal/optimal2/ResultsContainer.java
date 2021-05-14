@@ -1,6 +1,6 @@
 package optimal.optimal2;
 
-import optimal.configuration.AbstractSingleExperimentConfiguration;
+import optimal.configuration.MainConfiguration;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -9,10 +9,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public class ResultsContainer {
-    private final AbstractSingleExperimentConfiguration configuration;
+    private final MainConfiguration configuration;
     private final Map<String, String> extraData = new HashMap<>();
 
-    public ResultsContainer(AbstractSingleExperimentConfiguration configuration) {
+    public ResultsContainer(MainConfiguration configuration) {
         this.configuration = configuration;
     }
 
@@ -33,7 +33,7 @@ public class ResultsContainer {
                 '}';
     }
 
-    public AbstractSingleExperimentConfiguration getConfiguration() {
+    public MainConfiguration getConfiguration() {
         return configuration;
     }
 }

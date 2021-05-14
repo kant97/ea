@@ -9,6 +9,7 @@ import optimal.configuration.problems.ProblemConfig;
 import optimal.configuration.problems.RuggednessConfig;
 import optimal.configuration.runs.FixedRunsConfiguration;
 import optimal.configuration.runs.FixedSuccessConfiguration;
+import optimal.configuration.transitionsGeneration.TransitionsGenerationConfiguration;
 import optimal.configuration.vectorGeneration.PrecomputedVectorReadingConfiguration;
 import optimal.configuration.vectorGeneration.RunTimeGenerationConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -128,5 +129,30 @@ public class CsvExportConfigurationVisitor implements ConfigurationVisitor {
     @Override
     public @NotNull String visitUsualConfiguration(@NotNull UsualConfiguration configuration) {
         throw new IllegalStateException("Export of this configuration is not supported");
+    }
+
+    @Override
+    public @NotNull String visitTransitionsGenerationConfiguration(@NotNull TransitionsGenerationConfiguration configuration) {
+        return "{strategy=" + configuration.getStrategy().name() +
+                "; probEnumeration=" + configuration.getProbabilityEnumeration().accept(this) +
+                "; stopCondition=" + configuration.getStopConditionConfig().accept(this) +
+                "}";
+    }
+
+    @Override
+    public @NotNull String visitMainConfiguration(@NotNull MainConfiguration configuration) {
+        return configuration.getProblemConfig().accept(this) +
+                ',' +
+                configuration.getAlgorithmConfig().accept(this) +
+                ',' +
+                configuration.getProblemConfig().getSize() +
+                ',' +
+                configuration.getAlgorithmConfig().getLambda() +
+                ',' +
+                configuration.getBeginFitness() +
+                ',' +
+                configuration.getEndFitness() +
+                ',' +
+                configuration.getTransitionsGeneration().accept(this);
     }
 }

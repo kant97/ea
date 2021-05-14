@@ -4,11 +4,11 @@ import optimal.configuration.probability.ExponentialGridConfiguration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class ExponentialGridProbabilitySearcherTest {
+class ExponentialGridProbabilitySpaceTest {
 
     @Test
     void getNextProb() {
-        ExponentialGridProbabilitySearcher searcher = new ExponentialGridProbabilitySearcher(
+        ExponentialGridProbabilitySpace searcher = new ExponentialGridProbabilitySpace(
                 new ExponentialGridConfiguration(2,1,10,1)
         );
         Assertions.assertFalse(searcher.isFinished());
@@ -31,7 +31,7 @@ class ExponentialGridProbabilitySearcherTest {
 
     @Test
     void getNextProb2() {
-        ExponentialGridProbabilitySearcher searcher = new ExponentialGridProbabilitySearcher(
+        ExponentialGridProbabilitySpace searcher = new ExponentialGridProbabilitySpace(
                 new ExponentialGridConfiguration(10,-2,-1,0.1)
         );
         Assertions.assertFalse(searcher.isFinished());
@@ -52,5 +52,17 @@ class ExponentialGridProbabilitySearcherTest {
         Assertions.assertFalse(searcher.isFinished());
         searcher.getNextProb();
         Assertions.assertTrue(searcher.isFinished());
+    }
+
+    @Test
+    public void testGenerationOfBijectivityToIntegers() {
+        final ExponentialGridConfiguration exponentialGridConfiguration = new ExponentialGridConfiguration(2, 1, 10, 1);
+        final IntegerToProbabilityBijectiveMapping bijectionToIntegers = new ExponentialGridProbabilitySpace(exponentialGridConfiguration).createBijectionToIntegers();
+        Assertions.assertEquals(2, bijectionToIntegers.integerToProbability(0));
+        Assertions.assertEquals(4, bijectionToIntegers.integerToProbability(1));
+        Assertions.assertEquals(1024, bijectionToIntegers.integerToProbability(9));
+        Assertions.assertEquals(0, bijectionToIntegers.probabilityToInteger(2.));
+        Assertions.assertEquals(1, bijectionToIntegers.probabilityToInteger(4.));
+        Assertions.assertEquals(9, bijectionToIntegers.probabilityToInteger(1024.));
     }
 }
