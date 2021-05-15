@@ -35,7 +35,7 @@ public class MatrixDrawer {
         this.myLineStroke = new BasicStroke(3f);
     }
 
-    protected void drawRect(int matrixRowInd, int matrixColInd, int rgdColor) {
+    public void drawRect(int matrixRowInd, int matrixColInd, int rgdColor) {
         final int x = getXCoordinateByMatrixColumnIndex(matrixColInd);
         final int y = getYCoordinateByMatrixRowIndex(matrixRowInd);
         myGraphics.setColor(new Color(rgdColor));
@@ -64,7 +64,7 @@ public class MatrixDrawer {
         return getYCoordinateByMatrixRowIndex(matrixRowInd) + myOneWidth / 2;
     }
 
-    protected void drawSegment(int matrixRowIndBegin, int matrixColIndBegin,
+    public void drawSegment(int matrixRowIndBegin, int matrixColIndBegin,
                                int matrixRowIndEnd, int matrixColIndEnd,
                                int rgbColor) {
         final int xBegin = getXCenterOfSquare(matrixColIndBegin);
