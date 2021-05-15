@@ -40,5 +40,6 @@ public abstract class AbstractCsvProcessor<T> {
         return processData(records);
     }
 
+    @NotNull
     protected abstract T processData(@NotNull List<List<String>> data) throws CorruptedCsvException;
 }

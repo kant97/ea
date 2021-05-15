@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class PiExistenceTransitionsProcessor extends AbstractCsvProcessor<Map<Integer, Double>> {
     @Override
-    protected Map<Integer, Double> processData(@NotNull List<List<String>> data) throws CorruptedCsvException {
+    protected @NotNull Map<Integer, Double> processData(@NotNull List<List<String>> data) throws CorruptedCsvException {
         final HashMap<Integer, Double> mp = new HashMap<>();
         for (List<String> record : data) {
             final int piClass;
