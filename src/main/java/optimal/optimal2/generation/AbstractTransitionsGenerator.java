@@ -19,6 +19,8 @@ public abstract class AbstractTransitionsGenerator {
             return createRunTimeTransitionsGenerator(experimentConfiguration.getTransitionsGeneration().getStopConditionConfig(), experimentConfiguration.getProblemConfig(), experimentConfiguration.getAlgorithmConfig());
         } else if (generationStrategy == TransitionsGenerationConfiguration.TransitionsGenerationStrategy.PRECOMPUTED_TRANSITIONS_READING) {
             return new PrecomputedTransitionsReader(experimentConfiguration);
+        } else if (generationStrategy == TransitionsGenerationConfiguration.TransitionsGenerationStrategy.READ_AND_RECOMPUTE_TRANSITIONS) {
+            return new PrecomputedTransitionsReaderAndProcessor(experimentConfiguration);
         }
         throw new IllegalStateException("Strategy " + generationStrategy.name() + " is not supported");
     }
@@ -36,4 +38,6 @@ public abstract class AbstractTransitionsGenerator {
     }
 
     public abstract @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId);
+
+    public abstract @NotNull Map<Integer, Double> getTransitionsProbabilitiesIncludingWorse(double r, int piExistenceClassId);
 }

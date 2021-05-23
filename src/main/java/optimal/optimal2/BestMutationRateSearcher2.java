@@ -33,6 +33,9 @@ public class BestMutationRateSearcher2 {
             for (double r = ps.getInitialProbability(); !ps.isFinished(); r = ps.getNextProb()) {
                 final List<Integer> curPiExistenceClasses = piExistenceClassesManager.getPiExistenceClassesWithFitness(fitness);
                 final GraphComponentsEquationsSystemBuilder systemBuilder = new GraphComponentsEquationsSystemBuilder(curPiExistenceClasses, dp);
+                if (curPiExistenceClasses.contains(2) && r == 0.9999999999999813) {
+                    int a = 1;
+                }
                 for (int i = 0; i < curPiExistenceClasses.size(); i++) {
                     int piExistenceClassId = curPiExistenceClasses.get(i);
                     final Map<Integer, Double> pk = AbstractTransitionsGenerator.create(oneExperimentConfiguration).getTransitionsProbabilities(r, piExistenceClassId);

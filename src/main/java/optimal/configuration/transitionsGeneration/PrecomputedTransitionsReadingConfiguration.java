@@ -12,11 +12,12 @@ public class PrecomputedTransitionsReadingConfiguration extends TransitionsGener
     @SerializedName(value = "validationConfigPath")
     private final String configForWhichTheFilesWereComputedPath;
 
-    public PrecomputedTransitionsReadingConfiguration(@NotNull ProbabilitySamplingConfiguration probabilityEnumeration,
+    public PrecomputedTransitionsReadingConfiguration(@NotNull TransitionsGenerationStrategy strategy,
+                                                      @NotNull ProbabilitySamplingConfiguration probabilityEnumeration,
                                                       @NotNull StopConditionConfiguration stopConditionConfig,
                                                       @NotNull String directoryWithPrecomputedFilesPath,
                                                       @NotNull String configForWhichTheFilesWereComputedPath) {
-        super(TransitionsGenerationStrategy.PRECOMPUTED_TRANSITIONS_READING, probabilityEnumeration, stopConditionConfig);
+        super(strategy, probabilityEnumeration, stopConditionConfig);
         this.directoryWithPrecomputedFilesPath = directoryWithPrecomputedFilesPath;
         this.configForWhichTheFilesWereComputedPath = configForWhichTheFilesWereComputedPath;
     }

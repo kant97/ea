@@ -25,23 +25,27 @@ public class PlateauPiExistenceClassesManager extends AbstractPiExistenceClasses
     @Override
     public @NotNull Problem getAnyIndividualById(int piExistenceClassId) {
         final Plateau plateau = new Plateau(n, k);
-        final List<Integer> patch = new ArrayList<>();
-        int initOnesCount = plateau.getOnesCount(0);
         boolean[] individual = plateau.getIndividual();
-        int j = 0;
-        for (int i = 0; i < piExistenceClassId - initOnesCount; ) {
-            if (!individual[j]) {
-                patch.add(j);
-                i++;
+        List<Integer> patch = new ArrayList<>();
+        for (int i = 0; i < individual.length; i++) {
+            if (individual[i]) {
+                patch.add(i);
             }
-            j++;
         }
-        plateau.applyPatch(patch, plateau.calculatePatchFitness(patch));
+        plateau.applyPatch(patch, 1);
+        patch.clear();
+        for (int i = 0; i < piExistenceClassId; i++) {
+            patch.add(i);
+        }
+        plateau.applyPatch(patch, getFitnessById(piExistenceClassId));
         return plateau;
     }
 
     @Override
     public int getFitnessById(int id) {
+        if (id == Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
+        }
         return id / k + 1;
     }
 

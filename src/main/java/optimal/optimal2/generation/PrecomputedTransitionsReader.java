@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class PrecomputedTransitionsReader extends AbstractTransitionsGenerator {
-    private final MainConfiguration mainConfiguration;
+    protected final MainConfiguration mainConfiguration;
     private final PrecomputedTransitionsReadingConfiguration transitionsConfiguration;
     private final MyConventionCsvNamesGenerator csvNamesGenerator;
 
@@ -23,21 +23,40 @@ public class PrecomputedTransitionsReader extends AbstractTransitionsGenerator {
         this.csvNamesGenerator = new MyConventionCsvNamesGenerator(transitionsConfiguration.getProbabilityEnumeration());
     }
 
-    @Override
-    public @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId) {
+    private @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piClass, boolean isIncludeWorse) {
         final String validationConfigPath = transitionsConfiguration.getConfigForWhichTheFilesWereComputedPath();
         if (!isTheSameEnumerationConfig(validationConfigPath)) {
             throw new IllegalStateException("Current configuration does not match with the one for the precomputed transitions: " + validationConfigPath);
         }
-        final String csvFileName = csvNamesGenerator.getCsvFileName(piExistenceClassId, r);
+        final String csvFileName = csvNamesGenerator.getCsvFileName(piClass, r);
         try {
-            return new PiExistenceTransitionsProcessor().loadAndGetProcessedData(transitionsConfiguration.getDirectoryWithPrecomputedFilesPath() + "/" + csvFileName + ".csv");
+            final Map<Integer, Double> transitions = new PiExistenceTransitionsProcessor().loadAndGetProcessedData(transitionsConfiguration.getDirectoryWithPrecomputedFilesPath() + "/" + csvFileName + ".csv");
+            if (isIncludeWorse) {
+                return transitions;
+            }
+            final Double worseProb = transitions.remove(Integer.MIN_VALUE);
+            if (worseProb == null) {
+                return transitions;
+            }
+            final double toOurselfProb = transitions.getOrDefault(piClass, 0.);
+            transitions.put(piClass, toOurselfProb + worseProb);
+            return transitions;
         } catch (IOException | CorruptedCsvException e) {
-            throw new IllegalStateException("Unable to process transitions for r=" + r + " and piClass=" + piExistenceClassId, e);
+            throw new IllegalStateException("Unable to process transitions for r=" + r + " and piClass=" + piClass, e);
         }
     }
 
-    private boolean isCompatible(@NotNull OneExperimentConfiguration storedConfiguration) {
+    @Override
+    public @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId) {
+        return getTransitionsProbabilities(r, piExistenceClassId, false);
+    }
+
+    @Override
+    public @NotNull Map<Integer, Double> getTransitionsProbabilitiesIncludingWorse(double r, int piExistenceClassId) {
+        return getTransitionsProbabilities(r, piExistenceClassId, true);
+    }
+
+    protected boolean isCompatible(@NotNull OneExperimentConfiguration storedConfiguration) {
         return storedConfiguration.probabilityEnumeration.equals(transitionsConfiguration.getProbabilityEnumeration()) &&
                 storedConfiguration.problemConfig.equals(mainConfiguration.getProblemConfig()) &&
                 storedConfiguration.algorithmConfig.equals(mainConfiguration.getAlgorithmConfig()) &&
@@ -45,7 +64,7 @@ public class PrecomputedTransitionsReader extends AbstractTransitionsGenerator {
                 storedConfiguration.endFitness == mainConfiguration.getEndFitness();
     }
 
-    private boolean isCompatible(@NotNull MainConfiguration otherConfiguration) {
+    protected boolean isCompatible(@NotNull MainConfiguration otherConfiguration) {
         return otherConfiguration.getProblemConfig().equals(mainConfiguration.getProblemConfig()) &&
                 otherConfiguration.getAlgorithmConfig().equals(mainConfiguration.getAlgorithmConfig()) &&
                 otherConfiguration.getTransitionsGeneration().equals(mainConfiguration.getTransitionsGeneration()) &&

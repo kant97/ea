@@ -8,6 +8,7 @@ import optimal.oneStepAlgorithms.OneStepAlgorithm;
 import optimal.oneStepAlgorithms.OneStepAlgorithmsManager;
 import optimal.optimal2.generation.AbstractTransitionsGenerator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import problem.Problem;
 import utils.BestCalculatedPatch;
 
@@ -25,8 +26,15 @@ public abstract class TransitionGenerationRunTime extends AbstractTransitionsGen
         myPiExistenceClassesManager = AbstractPiExistenceClassesManager.create(problemConfig);
     }
 
-    @Override
-    public @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId) {
+    private int getNewClassId(int curClassId, @NotNull Problem individual, @Nullable BestCalculatedPatch patch, boolean isIncludeWorse) {
+        if (patch == null) {
+            return isIncludeWorse ? Integer.MIN_VALUE : curClassId;
+        }
+        return myPiExistenceClassesManager.getIdByIndividual(individual, patch);
+    }
+
+    @NotNull
+    private Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId, boolean isIncludeWorse) {
         final Problem individual = myPiExistenceClassesManager.getAnyIndividualById(piExistenceClassId);
         final OneStepAlgorithm algorithm = OneStepAlgorithmsManager.createAlgorithm(r, myAlgorithmConfiguration, individual);
         final int beginFitness = individual.getFitness();
@@ -36,7 +44,7 @@ public abstract class TransitionGenerationRunTime extends AbstractTransitionsGen
             algorithm.makeIteration();
             final BestCalculatedPatch patch = algorithm.getMutatedIndividual();
             final int newFitness = patch == null ? beginFitness : patch.fitness;
-            final int newClassId = patch == null ? piExistenceClassId : myPiExistenceClassesManager.getIdByIndividual(individual, patch);
+            final int newClassId = getNewClassId(piExistenceClassId, individual, patch, isIncludeWorse);
             update(cntOfId, newClassId);
             onIterationFinished(beginFitness, newFitness, algorithm);
             algorithm.resetState();
@@ -45,6 +53,16 @@ public abstract class TransitionGenerationRunTime extends AbstractTransitionsGen
         final int finalRunNumber = runNumber;
         cntOfId.forEach((id, cnt) -> transitions.put(id, (double) cnt / (double) finalRunNumber));
         return transitions;
+    }
+
+    @Override
+    public @NotNull Map<Integer, Double> getTransitionsProbabilities(double r, int piExistenceClassId) {
+        return getTransitionsProbabilities(r, piExistenceClassId, false);
+    }
+
+    @Override
+    public @NotNull Map<Integer, Double> getTransitionsProbabilitiesIncludingWorse(double r, int piExistenceClassId) {
+        return getTransitionsProbabilities(r, piExistenceClassId, true);
     }
 
     private void update(Map<Integer, Integer> cntOfId, int id) {

@@ -7,7 +7,7 @@ import optimal.configuration.transitionsGeneration.TransitionsGenerationConfigur
 
 import java.lang.reflect.Type;
 
-public class TransitionsGenerationConfigurationAdapter implements JsonDeserializer<TransitionsGenerationConfiguration>, JsonSerializer<TransitionsGenerationConfiguration>  {
+public class TransitionsGenerationConfigurationAdapter implements JsonDeserializer<TransitionsGenerationConfiguration>, JsonSerializer<TransitionsGenerationConfiguration> {
     @Override
     public TransitionsGenerationConfiguration deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
@@ -17,6 +17,7 @@ public class TransitionsGenerationConfigurationAdapter implements JsonDeserializ
             case RUN_TIME_TRANSITIONS_GENERATION:
                 return context.deserialize(json, RunTimeTransitionsGenerationConfiguration.class);
             case PRECOMPUTED_TRANSITIONS_READING:
+            case READ_AND_RECOMPUTE_TRANSITIONS:
                 return context.deserialize(json, PrecomputedTransitionsReadingConfiguration.class);
             default:
                 throw new IllegalStateException("Strategy " + strategy + " is not supported");

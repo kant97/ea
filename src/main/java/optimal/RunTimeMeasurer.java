@@ -4,7 +4,6 @@ import algo.ABalgo;
 import algo.TwoRate;
 import org.jetbrains.annotations.NotNull;
 import problem.Plateau;
-import problem.Ruggedness;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -36,38 +35,40 @@ public class RunTimeMeasurer implements AutoCloseable {
     }
 
     public void runTwoRate() {
-        final TwoRate twoRate = new TwoRate(1., 1. / 100., 512, new Ruggedness(100, 2, 0));
+        final Plateau problem = new Plateau(100, 2, 1);
+        final TwoRate twoRate = new TwoRate(1., 1. / 100., 32, problem);
         int iterationNumber = 0;
-        log(iterationNumber, twoRate.getFitness(), twoRate.getMutationRate());
+        log(iterationNumber, twoRate.getFitness(), problem.getOnesCount(twoRate.getFitness()), twoRate.getMutationRate());
         while (!twoRate.isFinished()) {
             twoRate.makeIteration();
             iterationNumber++;
-            log(iterationNumber, twoRate.getFitness(), twoRate.getMutationRateUsedInBestMutation());
+            log(iterationNumber, twoRate.getFitness(), problem.getOnesCount(twoRate.getFitness()), twoRate.getMutationRateUsedInBestMutation());
         }
     }
 
     public void runAb() {
-        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 10000., 512, true, new Ruggedness(100, 2, 0));
+        Plateau problem = new Plateau(100, 2, 1);
+        final ABalgo aBalgo = new ABalgo(1. / 100., 2, 0.5, 1. / 100., 32, true, problem);
         int iterationNumber = 0;
-        log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRate());
+        log(iterationNumber, aBalgo.getFitness(), problem.getOnesCount(aBalgo.getFitness()), aBalgo.getMutationRateUsedInBestMutation());
         while (!aBalgo.isFinished()) {
             aBalgo.makeIteration();
             iterationNumber++;
-            log(iterationNumber, aBalgo.getFitness(), aBalgo.getMutationRateUsedInBestMutation());
+            log(iterationNumber, aBalgo.getFitness(), problem.getOnesCount(aBalgo.getFitness()), aBalgo.getMutationRateUsedInBestMutation());
         }
     }
 
     private void logHeader() {
         try {
-            myWriter.write("iterationNumber,fitness,mutationRate\n");
+            myWriter.write("iterationNumber,fitness,piClass,mutationRate\n");
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
-    private void log(int iterationNumber, int fitness, double usedMutationRate) {
+    private void log(int iterationNumber, int fitness, int piClass, double usedMutationRate) {
         try {
-            myWriter.write(iterationNumber + "," + fitness + "," + usedMutationRate + "\n");
+            myWriter.write(iterationNumber + "," + fitness + "," + piClass + "," + usedMutationRate + "\n");
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }

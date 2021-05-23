@@ -1,10 +1,12 @@
 package pictures.optimal2Pictures;
 
+import javafx.util.Pair;
 import optimal.probabilitySampling.IntegerToProbabilityBijectiveMapping;
 import optimal.utils.AbstractCsvProcessor;
 import optimal.utils.CorruptedCsvException;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import pictures.coloring.AbstractColouring;
 
 import javax.imageio.ImageIO;
@@ -83,7 +85,17 @@ public class HeatMap {
     }
 
     public double getExpectedTime(int piExistenceClass, double mutationProbability) {
-        return data.get(integerProbabilityBijection.probabilityToInteger(mutationProbability), piExistenceClassToNumber.get(piExistenceClass));
+        Integer rowIndex = getRowIndex(mutationProbability);
+        Integer columnIndex = getColumnIndex(piExistenceClass);
+        if (rowIndex == null || columnIndex == null) {
+            return 0.;
+        }
+        return data.get(rowIndex, columnIndex);
+    }
+
+    @NotNull
+    public Pair<Integer, Integer> getCellRowCol(int piExistenceClass, double mutationProbability) {
+        return new Pair<>(getRowIndex(mutationProbability), getColumnIndex(piExistenceClass));
     }
 
     public double getValueInCell(int rowNumber, int colNumber) {
@@ -96,6 +108,28 @@ public class HeatMap {
 
     public int getColumnsNumber() {
         return data.numCols();
+    }
+
+    public ArrayList<Double> getMinInEveryColumn() {
+        final ArrayList<Double> minInHeatMapColumn = new ArrayList<>(this.getColumnsNumber());
+        for (int i = 0; i < this.getColumnsNumber(); i++) {
+            double minValue = Double.POSITIVE_INFINITY;
+            for (int j = 0; j < this.getRowsNumber(); j++) {
+                minValue = Math.min(this.getValueInCell(j, i), minValue);
+            }
+            minInHeatMapColumn.add(minValue);
+        }
+        return minInHeatMapColumn;
+    }
+
+    @Nullable
+    public Integer getColumnIndex(int piExistenceClass) {
+        return piExistenceClassToNumber.get(piExistenceClass);
+    }
+
+    @Nullable
+    public Integer getRowIndex(double mutationProbability) {
+        return integerProbabilityBijection.probabilityToInteger(mutationProbability);
     }
 
     public void saveToFile(@NotNull HeatMapPainter painter, @NotNull Path filePath) throws IOException {

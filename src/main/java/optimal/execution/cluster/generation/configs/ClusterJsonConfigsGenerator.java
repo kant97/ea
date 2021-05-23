@@ -41,6 +41,7 @@ public class ClusterJsonConfigsGenerator {
 
     public void generateJsonConfigs() {
         int offset = 0;
+        amountOfGeneratedFiles = 0;
         for (OneExperimentConfiguration oneExperimentConfiguration : myExperimentConfigurations) {
             if (oneExperimentConfiguration.problemConfig.isNonAcyclicFunction()) {
                 generateForNonAcyclicFitnessFunction(oneExperimentConfiguration);
@@ -71,7 +72,7 @@ public class ClusterJsonConfigsGenerator {
                                     fileName + ".csv",
                                     resultDirectory,
                                     piExistenceClassId),
-                            fileName + ".json");
+                            fileName + "_" + amountOfGeneratedFiles + ".json");
                     onNewFileCreation(0);
                 }
             }

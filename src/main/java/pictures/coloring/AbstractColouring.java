@@ -1,6 +1,7 @@
 package pictures.coloring;
 
 import optimal.heuristics.OneMaxHeuristics;
+import org.apache.commons.math3.analysis.function.Abs;
 import org.ejml.simple.SimpleMatrix;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,7 @@ public abstract class AbstractColouring {
     }
 
     public enum ColoringStrategy {
-        INITIAL, MODIFIED, ROBUSTNESS_HEATMAP, MULTIPLICATIVE
+        INITIAL, MODIFIED, ROBUSTNESS_HEATMAP, MULTIPLICATIVE, PLATEAU_COLORING
     }
 
     public static AbstractColouring createColoring(@NotNull SimpleMatrix matrix, @NotNull ColoringStrategy strategy) {
@@ -28,6 +29,8 @@ public abstract class AbstractColouring {
             return new RobustnessColoring(matrix);
         } else if (strategy == ColoringStrategy.MULTIPLICATIVE) {
             return new MultiplicativeColouring(matrix);
+        } else if (strategy == ColoringStrategy.PLATEAU_COLORING) {
+            return new PlateauColoring(matrix);
         }
         throw new IllegalArgumentException("Strategy " + strategy.name() + " is not supported.");
     }
@@ -106,6 +109,43 @@ public abstract class AbstractColouring {
         public @NotNull ColoringStrategy getColoringStrategy() {
             return ColoringStrategy.MODIFIED;
         }
+    }
+
+    private static class PlateauColoring extends AbstractColouring {
+        public PlateauColoring(@NotNull SimpleMatrix matrix) {
+            super(matrix);
+        }
+
+        private int calculateAmountNotPurple(int column) {
+            int k = 0;
+            for (int r = 0; r < myMatrix.numRows(); r++) {
+                if (!OneMaxHeuristics.isTooBig(myMatrix.get(r, column))) {
+                    k++;
+                }
+            }
+            return k;
+        }
+
+        @Override
+        protected double getValueForRgbColor(int row, int col) {
+            final double value = myMatrix.get(row, col);
+            int k = calculateAmountNotPurple(col);
+            if (col >= 11*myMatrix.numCols() / 20) {
+                k = (k + 1) / 2;
+            } else {
+                final double valueBest = myMatrixWithSortedColumns.get(col).get(0);
+                return valueBest / value;
+            }
+            final double valueK = myMatrixWithSortedColumns.get(col).get(k - 1);
+            final double value1 = myMatrixWithSortedColumns.get(col).get(0);
+            final double m = Math.min(1, Math.log(0.5) / (value1 - valueK));
+            return Math.exp(m * (value1 - value));        }
+
+        @Override
+        public @NotNull ColoringStrategy getColoringStrategy() {
+            return ColoringStrategy.PLATEAU_COLORING;
+        }
+
     }
 
     private static class RobustnessColoring extends AbstractColouring {

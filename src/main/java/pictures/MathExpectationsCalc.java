@@ -1,5 +1,6 @@
 package pictures;
 
+import optimal.optimal2.AbstractPiExistenceClassesManager;
 import pictures.processing.BestResultsProcessor;
 import problem.Problem;
 import problem.Ruggedness;
@@ -51,6 +52,17 @@ public class MathExpectationsCalc {
             BigDecimal binomial = new BigDecimal(Cn.get(onesCount));
             double p = Double.parseDouble(binomial.divide(all, 30, RoundingMode.HALF_UP).toString());
             T += mathExps.get(fitnessValue) * p;
+        }
+        return T;
+    }
+
+    public double getPiExistMathExpect(ArrayList<Double> mathExps, AbstractPiExistenceClassesManager piExistenceClassesManager) {
+        double T = 0.;
+        for (int id = 0; id < mathExps.size(); id++) {
+            int onesCount = id; // Plateau case
+            BigDecimal binomial = new BigDecimal(Cn.get(onesCount));
+            double p = Double.parseDouble(binomial.divide(all, 30, RoundingMode.HALF_UP).toString());
+            T += mathExps.get(id) * p;
         }
         return T;
     }

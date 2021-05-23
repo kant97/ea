@@ -13,6 +13,7 @@ import java.util.Objects;
 public abstract class TransitionsGenerationConfiguration implements ValidatableConfiguration, VisitableConfiguration {
     public enum TransitionsGenerationStrategy {
         PRECOMPUTED_TRANSITIONS_READING,
+        READ_AND_RECOMPUTE_TRANSITIONS,
         RUN_TIME_TRANSITIONS_GENERATION
     }
 

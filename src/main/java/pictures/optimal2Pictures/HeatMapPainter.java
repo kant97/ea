@@ -53,8 +53,18 @@ public class HeatMapPainter {
     @NotNull
     public BufferedImage getHeatMapImageWithAlgorithmsTracesAbove(@NotNull HeatMap heatMap) {
         final Pair<MatrixDrawer, BufferedImage> matrixDrawerBufferedImagePair = doDrawHeatMap(heatMap);
-        for (final AlgorithmTrace trace : traces) {
-            throw new IllegalStateException("Not implemented yet");
+        final MatrixDrawer matrixDrawer = matrixDrawerBufferedImagePair.getKey();
+        for (int i = 0; i < traces.size(); i++) {
+            final AlgorithmTrace trace = traces.get(i);
+            final int rgbTraceColor = lineColorForTraces.get(i).getRGB();
+            Pair<Integer, Integer> prevRowCol = null;
+            for (final Pair<Integer, Double> piClassAndProb : trace.getTrace()) {
+                final Pair<Integer, Integer> rowCol = heatMap.getCellRowCol(piClassAndProb.getKey(), piClassAndProb.getValue());
+                if (prevRowCol != null && rowCol.getValue() != null) {
+                    matrixDrawer.drawSegment(prevRowCol.getKey(), prevRowCol.getValue(), rowCol.getKey(), rowCol.getValue(), rgbTraceColor);
+                }
+                prevRowCol = rowCol;
+            }
         }
         return matrixDrawerBufferedImagePair.getValue();
     }

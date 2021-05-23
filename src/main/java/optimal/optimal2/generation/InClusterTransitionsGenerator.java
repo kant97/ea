@@ -11,7 +11,7 @@ import java.util.Map;
 public class InClusterTransitionsGenerator {
     public void generateTransitions(@NotNull PiExistenceTransitionClusterConfiguration configuration, @NotNull PiExistenceTransitionsWriter transitionsWriter) {
         final AbstractTransitionsGenerator transitionsGenerator = AbstractTransitionsGenerator.createRunTimeTransitionsGenerator(configuration.getStopConditionConfig(), configuration.getProblemConfig(), configuration.getAlgorithmConfig());
-        final Map<Integer, Double> transitionsProbabilities = transitionsGenerator.getTransitionsProbabilities(configuration.getProbability(), configuration.getPiExistenceClassId());
+        final Map<Integer, Double> transitionsProbabilities = transitionsGenerator.getTransitionsProbabilitiesIncludingWorse(configuration.getProbability(), configuration.getPiExistenceClassId());
         transitionsWriter.writeResults(transitionsProbabilities);
     }
 
