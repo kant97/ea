@@ -10,7 +10,6 @@ import optimal.execution.cluster.generation.vectors.FitnessLevelVectorGenerator;
 import optimal.optimal2.generation.ClusterPlacesManager;
 import optimal.optimal2.generation.InClusterTransitionsGenerator;
 import optimal.optimal2.generation.PiExistenceTransitionsWriter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.naming.ConfigurationException;
@@ -67,6 +66,9 @@ public class InClusterExperiments {
 
         private @Nullable String myConfigFileName = null;
         private @Nullable String myMode = null;
+        private @Nullable ClusterPlacesManager clusterPlacesManager = null;
+        private @Nullable PiExistenceTransitionClusterConfiguration piExistenceTransitionClusterConfiguration = null;
+        private @Nullable InClusterTransitionsGenerator inClusterTransitionsGenerator = null;
 
         VectorGenerator() {
             super("generateTransitions");
@@ -95,6 +97,17 @@ public class InClusterExperiments {
             }
         }
 
+        void createPiExistenceExperimentEnv() {
+            inClusterTransitionsGenerator = new InClusterTransitionsGenerator();
+            final PiExistenceVectorGenerationLoader piExistenceVectorGenerationLoader = new PiExistenceVectorGenerationLoader(myConfigFileName);
+            try {
+                this.piExistenceTransitionClusterConfiguration = piExistenceVectorGenerationLoader.getConfiguration();
+            } catch (IOException | ConfigurationException e) {
+                throw new IllegalStateException("Unable to load configuration for the experiment", e);
+            }
+            this.clusterPlacesManager = new ClusterPlacesManager(".", piExistenceTransitionClusterConfiguration.getOutputDirectory(), piExistenceTransitionClusterConfiguration.getOutputFileName());
+        }
+
         void runMode() {
             assert myConfigFileName != null;
             if (myMode == null || myMode.equals(MODES[3])) {
@@ -108,29 +121,20 @@ public class InClusterExperiments {
                 return;
             }
             if (myMode.equals(MODES[0])) {
-                final InClusterTransitionsGenerator inClusterTransitionsGenerator = new InClusterTransitionsGenerator();
-                final PiExistenceVectorGenerationLoader piExistenceVectorGenerationLoader = new PiExistenceVectorGenerationLoader(myConfigFileName);
-                try {
-                    final PiExistenceTransitionClusterConfiguration configuration = piExistenceVectorGenerationLoader.getConfiguration();
-                    final ClusterPlacesManager clusterPlacesManager = new ClusterPlacesManager(".", configuration.getOutputDirectory(), configuration.getOutputFileName());
-                    final PiExistenceTransitionsWriter transitionsWriter = new PiExistenceTransitionsWriter(clusterPlacesManager);
-                    inClusterTransitionsGenerator.generateTransitions(configuration, transitionsWriter);
-                } catch (IOException | ConfigurationException e) {
-                    throw new IllegalStateException(e);
-                }
+                createPiExistenceExperimentEnv();
+                assert inClusterTransitionsGenerator != null;
+                assert this.piExistenceTransitionClusterConfiguration != null;
+                assert this.clusterPlacesManager != null;
+                final PiExistenceTransitionsWriter transitionsWriter = new PiExistenceTransitionsWriter(this.clusterPlacesManager);
+                inClusterTransitionsGenerator.generateTransitions(this.piExistenceTransitionClusterConfiguration, transitionsWriter);
                 return;
             }
             if (myMode.equals(MODES[1])) {
-                final InClusterTransitionsGenerator inClusterTransitionsGenerator = new InClusterTransitionsGenerator();
-                final PiExistenceVectorGenerationLoader piExistenceVectorGenerationLoader = new PiExistenceVectorGenerationLoader(myConfigFileName);
-                try {
-                    final PiExistenceTransitionClusterConfiguration configuration = piExistenceVectorGenerationLoader.getConfiguration();
-                    final ClusterPlacesManager clusterPlacesManager = new ClusterPlacesManager(".", configuration.getOutputDirectory(), configuration.getOutputFileName());
-                    inClusterTransitionsGenerator.recoveryTransitions(configuration, clusterPlacesManager);
-                } catch (IOException | ConfigurationException e) {
-                    throw new IllegalStateException(e);
-                }
-                return;
+                createPiExistenceExperimentEnv();
+                assert inClusterTransitionsGenerator != null;
+                assert this.piExistenceTransitionClusterConfiguration != null;
+                assert this.clusterPlacesManager != null;
+                inClusterTransitionsGenerator.recoveryTransitions(this.piExistenceTransitionClusterConfiguration, this.clusterPlacesManager);
             }
         }
 
