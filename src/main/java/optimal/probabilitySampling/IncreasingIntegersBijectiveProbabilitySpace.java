@@ -7,16 +7,16 @@ public abstract class IncreasingIntegersBijectiveProbabilitySpace implements Int
     private final double myEpsilon;
 
     protected IncreasingIntegersBijectiveProbabilitySpace(@NotNull ProbabilitySpace space) {
-        double prevP = 0.;
+        double prevP = Double.MAX_VALUE;
         double epsilon = Double.MAX_VALUE;
         int probabilityDistance = 0;
         for (double p = space.getInitialProbability(); !space.isFinished(); p = space.getNextProb()) {
-            epsilon = Math.min(epsilon, Math.abs(prevP - p) / 4.);
+            epsilon = Math.min(epsilon, Math.abs(prevP - p));
             prevP = p;
             probabilityDistance++;
         }
         this.largestInteger = probabilityDistance;
-        this.myEpsilon = epsilon;
+        this.myEpsilon = epsilon / 10.;
     }
 
     private boolean isAInAreaOfB(double a, double b) {
@@ -33,7 +33,7 @@ public abstract class IncreasingIntegersBijectiveProbabilitySpace implements Int
     @Override
     public int probabilityToInteger(double probability) {
         int left = 0;
-        int right = largestInteger + 1;
+        int right = largestInteger;
         while (right - left > 1) {
             int m = (left + right) / 2;
             if (isALessOrInAreaOfB(integerToProbability(m), probability)) {

@@ -9,8 +9,8 @@ class IterativeProbabilitySpace extends ProbabilitySpace {
 
     @Override
     public double getNextProb() {
-        myLastReturnedPrecision = myLastReturnedPrecision + myPrecision;
-        return Math.min(myLastReturnedPrecision, myRightProb);
+        myLastReturnedPrecision = Math.min(myRightProb, myLastReturnedPrecision + myPrecision);
+        return myLastReturnedPrecision;
     }
 
     @Override
@@ -28,7 +28,7 @@ class IterativeProbabilitySpace extends ProbabilitySpace {
         return new IncreasingIntegersBijectiveProbabilitySpace(this) {
             @Override
             public double integerToProbability(int n) {
-                return myLeftProb + myPrecision * n;
+                return Math.min(myRightProb, myLeftProb + myPrecision * n);
             }
         };
     }

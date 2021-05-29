@@ -10,6 +10,7 @@ public abstract class ProbabilitySpace {
     protected final double myRightProb;
     protected final double myPrecision;
     protected double myLastReturnedPrecision;
+    private int cntRightProb = 0;
 
     protected ProbabilitySpace(double leftProb, double rightProb, double precision) {
         myLeftProb = leftProb;
@@ -41,7 +42,8 @@ public abstract class ProbabilitySpace {
     public abstract IntegerToProbabilityBijectiveMapping createBijectionToIntegers();
 
     public boolean isFinished() {
-        double difference = myLastReturnedPrecision - myRightProb;
-        return difference > myPrecision / 2.;
+        double difference = Math.abs(myLastReturnedPrecision - myRightProb);
+        cntRightProb += difference < myPrecision / 10 ? 1 : 0;
+        return cntRightProb > 1;
     }
 }
