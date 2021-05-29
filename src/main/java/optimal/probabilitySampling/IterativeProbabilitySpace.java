@@ -10,7 +10,7 @@ class IterativeProbabilitySpace extends ProbabilitySpace {
     @Override
     public double getNextProb() {
         myLastReturnedPrecision = myLastReturnedPrecision + myPrecision;
-        return myLastReturnedPrecision;
+        return Math.min(myLastReturnedPrecision, myRightProb);
     }
 
     @Override
