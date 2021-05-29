@@ -32,14 +32,17 @@ public abstract class ConfigurationsLoader<T extends ValidatableConfiguration> {
     }
 
     @NotNull
-    protected T doLoadConfigurations(InputStream resourceAsStream) throws FileNotFoundException,
-            ConfigurationException {
+    protected T doLoadConfigurations(InputStream resourceAsStream) throws FileNotFoundException, ConfigurationException {
         if (resourceAsStream == null) {
             throw new FileNotFoundException("File with name " + getConfigurationFilename() + " is not found");
         }
         final Gson gson = createGsonInstanceForDeserialization();
-        final T configuration = gson.fromJson(new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8),
-                getConfigurationTypeClass());
+        final T configuration;
+        try (InputStreamReader inputStreamReader = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8)) {
+            configuration = gson.fromJson(inputStreamReader, getConfigurationTypeClass());
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to close the stream for configuration", e);
+        }
         configuration.validate();
         return configuration;
     }
