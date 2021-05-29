@@ -56,11 +56,6 @@ class UsualConfigurationsLoaderTest {
         Assertions.assertThrows(FileNotFoundException.class, () -> loadConfigFromTestFile("configTestNOTFOUND.json"));
     }
 
-    @Test
-    void testDeserializationOfSerializedConfigs() throws Exception {
-
-    }
-
     @NotNull
     private UsualConfiguration loadConfigFromTestFile(String testFileName) throws URISyntaxException,
             IOException, ConfigurationException {
